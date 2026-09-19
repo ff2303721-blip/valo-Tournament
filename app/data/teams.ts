@@ -1,7 +1,7 @@
 export type Player = {
   id: string;
   name: string;
-  role: string;
+  role?: string;
 };
 
 export type Team = {
