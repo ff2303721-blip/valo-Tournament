@@ -84,12 +84,12 @@ export default function PublicTeamsPage() {
   );
 
   return (
-    <main className="min-h-screen bg-[#080c12] text-white">
-      <div className="mx-auto max-w-[1300px] px-5 py-8 sm:px-8">
-        <header className="mb-8 border-b border-white/10 pb-6">
+    <main className="relative min-h-screen overflow-hidden bg-[#050810] text-white"><div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_12%_10%,rgba(255,49,88,0.12),transparent_25%),radial-gradient(circle_at_88%_18%,rgba(39,217,255,0.10),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.10),transparent_35%)]" />
+      <div className="relative mx-auto max-w-[1300px] px-5 py-8 sm:px-8">
+        <header className="mb-8 border-b border-[#263750] pb-6">
           <Link
             href="/tournament"
-            className="text-xs font-bold uppercase tracking-[0.2em] text-white/40 transition hover:text-white"
+            className="text-xs font-black uppercase tracking-[0.2em] text-[#52e2ff] transition hover:text-white"
           >
             ← Tournament Central
           </Link>
@@ -102,17 +102,17 @@ export default function PublicTeamsPage() {
             Registered Rosters
           </p>
 
-          <h1 className="mt-2 text-4xl font-black uppercase">
+          <h1 className="mt-2 bg-gradient-to-r from-white via-[#ffdce4] to-[#ff5275] bg-clip-text text-4xl font-black uppercase tracking-tight text-transparent">
             Teams
           </h1>
 
-          <p className="mt-3 text-sm text-white/40">
+          <p className="mt-3 text-sm text-[#8195b0]">
             Official registered tournament
             rosters.
           </p>
 
           {error && (
-            <div className="mt-4 border border-red-400/20 bg-red-400/[0.05] px-4 py-3">
+            <div className="mt-4 rounded-xl border border-[#ff3158]/30 bg-[#ff3158]/10 px-4 py-3 shadow-[0_0_25px_rgba(255,49,88,0.06)]">
               <p className="text-xs font-bold text-red-400">
                 {error}
               </p>
@@ -121,7 +121,7 @@ export default function PublicTeamsPage() {
         </header>
 
         {loading ? (
-          <div className="border border-dashed border-white/10 py-20 text-center">
+          <div className="rounded-2xl border border-dashed border-[#2b3d58] bg-white/[0.02] py-20 text-center">
             <p className="text-xs font-black uppercase tracking-wider text-white/25">
               Loading registered teams...
             </p>
@@ -138,10 +138,10 @@ export default function PublicTeamsPage() {
               <Link
                 key={team.id}
                 href={`/tournament/teams/${team.id}`}
-                className="border border-white/10 bg-white/[0.03] transition hover:border-cyan-400/30 hover:bg-white/[0.045]"
+                className="group overflow-hidden rounded-2xl border border-[#263750] bg-gradient-to-br from-[#0d1522] via-[#0a1019] to-[#111020] shadow-[0_12px_35px_rgba(0,0,0,0.22)] transition duration-300 hover:-translate-y-1 hover:border-[#52e2ff]/50 hover:shadow-[0_18px_50px_rgba(39,217,255,0.10)]"
               >
-                <div className="flex items-center gap-4 border-b border-white/10 p-5">
-                  <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden border border-white/10 bg-black/20">
+                <div className="flex items-center gap-4 border-b border-white/[0.08] bg-white/[0.015] p-5">
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#52e2ff]/25 bg-[#060b14] shadow-[0_0_22px_rgba(39,217,255,0.08)]">
                     {team.logo ? (
                       <img
                         src={team.logo}
@@ -170,7 +170,7 @@ export default function PublicTeamsPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 border-b border-white/10">
+                <div className="grid grid-cols-3 border-b border-white/[0.08] bg-black/10">
                   <TeamStat
                     label="Wins"
                     value={team.wins}
@@ -252,7 +252,7 @@ function TeamStat({
   value: number;
 }) {
   return (
-    <div className="border-r border-white/10 p-4 text-center last:border-r-0">
+    <div className="border-r border-white/[0.08] p-4 text-center last:border-r-0">
       <p className="text-[8px] font-black uppercase tracking-wider text-white/20">
         {label}
       </p>
