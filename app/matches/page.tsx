@@ -359,8 +359,6 @@ export default function MatchCenterPage() {
       return;
     }
 
-    // Refresh immediately before creating so a cached/stale
-    // match list can never cause a duplicate M01/M02/etc. request.
     let latestMatches = matches;
 
     try {
@@ -398,71 +396,25 @@ export default function MatchCenterPage() {
       return;
     }
 
-    const team1 = teams.find(
-      (team) => team.seed === nextFixture.team1Seed,
-    );
-
-    const team2 = teams.find(
-      (team) => team.seed === nextFixture.team2Seed,
-    );
-
-    if (!team1 || !team2) {
-      setError(
-        "Unable to assign the teams for the next Group Stage fixture.",
-      );
-      return;
-    }
-
     const matchNumber = nextFixture.matchNumber;
-    const id = `M${String(matchNumber).padStart(2, "0")}`;
 
-    try {
-      setSaving(true);
+    // Open the creation form instead of automatically assigning
+    // the fixture teams. The admin can now choose both teams.
+    setEditor({
+      id: `M${String(matchNumber).padStart(2, "0")}`,
+      matchNumber: String(matchNumber),
+      stage: "Group Stage",
+      team1Id: "",
+      team2Id: "",
+      scheduledAt: "",
+      map: nextFixture.map,
+      bestOf: "1",
+      team1Score: "0",
+      team2Score: "0",
+      status: "Scheduled",
+    });
 
-      const response = await fetch("/api/matches", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id,
-          matchNumber,
-          stage: "Group Stage",
-          team1Id: team1.id,
-          team2Id: team2.id,
-          scheduledAt: "",
-          map: nextFixture.map,
-          bestOf: 1,
-          team1Score: 0,
-          team2Score: 0,
-          status: "Scheduled",
-          playerStats: [],
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.error ||
-            `Failed to create ${id}.`,
-        );
-      }
-
-      await loadData();
-
-      setMessage(
-        `${id} created: ${team1.name} vs ${team2.name}.`,
-      );
-    } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Failed to create Group Stage match.",
-      );
-    } finally {
-      setSaving(false);
-    }
+    setActiveSection("group");
   }
 
   function editMatch(match: Match) {
@@ -1294,9 +1246,7 @@ export default function MatchCenterPage() {
                 }
                 className="rounded-xl bg-gradient-to-r from-[#ff3158] to-[#ff5275] px-4 py-2 text-[10px] font-black uppercase tracking-wider text-white shadow-[0_0_22px_rgba(255,49,88,0.18)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                {saving
-                  ? "CREATING..."
-                  : "+ NEW GROUP MATCH"}
+                + NEW GROUP MATCH
               </button>
             </div>
 
@@ -1717,6 +1667,161 @@ export default function MatchCenterPage() {
                 <footer className="mt-8 border-t border-[#263750] pt-5 text-center text-[10px] font-black uppercase tracking-wider text-[#617994]">
           GROUP STAGE: M01–M12 MANUAL · M13–M16 AUTOMATIC
         </footer>
+
+        {editor.id && !matches.some((match) => match.id === editor.id) && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#02050b]/80 p-4 backdrop-blur-sm">
+            <div className="w-full max-w-2xl rounded-2xl border border-[#52e2ff]/30 bg-[#090f19] p-6 shadow-[0_0_60px_rgba(39,217,255,0.12)]">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#52e2ff]">
+                    CREATE GROUP MATCH
+                  </div>
+                  <h2 className="mt-2 text-2xl font-black uppercase">
+                    {editor.id}
+                  </h2>
+                  <p className="mt-1 text-xs text-[#71839a]">
+                    Select the two teams for this fixture. A team cannot play itself.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={resetEditor}
+                  className="rounded-lg border border-[#304159] px-3 py-2 text-xs font-black text-[#9aacc1] hover:bg-[#111a27]"
+                >
+                  CLOSE
+                </button>
+              </div>
+
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                <label className="block">
+                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#52e2ff]">
+                    TEAM 1
+                  </span>
+                  <select
+                    value={editor.team1Id}
+                    onChange={(event) =>
+                      setEditor((current) => ({
+                        ...current,
+                        team1Id: event.target.value,
+                        team2Id:
+                          event.target.value === current.team2Id
+                            ? ""
+                            : current.team2Id,
+                      }))
+                    }
+                    className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm font-bold text-white outline-none focus:border-[#52e2ff]"
+                  >
+                    <option value="">Select Team 1</option>
+                    {sortedTeams.map((team) => (
+                      <option key={team.id} value={team.id}>
+                        Seed {team.seed} — {team.name}
+                      </option>
+                    ))}
+                  </select>
+                  {editor.team1Id && (
+                    <div className="mt-2 flex items-center gap-2 text-xs text-[#8da0b8]">
+                      <TeamLogo
+                        team={sortedTeams.find(
+                          (team) => team.id === editor.team1Id,
+                        )}
+                      />
+                      {getTeamName(editor.team1Id)}
+                    </div>
+                  )}
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#ff5275]">
+                    TEAM 2
+                  </span>
+                  <select
+                    value={editor.team2Id}
+                    onChange={(event) =>
+                      setEditor((current) => ({
+                        ...current,
+                        team2Id: event.target.value,
+                      }))
+                    }
+                    className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm font-bold text-white outline-none focus:border-[#ff5275]"
+                  >
+                    <option value="">Select Team 2</option>
+                    {sortedTeams
+                      .filter((team) => team.id !== editor.team1Id)
+                      .map((team) => (
+                        <option key={team.id} value={team.id}>
+                          Seed {team.seed} — {team.name}
+                        </option>
+                      ))}
+                  </select>
+                  {editor.team2Id && (
+                    <div className="mt-2 flex items-center gap-2 text-xs text-[#8da0b8]">
+                      <TeamLogo
+                        team={sortedTeams.find(
+                          (team) => team.id === editor.team2Id,
+                        )}
+                      />
+                      {getTeamName(editor.team2Id)}
+                    </div>
+                  )}
+                </label>
+              </div>
+
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <label className="block">
+                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#7d8ea5]">
+                    MAP
+                  </span>
+                  <select
+                    value={editor.map}
+                    onChange={(event) =>
+                      setEditor((current) => ({
+                        ...current,
+                        map: event.target.value,
+                      }))
+                    }
+                    className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm font-bold text-white outline-none focus:border-[#52e2ff]"
+                  >
+                    {["Lotus", "Sunset", "Haven", "Split", "Ascent", "Bind", "Breeze"].map(
+                      (map) => (
+                        <option key={map} value={map}>
+                          {map}
+                        </option>
+                      ),
+                    )}
+                  </select>
+                </label>
+
+                <div>
+                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#7d8ea5]">
+                    FORMAT
+                  </span>
+                  <div className="rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm font-bold text-white">
+                    BO1 · Scheduled
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={resetEditor}
+                  className="rounded-xl border border-[#304159] bg-[#0d1522] px-5 py-3 text-xs font-black uppercase tracking-wider text-[#a7b6c9]"
+                >
+                  CANCEL
+                </button>
+                <button
+                  type="button"
+                  onClick={saveGroupMatch}
+                  disabled={saving || !editor.team1Id || !editor.team2Id}
+                  className="rounded-xl bg-gradient-to-r from-[#ff3158] to-[#ff5275] px-6 py-3 text-xs font-black uppercase tracking-wider text-white shadow-[0_0_24px_rgba(255,49,88,0.2)] disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {saving ? "CREATING..." : "CREATE MATCH"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )
       </div>
     </main>
   );
