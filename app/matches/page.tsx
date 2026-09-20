@@ -176,10 +176,10 @@ export default function MatchCenterPage() {
       setError("");
 
       const [teamsResponse, matchesResponse] = await Promise.all([
-        fetch("/api/teams", {
+        fetch("/api/teams?summary=true", {
           cache: "no-store",
         }),
-        fetch("/api/matches", {
+        fetch("/api/matches?includeStats=false&admin=true", {
           cache: "no-store",
         }),
       ]);
@@ -359,11 +359,35 @@ export default function MatchCenterPage() {
       return;
     }
 
+    // Refresh immediately before creating so a cached/stale
+    // match list can never cause a duplicate M01/M02/etc. request.
+    let latestMatches = matches;
+
+    try {
+      const latestResponse = await fetch(
+        "/api/matches?includeStats=false&admin=true",
+        {
+          cache: "no-store",
+        },
+      );
+
+      const latestData = await latestResponse.json();
+
+      if (latestResponse.ok && Array.isArray(latestData)) {
+        latestMatches = latestData.map(normalizeMatch);
+        setMatches(latestMatches);
+      }
+    } catch {
+      // Continue with the current in-memory list if refresh fails.
+    }
+
     const nextFixture = GROUP_FIXTURES.find(
       (fixture) =>
-        !matches.some(
+        !latestMatches.some(
           (match) =>
-            match.matchNumber === fixture.matchNumber,
+            match.id ===
+              `M${String(fixture.matchNumber).padStart(2, "0")}` ||
+            Number(match.matchNumber) === fixture.matchNumber,
         ),
     );
 
