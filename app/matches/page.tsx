@@ -39,6 +39,7 @@ type EditorState = {
   team1Score: string;
   team2Score: string;
   status: MatchStatus;
+  startingSide: "Attack" | "Defend" | "";
 };
 
 const emptyEditor: EditorState = {
@@ -53,6 +54,7 @@ const emptyEditor: EditorState = {
   team1Score: "0",
   team2Score: "0",
   status: "Scheduled",
+  startingSide: "",
 };
 
 function normalizeMatch(match: Match): Match {
@@ -436,6 +438,7 @@ export default function MatchCenterPage() {
       team1Score: "0",
       team2Score: "0",
       status: "Scheduled",
+      startingSide: "",
     });
 
     setShowCreateForm(true);
@@ -473,6 +476,11 @@ export default function MatchCenterPage() {
       team1Score: String(match.team1Score),
       team2Score: String(match.team2Score),
       status: match.status,
+      startingSide:
+        match.startingSide === "Attack" ||
+        match.startingSide === "Defend"
+          ? match.startingSide
+          : "",
     });
 
     setShowCreateForm(true);
@@ -571,6 +579,8 @@ export default function MatchCenterPage() {
       team1Score: score1,
       team2Score: score2,
       status: editor.status,
+      startingSide:
+        editor.startingSide || undefined,
       winnerId:
         editor.status === "Completed"
           ? score1 > score2
@@ -1350,7 +1360,7 @@ export default function MatchCenterPage() {
                   </div>
                 </div>
 
-                <div className="mt-4 grid gap-4 md:grid-cols-3">
+                <div className="mt-4 grid gap-4 md:grid-cols-4">
                   <label>
                     <span className="mb-2 block text-[10px] font-black text-[#52e2ff]">TEAM 1</span>
                     <select value={editor.team1Id} onChange={(event) => setEditor((current) => ({ ...current, team1Id: event.target.value, team2Id: event.target.value === current.team2Id ? "" : current.team2Id }))} className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm font-bold text-white">
@@ -1369,6 +1379,14 @@ export default function MatchCenterPage() {
                     <span className="mb-2 block text-[10px] font-black text-[#b68cff]">MAP</span>
                     <select value={editor.map} onChange={(event) => setEditor((current) => ({ ...current, map: event.target.value }))} className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm font-bold text-white">
                       {["Lotus","Sunset","Haven","Split","Ascent","Bind","Breeze"].map((map) => <option key={map} value={map}>{map}</option>)}
+                    </select>
+                  </label>
+                  <label>
+                    <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#52e2ff]">ATTACK & DEFEND</span>
+                    <select value={editor.startingSide} onChange={(event) => setEditor((current) => ({ ...current, startingSide: event.target.value as "Attack" | "Defend" | "" }))} className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm font-bold text-white">
+                      <option value="">Select Starting Side</option>
+                      <option value="Attack">Team 1 — Attack / Team 2 — Defend</option>
+                      <option value="Defend">Team 1 — Defend / Team 2 — Attack</option>
                     </select>
                   </label>
                 </div>
