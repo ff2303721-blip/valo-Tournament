@@ -8,50 +8,74 @@ import {
   teams as initialTeams,
 } from "../../data/teams";
 
-const TEAMS_STORAGE_KEY = "tournament-teams";
-
-function loadTeams(): Team[] {
-  if (typeof window === "undefined") {
-    return initialTeams;
-  }
-
-  const stored = window.localStorage.getItem(
-    TEAMS_STORAGE_KEY,
-  );
-
-  if (!stored) {
-    return initialTeams;
-  }
-
-  try {
-    const parsed = JSON.parse(stored);
-
-    if (Array.isArray(parsed)) {
-      return parsed;
-    }
-  } catch {
-    // Use defaults.
-  }
-
-  return initialTeams;
-}
-
 function initials(name: string) {
   return (
     name
       .split(/\s+/)
       .filter(Boolean)
       .slice(0, 2)
-      .map((word) => word[0]?.toUpperCase())
+      .map((word) =>
+        word[0]?.toUpperCase(),
+      )
       .join("") || "TM"
   );
 }
 
 export default function PublicTeamsPage() {
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [teams, setTeams] = useState<Team[]>(
+    [],
+  );
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
+
+  async function loadTeams() {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await fetch(
+        "/api/teams",
+        {
+          cache: "no-store",
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          "Unable to load registered teams.",
+        );
+      }
+
+      const data = await response.json();
+
+      if (!Array.isArray(data)) {
+        throw new Error(
+          "Invalid team data received.",
+        );
+      }
+
+      setTeams(data);
+    } catch (error) {
+      console.error(error);
+
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Unable to load registered teams.",
+      );
+
+      setTeams(initialTeams);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    setTeams(loadTeams());
+    loadTeams();
   }, []);
 
   const sortedTeams = [...teams].sort(
@@ -63,27 +87,41 @@ export default function PublicTeamsPage() {
       <div className="mx-auto max-w-[1300px] px-5 py-8 sm:px-8">
         <header className="mb-8 border-b border-white/10 pb-6">
           <Link
-            href="/admin"
+            href="/tournament"
             className="text-xs font-bold uppercase tracking-[0.2em] text-white/40 transition hover:text-white"
           >
-            ← ADMIN HUB
+            ← Tournament Central
           </Link>
 
           <p className="mt-6 text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400">
-            Tournament Management
+            Registered Rosters
           </p>
 
           <h1 className="mt-2 text-4xl font-black uppercase">
-            Registered Teams
+            Teams
           </h1>
 
           <p className="mt-3 text-sm text-white/40">
-            Manage registered rosters, players, team logos and tournament
-            seeds.
+            Official registered tournament
+            rosters.
           </p>
+
+          {error && (
+            <div className="mt-4 border border-red-400/20 bg-red-400/[0.05] px-4 py-3">
+              <p className="text-xs font-bold text-red-400">
+                {error}
+              </p>
+            </div>
+          )}
         </header>
 
-        {sortedTeams.length === 0 ? (
+        {loading ? (
+          <div className="border border-dashed border-white/10 py-20 text-center">
+            <p className="text-xs font-black uppercase tracking-wider text-white/25">
+              Loading registered teams...
+            </p>
+          </div>
+        ) : sortedTeams.length === 0 ? (
           <div className="border border-dashed border-white/10 py-20 text-center">
             <p className="text-xs font-black uppercase tracking-wider text-white/25">
               No teams registered
@@ -150,24 +188,42 @@ export default function PublicTeamsPage() {
                   </p>
 
                   <p className="mt-2 text-xs font-bold text-white/60">
-                    {team.captainRank || "Not specified"}
+                    {team.captainRank ||
+                      "Not specified"}
                   </p>
 
                   <div className="mt-4 space-y-1.5">
-                    {team.players.slice(0, 6).map((player, index) => (
-                      <div
-                        key={player.id}
-                        className="flex items-center justify-between border border-white/[0.06] bg-black/20 px-3 py-2"
-                      >
-                        <span className="truncate text-xs font-bold text-white/60">
-                          {player.name}
-                        </span>
+                    {team.players
+                      .slice(0, 6)
+                      .map(
+                        (
+                          player,
+                          index,
+                        ) => (
+                          <div
+                            key={
+                              player.id
+                            }
+                            className="flex items-center justify-between border border-white/[0.06] bg-black/20 px-3 py-2"
+                          >
+                            <span className="truncate text-xs font-bold text-white/60">
+                              {
+                                player.name
+                              }
+                            </span>
 
-                        <span className="ml-3 text-[8px] font-black text-white/15">
-                          {String(index + 1).padStart(2, "0")}
-                        </span>
-                      </div>
-                    ))}
+                            <span className="ml-3 text-[8px] font-black text-white/15">
+                              {String(
+                                index +
+                                  1,
+                              ).padStart(
+                                2,
+                                "0",
+                              )}
+                            </span>
+                          </div>
+                        ),
+                      )}
                   </div>
 
                   <p className="mt-4 text-right text-[9px] font-black uppercase tracking-wider text-cyan-400/60">

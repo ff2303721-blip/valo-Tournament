@@ -3,1046 +3,226 @@
 import Link from "next/link";
 import {
   ChangeEvent,
+  FormEvent,
   useEffect,
-  useRef,
+  useMemo,
   useState,
 } from "react";
-import {
-  Team,
-  Player,
-  teams as initialTeams,
-} from "../data/teams";
 
-const STORAGE_KEY = "tournament-teams";
-
-type CsvRow = {
-  roster: string;
-  player: string;
-  captainRank: string;
+type Player = {
+  id: string;
+  name: string;
+  role?: string;
 };
 
-function createId(prefix: string) {
-  return `${prefix}-${Date.now()}-${Math.random()
-    .toString(36)
-    .slice(2, 8)}`;
+type Team = {
+  id: string;
+  name: string;
+  tag: string;
+  seed: number;
+  logo?: string;
+  wins: number;
+  losses: number;
+  captainRank?: string;
+  players: Player[];
+};
+
+const EMPTY_PLAYER = (): Player => ({
+  id: crypto.randomUUID(),
+  name: "",
+  role: "",
+});
+
+const EMPTY_TEAM = (): Team => ({
+  id: "",
+  name: "",
+  tag: "",
+  seed: 1,
+  logo: "",
+  wins: 0,
+  losses: 0,
+  captainRank: "",
+  players: Array.from(
+    { length: 6 },
+    EMPTY_PLAYER,
+  ),
+});
+
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 function normalizeTeam(
-  team: Partial<Team>,
-  index: number
+  team: Team,
 ): Team {
   return {
-    id:
-      team.id ||
-      createId(`team-${index + 1}`),
-    name:
-      team.name?.trim() ||
-      `TEAM ${index + 1}`,
-    tag:
-      team.tag?.trim() ||
-      team.name?.trim() ||
-      `TEAM${index + 1}`,
-    seed:
-      Number(team.seed) ||
-      index + 1,
-    logo: team.logo || "",
-    wins:
-      Number(team.wins) || 0,
-    losses:
-      Number(team.losses) || 0,
+    id: team.id,
+    name: team.name,
+    tag: team.tag,
+    seed: Number(team.seed),
+    logo: team.logo ?? "",
+    wins: Number(team.wins ?? 0),
+    losses: Number(team.losses ?? 0),
     captainRank:
-      team.captainRank?.trim() || "",
-    players:
-      Array.isArray(team.players)
-        ? team.players
-            .filter(
-              (player): player is Player =>
-                Boolean(player)
-            )
-            .map(
-              (
-                player,
-                playerIndex
-              ) => ({
-                id:
-                  player.id ||
-                  createId(
-                    `player-${index}-${playerIndex}`
-                  ),
-                name:
-                  player.name?.trim() ||
-                  `PLAYER ${playerIndex + 1}`,
-              })
-            )
-        : [],
+      team.captainRank ?? "",
+    players: Array.isArray(
+      team.players,
+    )
+      ? team.players.map(
+          (player) => ({
+            id:
+              player.id ||
+              crypto.randomUUID(),
+            name:
+              player.name ?? "",
+            role:
+              player.role ?? "",
+          }),
+        )
+      : [],
   };
 }
 
-function slugify(value: string) {
-  return (
-    value
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "") ||
-    "team"
-  );
-}
-
-function parseCsv(text: string): CsvRow[] {
-  const rows: string[][] = [];
-
-  let row: string[] = [];
-  let cell = "";
-  let insideQuotes = false;
-
-  for (let i = 0; i < text.length; i += 1) {
-    const char = text[i];
-
-    if (char === '"') {
-      if (
-        insideQuotes &&
-        text[i + 1] === '"'
-      ) {
-        cell += '"';
-        i += 1;
-      } else {
-        insideQuotes = !insideQuotes;
-      }
-
-      continue;
-    }
-
-    if (char === "," && !insideQuotes) {
-      row.push(cell);
-      cell = "";
-      continue;
-    }
-
-    if (
-      (char === "\n" ||
-        char === "\r") &&
-      !insideQuotes
-    ) {
-      if (
-        char === "\r" &&
-        text[i + 1] === "\n"
-      ) {
-        i += 1;
-      }
-
-      row.push(cell);
-      cell = "";
-
-      if (
-        row.some(
-          (value) =>
-            value.trim() !== ""
-        )
-      ) {
-        rows.push(row);
-      }
-
-      row = [];
-      continue;
-    }
-
-    cell += char;
-  }
-
-  if (
-    cell.length > 0 ||
-    row.length > 0
-  ) {
-    row.push(cell);
-
-    if (
-      row.some(
-        (value) =>
-          value.trim() !== ""
-      )
-    ) {
-      rows.push(row);
-    }
-  }
-
-  if (rows.length === 0) {
-    return [];
-  }
-
-  const headers = rows[0].map((header) =>
-    header
-      .replace(/^\uFEFF/, "")
-      .trim()
-      .toLowerCase()
-  );
-
-  const rosterIndex =
-    headers.indexOf("roster");
-  const playerIndex =
-    headers.indexOf("player");
-  const captainRankIndex =
-    headers.indexOf(
-      "captain / rank"
-    );
-
-  if (
-    rosterIndex === -1 ||
-    playerIndex === -1
-  ) {
-    throw new Error(
-      'CSV must contain "Roster" and "Player" columns.'
-    );
-  }
-
-  return rows
-    .slice(1)
-    .map((values) => ({
-      roster:
-        values[rosterIndex]
-          ?.trim() || "",
-      player:
-        values[playerIndex]
-          ?.trim() || "",
-      captainRank:
-        captainRankIndex === -1
-          ? ""
-          : values[
-              captainRankIndex
-            ]?.trim() || "",
-    }))
-    .filter(
-      (row) =>
-        row.roster &&
-        row.player
-    );
-}
-
-function csvEscape(value: string) {
-  if (
-    value.includes(",") ||
-    value.includes('"') ||
-    value.includes("\n") ||
-    value.includes("\r")
-  ) {
-    return `"${value.replace(
-      /"/g,
-      '""'
-    )}"`;
-  }
-
-  return value;
-}
-
-function teamsToCsv(
-  teams: Team[]
-) {
-  const lines: string[] = [];
-
-  lines.push(
-    "Roster,Player,Captain / Rank"
-  );
-
-  teams.forEach((team) => {
-    if (team.players.length === 0) {
-      lines.push(
-        [
-          csvEscape(team.name),
-          "",
-          csvEscape(
-            team.captainRank || ""
-          ),
-        ].join(",")
-      );
-
-      return;
-    }
-
-    team.players.forEach(
-      (player, index) => {
-        lines.push(
-          [
-            csvEscape(team.name),
-            csvEscape(player.name),
-            csvEscape(
-              index === 0
-                ? team.captainRank ||
-                    ""
-                : ""
-            ),
-          ].join(",")
-        );
-      }
-    );
-  });
-
-  return lines.join("\r\n");
-}
-
-function csvRowsToTeams(
-  rows: CsvRow[]
-): Team[] {
-  const teamMap =
-    new Map<string, Team>();
-
-  rows.forEach(
-    (row, rowIndex) => {
-      const teamKey =
-        row.roster
-          .trim()
-          .toLowerCase();
-
-      if (!teamKey) {
-        return;
-      }
-
-      let team =
-        teamMap.get(teamKey);
-
-      if (!team) {
-        team = {
-          id: createId(
-            `team-${slugify(
-              row.roster
-            )}`
-          ),
-          name: row.roster.trim(),
-          tag: row.roster.trim(),
-          seed:
-            teamMap.size + 1,
-          logo: "",
-          wins: 0,
-          losses: 0,
-          captainRank:
-            row.captainRank ||
-            "",
-          players: [],
-        };
-
-        teamMap.set(
-          teamKey,
-          team
-        );
-      }
-
-      if (
-        row.captainRank
-      ) {
-        team.captainRank =
-          row.captainRank;
-      }
-
-      const duplicate =
-        team.players.some(
-          (player) =>
-            player.name
-              .trim()
-              .toLowerCase() ===
-            row.player
-              .trim()
-              .toLowerCase()
-        );
-
-      if (!duplicate) {
-        team.players.push({
-          id: createId(
-            `player-${rowIndex}`
-          ),
-          name: row.player.trim(),
-        });
-      }
-    }
-  );
-
-  return Array.from(
-    teamMap.values()
-  );
-}
-
-export default function TeamsPage() {
-  const [teamList, setTeamList] =
+export default function TeamsAdminPage() {
+  const [teams, setTeams] =
     useState<Team[]>([]);
+  const [loading, setLoading] =
+    useState(true);
+  const [saving, setSaving] =
+    useState(false);
+  const [error, setError] =
+    useState("");
+  const [notice, setNotice] =
+    useState("");
 
   const [search, setSearch] =
     useState("");
 
-  const [editorOpen, setEditorOpen] =
-    useState(false);
+  const [editingId, setEditingId] =
+    useState<string | null>(null);
 
-  const [
-    editingTeam,
-    setEditingTeam,
-  ] = useState<Team | null>(null);
-
-  const [
-    importOpen,
-    setImportOpen,
-  ] = useState(false);
-
-  const [
-    importPreview,
-    setImportPreview,
-  ] = useState<Team[] | null>(null);
-
-  const [
-    importError,
-    setImportError,
-  ] = useState("");
-
-  useEffect(() => {
-    const stored =
-      window.localStorage.getItem(
-        STORAGE_KEY
-      );
-
-    if (stored) {
-      try {
-        const parsed =
-          JSON.parse(stored);
-
-        if (Array.isArray(parsed)) {
-          setTeamList(
-            parsed.map(
-              normalizeTeam
-            )
-          );
-
-          return;
-        }
-      } catch {
-        // Ignore invalid local storage.
-      }
-    }
-
-    setTeamList(
-      initialTeams.map(
-        normalizeTeam
-      )
+  const [form, setForm] =
+    useState<Team>(
+      EMPTY_TEAM(),
     );
-  }, []);
-
-  function saveTeams(
-    nextTeams: Team[]
-  ) {
-    setTeamList(nextTeams);
-
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(nextTeams)
-    );
-  }
-
-  function openAddTeam() {
-    setEditingTeam({
-      id: "",
-      name: "",
-      tag: "",
-      seed:
-        teamList.length + 1,
-      logo: "",
-      wins: 0,
-      losses: 0,
-      captainRank: "",
-      players: [],
-    });
-
-    setEditorOpen(true);
-  }
-
-  function openEditTeam(
-    team: Team
-  ) {
-    setEditingTeam({
-      ...team,
-      players: team.players.map(
-        (player) => ({
-          ...player,
-        })
-      ),
-    });
-
-    setEditorOpen(true);
-  }
-
-  function closeEditor() {
-    setEditorOpen(false);
-    setEditingTeam(null);
-  }
-
-  function handleSaveTeam(
-    team: Team
-  ) {
-    const cleaned: Team =
-      normalizeTeam(
-        {
-          ...team,
-          name: team.name.trim(),
-          tag:
-            team.tag.trim() ||
-            team.name.trim(),
-        },
-        teamList.length
-      );
-
-    const existing =
-      teamList.some(
-        (item) =>
-          item.id === cleaned.id
-      );
-
-    const nextTeams = existing
-      ? teamList.map((item) =>
-          item.id === cleaned.id
-            ? cleaned
-            : item
-        )
-      : [
-          ...teamList,
-          {
-            ...cleaned,
-            id:
-              cleaned.id ||
-              createId("team"),
-          },
-        ];
-
-    saveTeams(nextTeams);
-    closeEditor();
-  }
-
-  function handleDeleteTeam(
-    team: Team
-  ) {
-    const confirmed =
-      window.confirm(
-        `Delete ${team.name}? This will remove the team from the tournament list.`
-      );
-
-    if (!confirmed) {
-      return;
-    }
-
-    const nextTeams =
-      teamList.filter(
-        (item) =>
-          item.id !== team.id
-      );
-
-    saveTeams(nextTeams);
-    closeEditor();
-  }
-
-  function handleReset() {
-    const confirmed =
-      window.confirm(
-        "Reset all teams to the original roster data?"
-      );
-
-    if (!confirmed) {
-      return;
-    }
-
-    const resetTeams =
-      initialTeams.map(
-        normalizeTeam
-      );
-
-    saveTeams(resetTeams);
-  }
-
-  function handleExport() {
-    const csv =
-      teamsToCsv(teamList);
-
-    const blob =
-      new Blob([csv], {
-        type: "text/csv;charset=utf-8;",
-      });
-
-    const url =
-      URL.createObjectURL(blob);
-
-    const link =
-      document.createElement(
-        "a"
-      );
-
-    link.href = url;
-    link.download =
-      "tournament-teams.csv";
-
-    document.body.appendChild(
-      link
-    );
-
-    link.click();
-    link.remove();
-
-    URL.revokeObjectURL(url);
-  }
-
-  function handleImportFile(
-    event: ChangeEvent<HTMLInputElement>
-  ) {
-    const file =
-      event.target.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
-    setImportError("");
-    setImportPreview(null);
-
-    const reader =
-      new FileReader();
-
-    reader.onload = () => {
-      try {
-        const text =
-          String(
-            reader.result || ""
-          );
-
-        const rows =
-          parseCsv(text);
-
-        if (rows.length === 0) {
-          throw new Error(
-            "No roster rows were found in the CSV."
-          );
-        }
-
-        const importedTeams =
-          csvRowsToTeams(rows);
-
-        if (
-          importedTeams.length === 0
-        ) {
-          throw new Error(
-            "No valid teams were found in the CSV."
-          );
-        }
-
-        setImportPreview(
-          importedTeams
-        );
-      } catch (error) {
-        setImportError(
-          error instanceof Error
-            ? error.message
-            : "Could not read the CSV file."
-        );
-      }
-    };
-
-    reader.onerror = () => {
-      setImportError(
-        "Could not read the selected file."
-      );
-    };
-
-    reader.readAsText(file);
-  }
-
-  function confirmImport() {
-    if (
-      !importPreview ||
-      importPreview.length === 0
-    ) {
-      return;
-    }
-
-    const confirmed =
-      window.confirm(
-        `Import ${importPreview.length} team${
-          importPreview.length === 1
-            ? ""
-            : "s"
-        } and replace the current team list?`
-      );
-
-    if (!confirmed) {
-      return;
-    }
-
-    const normalized =
-      importPreview.map(
-        normalizeTeam
-      );
-
-    saveTeams(normalized);
-
-    setImportPreview(null);
-    setImportError("");
-    setImportOpen(false);
-  }
-
-  function closeImport() {
-    setImportOpen(false);
-    setImportPreview(null);
-    setImportError("");
-  }
 
   const filteredTeams =
-    teamList.filter((team) => {
+    useMemo(() => {
       const query =
-        search.trim().toLowerCase();
+        search
+          .trim()
+          .toLowerCase();
 
       if (!query) {
-        return true;
+        return teams;
       }
 
-      return (
-        team.name
-          .toLowerCase()
-          .includes(query) ||
-        team.tag
-          .toLowerCase()
-          .includes(query) ||
-        team.players.some(
-          (player) =>
-            player.name
-              .toLowerCase()
-              .includes(query)
-        )
+      return teams.filter(
+        (team) =>
+          team.name
+            .toLowerCase()
+            .includes(query) ||
+          team.tag
+            .toLowerCase()
+            .includes(query) ||
+          team.id
+            .toLowerCase()
+            .includes(query),
       );
-    });
+    }, [teams, search]);
 
-  return (
-    <main className="min-h-screen bg-[#080c12] text-white">
-      <div className="mx-auto max-w-[1500px] px-6 py-8">
-        <header className="mb-8 flex flex-col gap-5 border-b border-white/10 pb-6 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <Link
-              href="/admin"
-              className="mb-4 inline-block text-xs font-bold uppercase tracking-[0.2em] text-white/40 transition hover:text-white"
-            >
-              ← Admin Hub
-            </Link>
+  async function loadTeams() {
+    setLoading(true);
+    setError("");
 
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">
-              Tournament Management
-            </p>
+    try {
+      const response =
+        await fetch(
+          "/api/teams",
+          {
+            cache: "no-store",
+          },
+        );
 
-            <h1 className="mt-2 text-4xl font-black uppercase tracking-tight">
-              Registered Teams
-            </h1>
+      const data =
+        await response.json();
 
-            <p className="mt-2 max-w-2xl text-sm text-white/50">
-              Manage registered rosters,
-              players, team logos and
-              tournament seeds.
-            </p>
-          </div>
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            "Failed to load teams.",
+        );
+      }
 
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={handleReset}
-              className="border border-white/10 bg-white/[0.04] px-4 py-3 text-xs font-black uppercase tracking-wider text-white/70 transition hover:bg-white/[0.08] hover:text-white"
-            >
-              Reset
-            </button>
+      setTeams(
+        Array.isArray(data)
+          ? data.map(normalizeTeam)
+          : [],
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to load teams.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
-            <button
-              onClick={handleExport}
-              className="border border-cyan-400/30 bg-cyan-400/10 px-4 py-3 text-xs font-black uppercase tracking-wider text-cyan-300 transition hover:bg-cyan-400/20"
-            >
-              Export CSV
-            </button>
+  useEffect(() => {
+    loadTeams();
+  }, []);
 
-            <button
-              onClick={() =>
-                setImportOpen(true)
-              }
-              className="border border-violet-400/30 bg-violet-400/10 px-4 py-3 text-xs font-black uppercase tracking-wider text-violet-300 transition hover:bg-violet-400/20"
-            >
-              Import CSV
-            </button>
-
-            <button
-              onClick={openAddTeam}
-              className="bg-white px-5 py-3 text-xs font-black uppercase tracking-wider text-black transition hover:bg-cyan-300"
-            >
-              + Add Team
-            </button>
-          </div>
-        </header>
-
-        <section className="mb-6 grid gap-4 md:grid-cols-3">
-          <div className="border border-white/10 bg-white/[0.03] p-5">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
-              Registered Teams
-            </p>
-
-            <p className="mt-2 text-3xl font-black">
-              {teamList.length}
-            </p>
-          </div>
-
-          <div className="border border-white/10 bg-white/[0.03] p-5">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
-              Total Players
-            </p>
-
-            <p className="mt-2 text-3xl font-black">
-              {teamList.reduce(
-                (total, team) =>
-                  total +
-                  team.players.length,
-                0
-              )}
-            </p>
-          </div>
-
-          <div className="border border-white/10 bg-white/[0.03] p-5">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
-              Search
-            </p>
-
-            <input
-              value={search}
-              onChange={(event) =>
-                setSearch(
-                  event.target.value
-                )
-              }
-              placeholder="Team or player..."
-              className="mt-2 w-full border border-white/10 bg-black/30 px-3 py-2 text-sm text-white outline-none placeholder:text-white/25 focus:border-cyan-400/50"
-            />
-          </div>
-        </section>
-
-        {teamList.length === 0 ? (
-          <div className="border border-dashed border-white/15 py-20 text-center">
-            <p className="text-sm font-bold uppercase tracking-wider text-white/40">
-              No teams registered
-            </p>
-
-            <button
-              onClick={openAddTeam}
-              className="mt-4 bg-white px-5 py-3 text-xs font-black uppercase tracking-wider text-black"
-            >
-              Add First Team
-            </button>
-          </div>
-        ) : filteredTeams.length === 0 ? (
-          <div className="border border-dashed border-white/15 py-20 text-center">
-            <p className="text-sm font-bold uppercase tracking-wider text-white/40">
-              No teams match your search
-            </p>
-          </div>
-        ) : (
-          <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {filteredTeams.map(
-              (team) => (
-                <TeamCard
-                  key={team.id}
-                  team={team}
-                  onEdit={() =>
-                    openEditTeam(
-                      team
-                    )
-                  }
-                />
-              )
-            )}
-          </section>
-        )}
-      </div>
-
-      {editorOpen &&
-        editingTeam && (
-          <TeamEditor
-            team={editingTeam}
-            isNew={!editingTeam.id}
-            onClose={closeEditor}
-            onSave={handleSaveTeam}
-            onDelete={
-              editingTeam.id
-                ? () =>
-                    handleDeleteTeam(
-                      editingTeam
-                    )
-                : undefined
-            }
-          />
-        )}
-
-      {importOpen && (
-        <ImportTeamsModal
-          preview={importPreview}
-          error={importError}
-          onFileChange={
-            handleImportFile
-          }
-          onConfirm={
-            confirmImport
-          }
-          onClose={closeImport}
-          onClearPreview={() =>
-            setImportPreview(null)
-          }
-        />
-      )}
-    </main>
-  );
-}
-
-function TeamCard({
-  team,
-  onEdit,
-}: {
-  team: Team;
-  onEdit: () => void;
-}) {
-  const initials =
-    team.name
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((word) =>
-        word[0]?.toUpperCase()
-      )
-      .join("") || "TM";
-
-  return (
-    <article className="overflow-hidden border border-white/10 bg-white/[0.03]">
-      <div className="flex items-start justify-between border-b border-white/10 p-5">
-        <div className="flex min-w-0 items-center gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden border border-white/10 bg-black/30">
-            {team.logo ? (
-              <img
-                src={team.logo}
-                alt={`${team.name} logo`}
-                className="h-full w-full object-contain"
-              />
-            ) : (
-              <span className="text-xl font-black text-white/50">
-                {initials}
-              </span>
-            )}
-          </div>
-
-          <div className="min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400">
-              Seed {team.seed}
-            </p>
-
-            <h2 className="mt-1 truncate text-xl font-black uppercase">
-              {team.name}
-            </h2>
-
-            <p className="mt-1 text-xs font-bold uppercase tracking-wider text-white/35">
-              {team.tag}
-            </p>
-          </div>
-        </div>
-
-        <button
-          onClick={onEdit}
-          className="border border-white/10 px-3 py-2 text-[10px] font-black uppercase tracking-wider text-white/50 transition hover:border-white/30 hover:text-white"
-        >
-          Edit
-        </button>
-      </div>
-
-      <div className="grid grid-cols-2 border-b border-white/10">
-        <div className="border-r border-white/10 p-4">
-          <p className="text-[9px] font-black uppercase tracking-widest text-white/30">
-            Record
-          </p>
-
-          <p className="mt-1 text-lg font-black">
-            {team.wins}W -{" "}
-            {team.losses}L
-          </p>
-        </div>
-
-        <div className="p-4">
-          <p className="text-[9px] font-black uppercase tracking-widest text-white/30">
-            Players
-          </p>
-
-          <p className="mt-1 text-lg font-black">
-            {team.players.length}
-          </p>
-        </div>
-      </div>
-
-      <div className="p-5">
-        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30">
-          Captain / Rank
-        </p>
-
-        <p className="mt-2 min-h-5 text-xs font-bold text-white/70">
-          {team.captainRank ||
-            "Not specified"}
-        </p>
-
-        <div className="mt-4 space-y-1.5">
-          {team.players.map(
-            (player, index) => (
-              <div
-                key={player.id}
-                className="flex items-center justify-between border border-white/[0.06] bg-black/20 px-3 py-2"
-              >
-                <span className="truncate text-xs font-bold text-white/70">
-                  {player.name}
-                </span>
-
-                <span className="ml-3 shrink-0 text-[9px] font-black text-white/20">
-                  {String(
-                    index + 1
-                  ).padStart(2, "0")}
-                </span>
-              </div>
-            )
-          )}
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function TeamEditor({
-  team,
-  isNew,
-  onClose,
-  onSave,
-  onDelete,
-}: {
-  team: Team;
-  isNew: boolean;
-  onClose: () => void;
-  onSave: (team: Team) => void;
-  onDelete?: () => void;
-}) {
-  const [form, setForm] =
-    useState<Team>(() => ({
-      ...team,
-      players: team.players.map(
-        (player) => ({
-          ...player,
-        })
-      ),
-    }));
-
-  const logoInputRef =
-    useRef<HTMLInputElement | null>(
-      null
+  function startCreate() {
+    setEditingId(null);
+    setForm(
+      EMPTY_TEAM(),
     );
+    setNotice("");
+    setError("");
+  }
 
-  function updateField<
-    K extends keyof Team
-  >(
-    field: K,
-    value: Team[K]
+  function startEdit(
+    team: Team,
   ) {
-    setForm((current) => ({
-      ...current,
-      [field]: value,
-    }));
+    setEditingId(team.id);
+    setForm(
+      normalizeTeam(team),
+    );
+    setNotice("");
+    setError("");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  function updatePlayer(
+    index: number,
+    field: keyof Player,
+    value: string,
+  ) {
+    setForm((current) => {
+      const players = [
+        ...current.players,
+      ];
+
+      players[index] = {
+        ...players[index],
+        [field]: value,
+      };
+
+      return {
+        ...current,
+        players,
+      };
+    });
   }
 
   function addPlayer() {
@@ -1050,52 +230,25 @@ function TeamEditor({
       ...current,
       players: [
         ...current.players,
-        {
-          id: createId(
-            "player"
-          ),
-          name: "",
-        },
+        EMPTY_PLAYER(),
       ],
     }));
   }
 
-  function updatePlayer(
-    playerId: string,
-    value: string
-  ) {
-    setForm((current) => ({
-      ...current,
-      players:
-        current.players.map(
-          (player) =>
-            player.id ===
-            playerId
-              ? {
-                  ...player,
-                  name: value,
-                }
-              : player
-        ),
-    }));
-  }
-
   function removePlayer(
-    playerId: string
+    index: number,
   ) {
     setForm((current) => ({
       ...current,
       players:
         current.players.filter(
-          (player) =>
-            player.id !==
-            playerId
+          (_, i) => i !== index,
         ),
     }));
   }
 
   function handleLogoUpload(
-    event: ChangeEvent<HTMLInputElement>
+    event: ChangeEvent<HTMLInputElement>,
   ) {
     const file =
       event.target.files?.[0];
@@ -1106,24 +259,12 @@ function TeamEditor({
 
     if (
       !file.type.startsWith(
-        "image/"
+        "image/",
       )
     ) {
-      window.alert(
-        "Please select an image file."
+      setError(
+        "Please select an image file.",
       );
-
-      return;
-    }
-
-    if (
-      file.size >
-      2 * 1024 * 1024
-    ) {
-      window.alert(
-        "Logo must be smaller than 2 MB."
-      );
-
       return;
     }
 
@@ -1133,547 +274,1270 @@ function TeamEditor({
     reader.onload = () => {
       setForm((current) => ({
         ...current,
-        logo: String(
-          reader.result || ""
-        ),
+        logo:
+          typeof reader.result ===
+          "string"
+            ? reader.result
+            : "",
       }));
     };
 
     reader.readAsDataURL(file);
   }
 
-  function handleSave() {
-    if (!form.name.trim()) {
-      window.alert(
-        "Team name is required."
+  async function saveTeam(
+    event: FormEvent,
+  ) {
+    event.preventDefault();
+
+    setSaving(true);
+    setError("");
+    setNotice("");
+
+    try {
+      const cleanPlayers =
+        form.players
+          .filter(
+            (player) =>
+              player.name.trim(),
+          )
+          .map((player) => ({
+            id:
+              player.id ||
+              crypto.randomUUID(),
+            name:
+              player.name.trim(),
+            role:
+              player.role?.trim() ||
+              "",
+          }));
+
+      const payload = {
+        ...form,
+        id:
+          form.id.trim() ||
+          slugify(form.name),
+        name:
+          form.name.trim(),
+        tag:
+          form.tag.trim(),
+        seed:
+          Number(form.seed),
+        wins:
+          Number(form.wins),
+        losses:
+          Number(form.losses),
+        captainRank:
+          form.captainRank?.trim() ||
+          "",
+        players:
+          cleanPlayers,
+      };
+
+      if (!payload.id) {
+        throw new Error(
+          "Team name is required.",
+        );
+      }
+
+      const isEditing =
+        Boolean(editingId);
+
+      const response =
+        await fetch(
+          isEditing
+            ? `/api/teams/${encodeURIComponent(
+                editingId!,
+              )}`
+            : "/api/teams",
+          {
+            method: isEditing
+              ? "PUT"
+              : "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body:
+              JSON.stringify(
+                payload,
+              ),
+          },
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            "Failed to save team.",
+        );
+      }
+
+      await loadTeams();
+
+      setNotice(
+        isEditing
+          ? "Team updated successfully."
+          : "Team created successfully.",
       );
 
+      setEditingId(null);
+      setForm(
+        EMPTY_TEAM(),
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to save team.",
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function deleteTeam(
+    team: Team,
+  ) {
+    const confirmed =
+      window.confirm(
+        `Delete ${team.name}? This will also delete all players belonging to this team.`,
+      );
+
+    if (!confirmed) {
       return;
     }
 
-    const cleanedPlayers =
-      form.players
-        .map((player) => ({
-          ...player,
-          name: player.name.trim(),
-        }))
-        .filter(
-          (player) =>
-            player.name.length > 0
+    setError("");
+    setNotice("");
+
+    try {
+      const response =
+        await fetch(
+          `/api/teams/${encodeURIComponent(
+            team.id,
+          )}`,
+          {
+            method: "DELETE",
+          },
         );
 
-    onSave({
-      ...form,
-      name: form.name.trim(),
-      tag:
-        form.tag.trim() ||
-        form.name.trim(),
-      captainRank:
-        form.captainRank?.trim() ||
-        "",
-      players:
-        cleanedPlayers,
-    });
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            "Failed to delete team.",
+        );
+      }
+
+      setTeams(
+        (current) =>
+          current.filter(
+            (item) =>
+              item.id !==
+              team.id,
+          ),
+      );
+
+      if (
+        editingId ===
+        team.id
+      ) {
+        startCreate();
+      }
+
+      setNotice(
+        "Team deleted successfully.",
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to delete team.",
+      );
+    }
+  }
+
+  function exportCsv() {
+    const rows = [
+      [
+        "team_id",
+        "team_name",
+        "tag",
+        "seed",
+        "captain_rank",
+        "player_1",
+        "player_2",
+        "player_3",
+        "player_4",
+        "player_5",
+        "player_6",
+      ],
+      ...teams.map(
+        (team) => [
+          team.id,
+          team.name,
+          team.tag,
+          String(team.seed),
+          team.captainRank ??
+            "",
+          ...Array.from(
+            {
+              length: 6,
+            },
+            (_, index) =>
+              team.players[
+                index
+              ]?.name ?? "",
+          ),
+        ],
+      ),
+    ];
+
+    const csv =
+      rows
+        .map((row) =>
+          row
+            .map(
+              (cell) =>
+                `"${String(
+                  cell,
+                ).replaceAll(
+                  '"',
+                  '""',
+                )}"`,
+            )
+            .join(","),
+        )
+        .join("\n");
+
+    const blob =
+      new Blob(
+        [csv],
+        {
+          type: "text/csv;charset=utf-8;",
+        },
+      );
+
+    const url =
+      URL.createObjectURL(
+        blob,
+      );
+
+    const anchor =
+      document.createElement(
+        "a",
+      );
+
+    anchor.href = url;
+    anchor.download =
+      "valorant-teams.csv";
+    anchor.click();
+
+    URL.revokeObjectURL(url);
+  }
+
+  function parseCsvLine(
+    line: string,
+  ) {
+    const values: string[] = [];
+    let current = "";
+    let quoted = false;
+
+    for (
+      let i = 0;
+      i < line.length;
+      i++
+    ) {
+      const char =
+        line[i];
+
+      if (
+        char === '"' &&
+        line[i + 1] === '"'
+      ) {
+        current += '"';
+        i++;
+        continue;
+      }
+
+      if (char === '"') {
+        quoted =
+          !quoted;
+        continue;
+      }
+
+      if (
+        char === "," &&
+        !quoted
+      ) {
+        values.push(
+          current.trim(),
+        );
+        current = "";
+        continue;
+      }
+
+      current += char;
+    }
+
+    values.push(
+      current.trim(),
+    );
+
+    return values;
+  }
+
+  async function importCsv(
+    event: ChangeEvent<HTMLInputElement>,
+  ) {
+    const file =
+      event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    setError("");
+    setNotice("");
+
+    try {
+      const text =
+        await file.text();
+
+      const lines =
+        text
+          .split(/\r?\n/)
+          .filter(
+            (line) =>
+              line.trim(),
+          );
+
+      if (
+        lines.length <
+        2
+      ) {
+        throw new Error(
+          "CSV must contain a header and at least one team.",
+        );
+      }
+
+      const headers =
+        parseCsvLine(
+          lines[0],
+        ).map(
+          (header) =>
+            header
+              .toLowerCase()
+              .trim(),
+        );
+
+      const findIndex =
+        (
+          names: string[],
+        ) =>
+          names
+            .map((name) =>
+              headers.indexOf(
+                name,
+              ),
+            )
+            .find(
+              (index) =>
+                index !== -1,
+            ) ??
+          -1;
+
+      const idIndex =
+        findIndex([
+          "team_id",
+          "id",
+        ]);
+
+      const nameIndex =
+        findIndex([
+          "team_name",
+          "name",
+        ]);
+
+      const tagIndex =
+        findIndex([
+          "tag",
+        ]);
+
+      const seedIndex =
+        findIndex([
+          "seed",
+        ]);
+
+      const captainIndex =
+        findIndex([
+          "captain_rank",
+          "captainrank",
+        ]);
+
+      if (
+        nameIndex === -1 ||
+        tagIndex === -1
+      ) {
+        throw new Error(
+          "CSV must contain team_name/name and tag columns.",
+        );
+      }
+
+      const importedTeams =
+        lines
+          .slice(1)
+          .map(
+            (line) =>
+              parseCsvLine(
+                line,
+              ),
+          )
+          .filter(
+            (row) =>
+              row[nameIndex]
+                ?.trim(),
+          )
+          .map(
+            (row, rowIndex) => {
+              const name =
+                row[
+                  nameIndex
+                ].trim();
+
+              const id =
+                (
+                  idIndex !==
+                  -1
+                    ? row[
+                        idIndex
+                      ]
+                    : ""
+                )?.trim() ||
+                slugify(name);
+
+              const players =
+                Array.from(
+                  {
+                    length: 6,
+                  },
+                  (_, index) => ({
+                    id:
+                      crypto.randomUUID(),
+                    name:
+                      row[
+                        captainIndex +
+                          1 +
+                          index
+                      ]?.trim() ||
+                      "",
+                    role: "",
+                  }),
+                ).filter(
+                  (
+                    player,
+                  ) =>
+                    player.name,
+                );
+
+              return {
+                id,
+                name,
+                tag:
+                  row[
+                    tagIndex
+                  ]?.trim() ||
+                  name,
+                seed:
+                  Number(
+                    row[
+                      seedIndex
+                    ],
+                  ) ||
+                  rowIndex +
+                    1,
+                logo: "",
+                wins: 0,
+                losses: 0,
+                captainRank:
+                  captainIndex !==
+                  -1
+                    ? row[
+                        captainIndex
+                      ]?.trim() ||
+                      ""
+                    : "",
+                players,
+              };
+            },
+          );
+
+      for (
+        const team of importedTeams
+      ) {
+        const existing =
+          teams.find(
+            (item) =>
+              item.id ===
+              team.id,
+          );
+
+        const response =
+          await fetch(
+            existing
+              ? `/api/teams/${encodeURIComponent(
+                  team.id,
+                )}`
+              : "/api/teams",
+            {
+              method:
+                existing
+                  ? "PUT"
+                  : "POST",
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+              body:
+                JSON.stringify(
+                  team,
+                ),
+            },
+          );
+
+        const data =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.error ||
+              `Failed to import ${team.name}.`,
+          );
+        }
+      }
+
+      await loadTeams();
+
+      setNotice(
+        `${importedTeams.length} team(s) imported successfully.`,
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to import CSV.",
+      );
+    } finally {
+      event.target.value =
+        "";
+    }
   }
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 p-4 backdrop-blur-sm">
-      <div className="mx-auto my-8 max-w-4xl border border-white/10 bg-[#0c1119] shadow-2xl">
-        <div className="flex items-center justify-between border-b border-white/10 p-6">
+    <main className="min-h-screen bg-[#080c12] text-white">
+      <header className="border-b border-[#1c2938] bg-[#0b1119]">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400">
-              {isNew
-                ? "New Registration"
-                : "Team Editor"}
-            </p>
-
-            <h2 className="mt-1 text-2xl font-black uppercase">
-              {isNew
-                ? "Add Team"
-                : form.name ||
-                  "Edit Team"}
-            </h2>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="text-2xl text-white/40 transition hover:text-white"
-          >
-            ×
-          </button>
-        </div>
-
-        <div className="grid gap-8 p-6 lg:grid-cols-[220px_1fr]">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
-              Team Logo
-            </p>
-
-            <div className="mt-3 flex aspect-square items-center justify-center overflow-hidden border border-white/10 bg-black/30">
-              {form.logo ? (
-                <img
-                  src={form.logo}
-                  alt="Team logo preview"
-                  className="h-full w-full object-contain"
-                />
-              ) : (
-                <span className="text-4xl font-black text-white/10">
-                  LOGO
-                </span>
-              )}
+            <div className="text-[11px] font-bold tracking-[0.35em] text-[#7890ad]">
+              VALORANT ESPORTS
             </div>
 
-            <input
-              ref={logoInputRef}
-              type="file"
-              accept="image/*"
-              onChange={
-                handleLogoUpload
-              }
-              className="hidden"
-            />
-
-            <button
-              onClick={() =>
-                logoInputRef.current?.click()
-              }
-              className="mt-3 w-full border border-white/10 bg-white/[0.04] px-4 py-3 text-[10px] font-black uppercase tracking-wider text-white/60 transition hover:bg-white/[0.08] hover:text-white"
-            >
-              Upload Logo
-            </button>
-
-            {form.logo && (
-              <button
-                onClick={() =>
-                  updateField(
-                    "logo",
-                    ""
-                  )
-                }
-                className="mt-2 w-full text-[10px] font-black uppercase tracking-wider text-red-400"
-              >
-                Remove Logo
-              </button>
-            )}
-
-            <p className="mt-3 text-[10px] leading-4 text-white/25">
-              PNG, JPG, WEBP.
-              Maximum 2 MB.
-            </p>
+            <h1 className="mt-1 text-2xl font-black tracking-tight">
+              TEAM MANAGEMENT
+            </h1>
           </div>
 
-          <div className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-3">
-              <label className="block md:col-span-2">
-                <span className="text-[10px] font-black uppercase tracking-wider text-white/35">
-                  Team Name
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href="/admin"
+              className="rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#bcd0e8]"
+            >
+              ADMIN HUB ↗
+            </Link>
+
+            <Link
+              href="/matches"
+              className="rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#bcd0e8]"
+            >
+              MATCH CENTER ↗
+            </Link>
+
+            <Link
+              href="/tournament"
+              className="rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#bcd0e8]"
+            >
+              PUBLIC SITE ↗
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-7xl px-6 py-8">
+        {error && (
+          <div className="mb-5 rounded border border-red-900/60 bg-red-950/30 px-4 py-3 text-sm text-red-300">
+            {error}
+          </div>
+        )}
+
+        {notice && (
+          <div className="mb-5 rounded border border-emerald-900/60 bg-emerald-950/30 px-4 py-3 text-sm text-emerald-300">
+            {notice}
+          </div>
+        )}
+
+        <section className="mb-8 rounded-xl border border-[#1d2a3a] bg-[#0d141e] p-6">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <div className="text-xs font-bold uppercase tracking-[0.2em] text-[#6f87a4]">
+                {editingId
+                  ? "EDIT TEAM"
+                  : "CREATE TEAM"}
+              </div>
+
+              <h2 className="mt-1 text-xl font-black">
+                {editingId
+                  ? form.name ||
+                    "Edit Team"
+                  : "Add Tournament Team"}
+              </h2>
+            </div>
+
+            {editingId && (
+              <button
+                type="button"
+                onClick={
+                  startCreate
+                }
+                className="rounded border border-[#384b61] px-4 py-2 text-xs font-bold text-[#b7c8dc]"
+              >
+                CANCEL EDIT
+              </button>
+            )}
+          </div>
+
+          <form
+            onSubmit={
+              saveTeam
+            }
+            className="space-y-6"
+          >
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <label className="block">
+                <span className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#7188a5]">
+                  Team ID
                 </span>
 
                 <input
-                  value={form.name}
+                  value={
+                    form.id
+                  }
                   onChange={(event) =>
-                    updateField(
-                      "name",
-                      event.target.value
+                    setForm(
+                      (
+                        current,
+                      ) => ({
+                        ...current,
+                        id:
+                          event
+                            .target
+                            .value,
+                      }),
                     )
                   }
-                  className="mt-2 w-full border border-white/10 bg-black/30 px-4 py-3 text-sm font-bold outline-none focus:border-cyan-400/50"
-                  placeholder="DEVILDOM"
+                  disabled={
+                    Boolean(
+                      editingId,
+                    )
+                  }
+                  placeholder="example-team"
+                  className="w-full rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-3 text-sm outline-none focus:border-[#5d7da3] disabled:opacity-50"
                 />
               </label>
 
               <label className="block">
-                <span className="text-[10px] font-black uppercase tracking-wider text-white/35">
+                <span className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#7188a5]">
+                  Team Name
+                </span>
+
+                <input
+                  value={
+                    form.name
+                  }
+                  onChange={(event) =>
+                    setForm(
+                      (
+                        current,
+                      ) => ({
+                        ...current,
+                        name:
+                          event
+                            .target
+                            .value,
+                        id:
+                          editingId
+                            ? current.id
+                            : current.id ||
+                              slugify(
+                                event
+                                  .target
+                                  .value,
+                              ),
+                      }),
+                    )
+                  }
+                  placeholder="Team name"
+                  className="w-full rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-3 text-sm outline-none focus:border-[#5d7da3]"
+                />
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#7188a5]">
+                  Tag
+                </span>
+
+                <input
+                  value={
+                    form.tag
+                  }
+                  onChange={(event) =>
+                    setForm(
+                      (
+                        current,
+                      ) => ({
+                        ...current,
+                        tag:
+                          event
+                            .target
+                            .value,
+                      }),
+                    )
+                  }
+                  placeholder="TAG"
+                  className="w-full rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-3 text-sm uppercase outline-none focus:border-[#5d7da3]"
+                />
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#7188a5]">
                   Seed
                 </span>
 
                 <input
                   type="number"
                   min="1"
-                  value={form.seed}
+                  value={
+                    form.seed
+                  }
                   onChange={(event) =>
-                    updateField(
-                      "seed",
-                      Number(
-                        event.target.value
-                      )
+                    setForm(
+                      (
+                        current,
+                      ) => ({
+                        ...current,
+                        seed:
+                          Number(
+                            event
+                              .target
+                              .value,
+                          ),
+                      }),
                     )
                   }
-                  className="mt-2 w-full border border-white/10 bg-black/30 px-4 py-3 text-sm font-bold outline-none focus:border-cyan-400/50"
+                  className="w-full rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-3 text-sm outline-none focus:border-[#5d7da3]"
                 />
               </label>
             </div>
 
-            <label className="block">
-              <span className="text-[10px] font-black uppercase tracking-wider text-white/35">
-                Tag
-              </span>
+            <div className="grid gap-4 md:grid-cols-3">
+              <label className="block">
+                <span className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#7188a5]">
+                  Captain Rank
+                </span>
 
-              <input
-                value={form.tag}
-                onChange={(event) =>
-                  updateField(
-                    "tag",
-                    event.target.value
-                  )
-                }
-                className="mt-2 w-full border border-white/10 bg-black/30 px-4 py-3 text-sm font-bold outline-none focus:border-cyan-400/50"
-                placeholder="DEVILDOM"
-              />
-            </label>
+                <input
+                  value={
+                    form.captainRank ??
+                    ""
+                  }
+                  onChange={(event) =>
+                    setForm(
+                      (
+                        current,
+                      ) => ({
+                        ...current,
+                        captainRank:
+                          event
+                            .target
+                            .value,
+                      }),
+                    )
+                  }
+                  placeholder="Captain - Bronze 1"
+                  className="w-full rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-3 text-sm outline-none focus:border-[#5d7da3]"
+                />
+              </label>
 
-            <label className="block">
-              <span className="text-[10px] font-black uppercase tracking-wider text-white/35">
-                Captain / Rank
-              </span>
+              <label className="block">
+                <span className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#7188a5]">
+                  Wins
+                </span>
 
-              <input
-                value={
-                  form.captainRank ||
-                  ""
-                }
-                onChange={(event) =>
-                  updateField(
-                    "captainRank",
-                    event.target.value
-                  )
-                }
-                className="mt-2 w-full border border-white/10 bg-black/30 px-4 py-3 text-sm font-bold outline-none focus:border-cyan-400/50"
-                placeholder="Captain - Silver 3"
-              />
-            </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={
+                    form.wins
+                  }
+                  onChange={(event) =>
+                    setForm(
+                      (
+                        current,
+                      ) => ({
+                        ...current,
+                        wins:
+                          Number(
+                            event
+                              .target
+                              .value,
+                          ),
+                      }),
+                    )
+                  }
+                  className="w-full rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-3 text-sm outline-none focus:border-[#5d7da3]"
+                />
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#7188a5]">
+                  Losses
+                </span>
+
+                <input
+                  type="number"
+                  min="0"
+                  value={
+                    form.losses
+                  }
+                  onChange={(event) =>
+                    setForm(
+                      (
+                        current,
+                      ) => ({
+                        ...current,
+                        losses:
+                          Number(
+                            event
+                              .target
+                              .value,
+                          ),
+                      }),
+                    )
+                  }
+                  className="w-full rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-3 text-sm outline-none focus:border-[#5d7da3]"
+                />
+              </label>
+            </div>
 
             <div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
-                    Players
-                  </p>
-
-                  <p className="mt-1 text-xs text-white/30">
-                    {form.players.length}{" "}
-                    player
-                    {form.players.length ===
-                    1
-                      ? ""
-                      : "s"}
-                  </p>
-                </div>
-
-                <button
-                  onClick={addPlayer}
-                  className="border border-cyan-400/30 bg-cyan-400/10 px-3 py-2 text-[10px] font-black uppercase tracking-wider text-cyan-300"
-                >
-                  + Add Player
-                </button>
+              <div className="mb-2 text-xs font-bold uppercase tracking-wider text-[#7188a5]">
+                Team Logo
               </div>
 
-              <div className="mt-3 space-y-2">
-                {form.players.length ===
-                0 ? (
-                  <div className="border border-dashed border-white/10 px-4 py-8 text-center text-xs text-white/25">
-                    No players added
-                  </div>
+              <div className="flex flex-wrap items-center gap-4">
+                {form.logo ? (
+                  <img
+                    src={
+                      form.logo
+                    }
+                    alt=""
+                    className="h-20 w-20 rounded border border-[#30435a] bg-[#080e16] object-contain p-2"
+                  />
                 ) : (
-                  form.players.map(
-                    (
-                      player,
-                      index
-                    ) => (
-                      <div
-                        key={
-                          player.id
-                        }
-                        className="flex gap-2"
-                      >
-                        <div className="flex w-10 shrink-0 items-center justify-center border border-white/10 bg-black/30 text-[10px] font-black text-white/20">
-                          {String(
-                            index + 1
-                          ).padStart(
-                            2,
-                            "0"
-                          )}
-                        </div>
+                  <div className="flex h-20 w-20 items-center justify-center rounded border border-dashed border-[#30435a] bg-[#080e16] text-[10px] font-bold text-[#5f748f]">
+                    NO LOGO
+                  </div>
+                )}
 
-                        <input
-                          value={
-                            player.name
-                          }
-                          onChange={(
-                            event
-                          ) =>
-                            updatePlayer(
-                              player.id,
-                              event
-                                .target
-                                .value
-                            )
-                          }
-                          placeholder="Player name"
-                          className="min-w-0 flex-1 border border-white/10 bg-black/30 px-4 py-3 text-sm font-bold outline-none focus:border-cyan-400/50"
-                        />
+                <label className="cursor-pointer rounded border border-[#38506d] bg-[#111b29] px-4 py-3 text-xs font-bold text-[#c1d1e5]">
+                  UPLOAD LOGO
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={
+                      handleLogoUpload
+                    }
+                    className="hidden"
+                  />
+                </label>
 
-                        <button
-                          onClick={() =>
-                            removePlayer(
-                              player.id
-                            )
-                          }
-                          className="w-11 border border-red-400/10 bg-red-400/[0.04] text-red-400/60 transition hover:bg-red-400/10 hover:text-red-400"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    )
-                  )
+                {form.logo && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setForm(
+                        (
+                          current,
+                        ) => ({
+                          ...current,
+                          logo: "",
+                        }),
+                      )
+                    }
+                    className="rounded border border-red-900/60 px-4 py-3 text-xs font-bold text-red-300"
+                  >
+                    REMOVE LOGO
+                  </button>
                 )}
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className="flex flex-col-reverse gap-3 border-t border-white/10 p-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            {!isNew &&
-              onDelete && (
-                <button
-                  onClick={onDelete}
-                  className="border border-red-400/20 bg-red-400/[0.04] px-4 py-3 text-[10px] font-black uppercase tracking-wider text-red-400 transition hover:bg-red-400/10"
-                >
-                  Delete Team
-                </button>
-              )}
-          </div>
-
-          <div className="flex gap-3">
-            <button
-              onClick={onClose}
-              className="border border-white/10 px-5 py-3 text-[10px] font-black uppercase tracking-wider text-white/50 hover:text-white"
-            >
-              Cancel
-            </button>
-
-            <button
-              onClick={handleSave}
-              className="bg-white px-6 py-3 text-[10px] font-black uppercase tracking-wider text-black transition hover:bg-cyan-300"
-            >
-              Save Team
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ImportTeamsModal({
-  preview,
-  error,
-  onFileChange,
-  onConfirm,
-  onClose,
-  onClearPreview,
-}: {
-  preview: Team[] | null;
-  error: string;
-  onFileChange: (
-    event: ChangeEvent<HTMLInputElement>
-  ) => void;
-  onConfirm: () => void;
-  onClose: () => void;
-  onClearPreview: () => void;
-}) {
-  const fileInputRef =
-    useRef<HTMLInputElement | null>(
-      null
-    );
-
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 p-4 backdrop-blur-sm">
-      <div className="mx-auto my-8 max-w-5xl border border-white/10 bg-[#0c1119] shadow-2xl">
-        <div className="flex items-center justify-between border-b border-white/10 p-6">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-violet-400">
-              CSV Import
-            </p>
-
-            <h2 className="mt-1 text-2xl font-black uppercase">
-              Import Registered Teams
-            </h2>
-
-            <p className="mt-2 text-xs text-white/35">
-              Use the same structure as
-              your spreadsheet:
-              Roster, Player,
-              Captain / Rank.
-            </p>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="text-2xl text-white/40 transition hover:text-white"
-          >
-            ×
-          </button>
-        </div>
-
-        <div className="p-6">
-          <div className="border border-dashed border-white/15 bg-black/20 p-8 text-center">
-            <p className="text-xs font-black uppercase tracking-wider text-white/40">
-              Select CSV File
-            </p>
-
-            <p className="mt-2 text-xs text-white/25">
-              Example:
-              tournament-rosters.csv
-            </p>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".csv,text/csv"
-              onChange={
-                onFileChange
-              }
-              className="hidden"
-            />
-
-            <button
-              onClick={() =>
-                fileInputRef.current?.click()
-              }
-              className="mt-5 bg-white px-6 py-3 text-[10px] font-black uppercase tracking-wider text-black transition hover:bg-violet-300"
-            >
-              Choose CSV
-            </button>
-          </div>
-
-          {error && (
-            <div className="mt-4 border border-red-400/20 bg-red-400/[0.05] p-4">
-              <p className="text-xs font-bold text-red-400">
-                {error}
-              </p>
-            </div>
-          )}
-
-          {preview && (
-            <div className="mt-6">
-              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-400">
-                    Import Preview
-                  </p>
+                  <div className="text-xs font-bold uppercase tracking-wider text-[#7188a5]">
+                    ROSTER
+                  </div>
 
-                  <p className="mt-1 text-sm font-bold text-white/70">
-                    {preview.length} teams
-                    detected
-                  </p>
+                  <div className="mt-1 text-sm text-[#8fa2ba]">
+                    Add players belonging to this team.
+                  </div>
                 </div>
 
                 <button
+                  type="button"
                   onClick={
-                    onClearPreview
+                    addPlayer
                   }
-                  className="text-[10px] font-black uppercase tracking-wider text-white/30 hover:text-white"
+                  className="rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#c1d1e5]"
                 >
-                  Clear Preview
+                  + ADD PLAYER
                 </button>
               </div>
 
-              <div className="max-h-[450px] overflow-auto border border-white/10">
-                <table className="w-full min-w-[700px] border-collapse text-left">
-                  <thead className="sticky top-0 bg-[#111722]">
-                    <tr className="border-b border-white/10">
-                      <th className="px-4 py-3 text-[9px] font-black uppercase tracking-wider text-white/30">
-                        Seed
-                      </th>
+              <div className="space-y-3">
+                {form.players.map(
+                  (
+                    player,
+                    index,
+                  ) => (
+                    <div
+                      key={
+                        player.id
+                      }
+                      className="grid gap-3 rounded border border-[#202e3f] bg-[#090f17] p-3 md:grid-cols-[1fr_180px_auto]"
+                    >
+                      <input
+                        value={
+                          player.name
+                        }
+                        onChange={(
+                          event,
+                        ) =>
+                          updatePlayer(
+                            index,
+                            "name",
+                            event
+                              .target
+                              .value,
+                          )
+                        }
+                        placeholder={`Player ${
+                          index +
+                          1
+                        }`}
+                        className="rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-2 text-sm outline-none focus:border-[#5d7da3]"
+                      />
 
-                      <th className="px-4 py-3 text-[9px] font-black uppercase tracking-wider text-white/30">
-                        Roster
-                      </th>
+                      <input
+                        value={
+                          player.role ??
+                          ""
+                        }
+                        onChange={(
+                          event,
+                        ) =>
+                          updatePlayer(
+                            index,
+                            "role",
+                            event
+                              .target
+                              .value,
+                          )
+                        }
+                        placeholder="Role"
+                        className="rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-2 text-sm outline-none focus:border-[#5d7da3]"
+                      />
 
-                      <th className="px-4 py-3 text-[9px] font-black uppercase tracking-wider text-white/30">
-                        Captain / Rank
-                      </th>
-
-                      <th className="px-4 py-3 text-[9px] font-black uppercase tracking-wider text-white/30">
-                        Players
-                      </th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {preview.map(
-                      (team) => (
-                        <tr
-                          key={
-                            team.id
-                          }
-                          className="border-b border-white/[0.06]"
-                        >
-                          <td className="px-4 py-3 text-xs font-black text-cyan-400">
-                            {team.seed}
-                          </td>
-
-                          <td className="px-4 py-3 text-xs font-black uppercase">
-                            {team.name}
-                          </td>
-
-                          <td className="px-4 py-3 text-xs text-white/50">
-                            {team.captainRank ||
-                              "—"}
-                          </td>
-
-                          <td className="px-4 py-3">
-                            <div className="flex flex-wrap gap-1.5">
-                              {team.players.map(
-                                (
-                                  player
-                                ) => (
-                                  <span
-                                    key={
-                                      player.id
-                                    }
-                                    className="border border-white/10 bg-white/[0.03] px-2 py-1 text-[10px] font-bold text-white/60"
-                                  >
-                                    {
-                                      player.name
-                                    }
-                                  </span>
-                                )
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    )}
-                  </tbody>
-                </table>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          removePlayer(
+                            index,
+                          )
+                        }
+                        className="rounded border border-red-900/60 px-3 py-2 text-xs font-bold text-red-300"
+                      >
+                        REMOVE
+                      </button>
+                    </div>
+                  ),
+                )}
               </div>
             </div>
+
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="submit"
+                disabled={
+                  saving
+                }
+                className="rounded bg-[#d7e3f0] px-6 py-3 text-xs font-black tracking-wider text-[#08101a] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {saving
+                  ? "SAVING..."
+                  : editingId
+                    ? "UPDATE TEAM"
+                    : "CREATE TEAM"}
+              </button>
+
+              <button
+                type="button"
+                onClick={
+                  startCreate
+                }
+                className="rounded border border-[#35485f] px-6 py-3 text-xs font-bold text-[#b6c7da]"
+              >
+                CLEAR
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section className="rounded-xl border border-[#1d2a3a] bg-[#0d141e]">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#1d2a3a] p-5">
+            <div>
+              <div className="text-xs font-bold uppercase tracking-[0.2em] text-[#6f87a4]">
+                DATABASE
+              </div>
+
+              <h2 className="mt-1 text-xl font-black">
+                Tournament Teams
+              </h2>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <input
+                value={
+                  search
+                }
+                onChange={(
+                  event,
+                ) =>
+                  setSearch(
+                    event
+                      .target
+                      .value,
+                  )
+                }
+                placeholder="Search teams..."
+                className="rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-2 text-sm outline-none focus:border-[#5d7da3]"
+              />
+
+              <label className="cursor-pointer rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#c1d1e5]">
+                IMPORT CSV
+                <input
+                  type="file"
+                  accept=".csv,text/csv"
+                  onChange={
+                    importCsv
+                  }
+                  className="hidden"
+                />
+              </label>
+
+              <button
+                type="button"
+                onClick={
+                  exportCsv
+                }
+                className="rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#c1d1e5]"
+              >
+                EXPORT CSV
+              </button>
+
+              <button
+                type="button"
+                onClick={
+                  loadTeams
+                }
+                className="rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#c1d1e5]"
+              >
+                REFRESH
+              </button>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="p-10 text-center text-sm text-[#7188a5]">
+              Loading teams from database...
+            </div>
+          ) : filteredTeams.length ===
+            0 ? (
+            <div className="p-10 text-center">
+              <div className="text-lg font-black">
+                No teams found
+              </div>
+
+              <div className="mt-2 text-sm text-[#7188a5]">
+                Create a team above or import a CSV.
+              </div>
+            </div>
+          ) : (
+            <div className="grid gap-4 p-5 md:grid-cols-2">
+              {filteredTeams.map(
+                (team) => (
+                  <article
+                    key={
+                      team.id
+                    }
+                    className="rounded-lg border border-[#223145] bg-[#090f17] p-5"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex min-w-0 items-center gap-4">
+                        {team.logo ? (
+                          <img
+                            src={
+                              team.logo
+                            }
+                            alt=""
+                            className="h-16 w-16 shrink-0 rounded border border-[#2d4056] bg-[#080e16] object-contain p-2"
+                          />
+                        ) : (
+                          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded border border-[#2d4056] bg-[#080e16] text-xs font-black text-[#647991]">
+                            {team.tag
+                              .slice(
+                                0,
+                                3,
+                              )
+                              .toUpperCase()}
+                          </div>
+                        )}
+
+                        <div className="min-w-0">
+                          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#627994]">
+                            SEED{" "}
+                            {
+                              team.seed
+                            }
+                          </div>
+
+                          <h3 className="truncate text-lg font-black">
+                            {
+                              team.name
+                            }
+                          </h3>
+
+                          <div className="text-xs font-bold text-[#7188a5]">
+                            {
+                              team.tag
+                            }{" "}
+                            ·{" "}
+                            {
+                              team.id
+                            }
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="text-right text-xs">
+                        <div className="font-black text-emerald-400">
+                          {
+                            team.wins
+                          }{" "}
+                          W
+                        </div>
+
+                        <div className="font-black text-red-400">
+                          {
+                            team.losses
+                          }{" "}
+                          L
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 border-t border-[#1c2938] pt-4">
+                      <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#627994]">
+                        PLAYERS
+                      </div>
+
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        {team.players.map(
+                          (
+                            player,
+                          ) => (
+                            <div
+                              key={
+                                player.id
+                              }
+                              className="rounded border border-[#1b2837] bg-[#0c131d] px-3 py-2"
+                            >
+                              <div className="text-sm font-bold">
+                                {
+                                  player.name
+                                }
+                              </div>
+
+                              {player.role && (
+                                <div className="text-[10px] uppercase tracking-wider text-[#647a94]">
+                                  {
+                                    player.role
+                                  }
+                                </div>
+                              )}
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="mt-5 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          startEdit(
+                            team,
+                          )
+                        }
+                        className="flex-1 rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#c1d1e5]"
+                      >
+                        EDIT
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          deleteTeam(
+                            team,
+                          )
+                        }
+                        className="rounded border border-red-900/60 px-4 py-2 text-xs font-bold text-red-300"
+                      >
+                        DELETE
+                      </button>
+                    </div>
+                  </article>
+                ),
+              )}
+            </div>
           )}
-        </div>
-
-        <div className="flex flex-col-reverse gap-3 border-t border-white/10 p-6 sm:flex-row sm:justify-end">
-          <button
-            onClick={onClose}
-            className="border border-white/10 px-5 py-3 text-[10px] font-black uppercase tracking-wider text-white/50 hover:text-white"
-          >
-            Cancel
-          </button>
-
-          <button
-            onClick={onConfirm}
-            disabled={
-              !preview ||
-              preview.length === 0
-            }
-            className="bg-white px-6 py-3 text-[10px] font-black uppercase tracking-wider text-black transition hover:bg-violet-300 disabled:cursor-not-allowed disabled:opacity-30"
-          >
-            Import Teams
-          </button>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }
