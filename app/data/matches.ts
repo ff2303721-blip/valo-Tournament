@@ -31,6 +31,7 @@ export type Match = {
   winnerId?: string;
   mvpPlayerId?: string;
   topFraggerPlayerId?: string;
+  startingSide?: "Attack" | "Defend";
   playerStats: PlayerStat[];
   createdAt: string;
 };
