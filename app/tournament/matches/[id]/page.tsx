@@ -542,7 +542,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
         </section>
 
         {/* Target-style information area */}
-        <section className="mt-5 grid gap-5 lg:grid-cols-[1.05fr_0.95fr]">
+        <section className="mt-5">
           <div className="rounded-2xl border border-[#ff3158]/30 bg-[#070d16]/82 p-5 backdrop-blur-md">
             <div className="text-[9px] font-black uppercase tracking-[0.24em] text-[#ff5275]">
               Match Details
@@ -564,29 +564,6 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
                   <span className="text-right font-black">{value}</span>
                 </div>
               ))}
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-[#52e2ff]/30 bg-[#071019]/82 p-5 backdrop-blur-md">
-            <div className="text-[9px] font-black uppercase tracking-[0.24em] text-[#52e2ff]">
-              Map & Schedule
-            </div>
-
-            <div className="relative mt-4 min-h-[188px] overflow-hidden rounded-xl border border-[#52e2ff]/20 bg-[radial-gradient(circle_at_25%_30%,rgba(255,20,79,0.22),transparent_30%),radial-gradient(circle_at_75%_65%,rgba(35,230,255,0.20),transparent_35%),linear-gradient(135deg,#111928,#071019)]">
-              <div className="absolute inset-0 opacity-25 [background-image:linear-gradient(135deg,transparent_24%,rgba(255,255,255,0.08)_25%,transparent_26%),linear-gradient(315deg,transparent_24%,rgba(255,255,255,0.06)_25%,transparent_26%)] [background-size:38px_38px]" />
-              <div className="relative flex h-full min-h-[188px] items-center justify-center text-center">
-                <div>
-                  <div className="text-[8px] font-black uppercase tracking-[0.3em] text-[#52e2ff]">
-                    Selected Map
-                  </div>
-                  <div className="mt-2 text-4xl font-black uppercase tracking-[0.08em]">
-                    {mapName}
-                  </div>
-                  <div className="mt-3 text-xs font-bold text-[#91a4bc]">
-                    {dateLabel} · {timeLabel}
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </section>
