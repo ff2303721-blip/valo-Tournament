@@ -864,6 +864,14 @@ export default function TeamsAdminPage() {
       <div
         className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{
+          backgroundImage: `linear-gradient(rgba(4,7,15,0.76), rgba(4,7,15,0.91)), url("https://images5.alphacoders.com/120/thumb-1920-1202339.png")`,
+          backgroundAttachment: "fixed",
+        }}
+      />
+      <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_12%_30%,rgba(255,31,91,0.16),transparent_28%),radial-gradient(circle_at_88%_30%,rgba(0,229,255,0.12),transparent_30%)]" />
+      <div
+        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{
           backgroundImage: `url("${backgroundImage}")`,
         }}
       />
