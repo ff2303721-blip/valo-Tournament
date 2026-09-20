@@ -502,9 +502,16 @@ export default function PublicMatchDetailPage({
       </header>
 
       <div className="relative mx-auto max-w-[1440px] px-5 py-8 sm:px-8">
-        <section className="relative overflow-hidden rounded-[24px] border border-[#405675] bg-gradient-to-br from-[#160b18] via-[#0a1220] to-[#06151b] shadow-[0_25px_90px_rgba(0,0,0,0.45)]">
+        <section className="relative overflow-hidden rounded-[24px] border border-[#405675] bg-[#07101b]/90 shadow-[0_25px_90px_rgba(0,0,0,0.60)] backdrop-blur-[2px]">
           <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#ff174f] via-[#ff4f9a] to-[#23e6ff]" />
           <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#8b2cff]/70 to-transparent" />
+          <div
+            className="absolute inset-0 bg-cover bg-center opacity-25 mix-blend-screen"
+            style={{
+              backgroundImage:
+                'url("https://images5.alphacoders.com/120/thumb-1920-1202339.png")',
+            }}
+          />
           <div className="absolute left-0 top-0 h-full w-1/2 bg-[radial-gradient(circle_at_15%_50%,rgba(255,20,79,0.24),transparent_60%)]" />
           <div className="absolute right-0 top-0 h-full w-1/2 bg-[radial-gradient(circle_at_85%_50%,rgba(35,230,255,0.24),transparent_60%)]" />
 
