@@ -517,11 +517,15 @@ export default function FixturesPage() {
             <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-xl border border-[#27d9ff]/30 bg-gradient-to-br from-[#0d1720] to-[#090e18] p-5">
                 <div className="text-[10px] font-black tracking-[0.2em] text-[#52e2ff]">
-                  TOTAL FIXTURES
+                  GROUP MATCHES
                 </div>
 
                 <div className="mt-2 text-4xl font-black">
-                  {matches.length}
+                  12
+                </div>
+
+                <div className="mt-1 text-xs text-[#687994]">
+                  Round-robin schedule
                 </div>
               </div>
 
@@ -611,7 +615,7 @@ export default function FixturesPage() {
                 </div>
               </div>
 
-              <div className="grid gap-4 p-6">
+              <div className="grid gap-3 p-4 sm:grid-cols-2">
                 {filteredMatches.length ===
                 0 ? (
                   <div className="rounded-xl border border-[#263149] bg-[#080e18] p-12 text-center">
@@ -677,7 +681,7 @@ export default function FixturesPage() {
                             }`}
                           />
 
-                          <div className="grid gap-5 p-5 md:grid-cols-[180px_1fr_auto] md:items-center">
+                          <div className="grid gap-3 p-4 md:grid-cols-[125px_1fr_auto] md:items-center">
                             <div>
                               <div
                                 className={`inline-flex rounded border px-2 py-1 text-[8px] font-black tracking-wider ${stageColor.border} ${stageColor.bg} ${stageColor.text}`}
@@ -687,7 +691,7 @@ export default function FixturesPage() {
                                 )}
                               </div>
 
-                              <div className="mt-3 text-[10px] font-black tracking-[0.2em] text-[#64748d]">
+                              <div className="mt-2 text-[9px] font-black tracking-[0.2em] text-[#64748d]">
                                 MATCH{" "}
                                 {String(
                                   match.matchNumber,
@@ -697,7 +701,7 @@ export default function FixturesPage() {
                                 )}
                               </div>
 
-                              <div className="mt-1 text-xs font-bold text-[#8b99ad]">
+                              <div className="mt-1 text-[11px] font-bold text-[#8b99ad]">
                                 {formatDate(
                                   match.scheduledAt,
                                 )}
@@ -711,8 +715,8 @@ export default function FixturesPage() {
                             </div>
 
                             <div>
-                              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-                                <div className="flex items-center justify-end gap-3">
+                              <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
+                                <div className="flex min-w-0 items-center justify-end gap-2">
                                   <div className="text-right">
                                     <div
                                       className={`text-sm font-black ${
@@ -761,7 +765,7 @@ export default function FixturesPage() {
                                   )}
                                 </div>
 
-                                <div className="min-w-[90px] text-center">
+                                <div className="min-w-[52px] text-center">
                                   {match.status ===
                                   "Completed" ? (
                                     <div className="text-xl font-black text-[#ffd45c]">
@@ -789,7 +793,7 @@ export default function FixturesPage() {
                                   </div>
                                 </div>
 
-                                <div className="flex items-center gap-3">
+                                <div className="flex min-w-0 items-center gap-2">
                                   {team2?.logo ? (
                                     <img
                                       src={
@@ -839,7 +843,7 @@ export default function FixturesPage() {
                                 </div>
                               </div>
 
-                              <div className="mt-4 flex flex-wrap justify-center gap-2 text-[9px] font-bold text-[#64738d]">
+                              <div className="mt-2 flex flex-wrap justify-center gap-1.5 text-[8px] font-bold text-[#64738d]">
                                 <span className="rounded border border-[#202e42] bg-[#0a1019] px-2 py-1">
                                   MAP:{" "}
                                   {match.map ||
