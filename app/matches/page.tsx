@@ -1304,7 +1304,11 @@ export default function MatchCenterPage() {
                     CLOSE
                   </button>
                 </div>
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="mb-5 rounded-xl border border-[#52e2ff]/30 bg-[#07131d] p-4">
+                  <div className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-[#52e2ff]">
+                    MATCH DATE & TIME
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-3">
                   <label>
                     <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#52e2ff]">DATE</span>
                     <input
@@ -1342,6 +1346,7 @@ export default function MatchCenterPage() {
                     <div className="rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm font-bold text-white">
                       {scheduleDate ? `${scheduleDate} · ${scheduleHour}:${scheduleMinute} ${schedulePeriod}` : "DATE / TIME NOT SET"}
                     </div>
+                  </div>
                   </div>
                 </div>
 
