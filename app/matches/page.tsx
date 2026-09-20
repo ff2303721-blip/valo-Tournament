@@ -319,7 +319,17 @@ export default function MatchCenterPage() {
     setError("");
   }
 
-  function startNewGroupMatch() {
+  async function startNewGroupMatch() {
+    setError("");
+    setMessage("");
+
+    if (teams.length !== 4) {
+      setError(
+        "Exactly four registered teams are required before creating Group Stage matches.",
+      );
+      return;
+    }
+
     const nextFixture = GROUP_FIXTURES.find(
       (fixture) =>
         !matches.some(
@@ -343,26 +353,63 @@ export default function MatchCenterPage() {
       (team) => team.seed === nextFixture.team2Seed,
     );
 
-    setEditor({
-      id: `M${String(nextFixture.matchNumber).padStart(
-        2,
-        "0",
-      )}`,
-      matchNumber: String(nextFixture.matchNumber),
-      stage: "Group Stage",
-      team1Id: team1?.id ?? "",
-      team2Id: team2?.id ?? "",
-      scheduledAt: "",
-      map: nextFixture.map,
-      bestOf: "1",
-      team1Score: "0",
-      team2Score: "0",
-      status: "Scheduled",
-    });
+    if (!team1 || !team2) {
+      setError(
+        "Unable to assign the teams for the next Group Stage fixture.",
+      );
+      return;
+    }
 
-    setActiveSection("group");
-    setMessage("");
-    setError("");
+    const matchNumber = nextFixture.matchNumber;
+    const id = `M${String(matchNumber).padStart(2, "0")}`;
+
+    try {
+      setSaving(true);
+
+      const response = await fetch("/api/matches", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          matchNumber,
+          stage: "Group Stage",
+          team1Id: team1.id,
+          team2Id: team2.id,
+          scheduledAt: "",
+          map: nextFixture.map,
+          bestOf: 1,
+          team1Score: 0,
+          team2Score: 0,
+          status: "Scheduled",
+          playerStats: [],
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            `Failed to create ${id}.`,
+        );
+      }
+
+      await loadData();
+
+      setMessage(
+        `${id} created: ${team1.name} vs ${team2.name}.`,
+      );
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to create Group Stage match.",
+      );
+    } finally {
+      setSaving(false);
+    }
   }
 
   function editMatch(match: Match) {
@@ -1188,12 +1235,15 @@ export default function MatchCenterPage() {
                 type="button"
                 onClick={startNewGroupMatch}
                 disabled={
+                  saving ||
                   teams.length !== 4 ||
                   groupMatches.length >= 12
                 }
                 className="rounded-xl bg-gradient-to-r from-[#ff3158] to-[#ff5275] px-4 py-2 text-[10px] font-black uppercase tracking-wider text-white shadow-[0_0_22px_rgba(255,49,88,0.18)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                + NEW GROUP MATCH
+                {saving
+                  ? "CREATING..."
+                  : "+ NEW GROUP MATCH"}
               </button>
             </div>
 
