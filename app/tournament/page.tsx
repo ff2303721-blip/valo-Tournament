@@ -314,13 +314,13 @@ export default function TournamentDashboard() {
           settingsResponse,
         ] = await Promise.all([
           fetch("/api/teams", {
-            cache: "no-store",
+            cache: "force-cache",
           }),
           fetch("/api/matches", {
-            cache: "no-store",
+            cache: "force-cache",
           }),
           fetch("/api/settings", {
-            cache: "no-store",
+            cache: "force-cache",
           }),
         ]);
 
