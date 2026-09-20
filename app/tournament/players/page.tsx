@@ -812,7 +812,7 @@ function PlayerTableRow({
           </div>
 
           <div>
-            <div className="text-[15px] font-black uppercase tracking-wide md:text-[17px]">
+            <div className="text-[18px] font-black uppercase tracking-wide md:text-[17px]">
               {row.player.name}
             </div>
 
@@ -903,8 +903,8 @@ function PlayerTableRow({
         <span
           className={
             row.mvp > 0
-              ? "text-[15px] font-black text-yellow-400"
-              : "text-[15px] font-black text-white/20"
+              ? "text-[18px] font-black text-yellow-400"
+              : "text-[18px] font-black text-white/20"
           }
         >
           {row.mvp}
@@ -916,8 +916,8 @@ function PlayerTableRow({
         <span
           className={
             row.topFragger > 0
-              ? "text-[15px] font-black text-cyan-400"
-              : "text-[15px] font-black text-white/20"
+              ? "text-[18px] font-black text-cyan-400"
+              : "text-[18px] font-black text-white/20"
           }
         >
           {row.topFragger}
@@ -1041,21 +1041,21 @@ function StatCell({
   cyan?: boolean;
 }) {
   let className =
-    "text-[15px] font-black text-white";
+    "text-[18px] font-black text-white";
 
   if (positive) {
     className =
-      "text-[15px] font-black text-emerald-400";
+      "text-[18px] font-black text-emerald-400";
   }
 
   if (negative) {
     className =
-      "text-[15px] font-black text-red-400";
+      "text-[18px] font-black text-red-400";
   }
 
   if (cyan) {
     className =
-      "text-[15px] font-black text-cyan-400";
+      "text-[18px] font-black text-cyan-400";
   }
 
   return (
