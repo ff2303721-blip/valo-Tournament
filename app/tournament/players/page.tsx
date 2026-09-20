@@ -812,7 +812,7 @@ function PlayerTableRow({
           </div>
 
           <div>
-            <div className="text-[10px] font-black uppercase">
+            <div className="text-[15px] font-black uppercase tracking-wide md:text-[17px]">
               {row.player.name}
             </div>
 
