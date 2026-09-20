@@ -839,8 +839,8 @@ export default function TeamsAdminPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#04070f] bg-[#04070f] text-white">
-      <header className="border-b border-[#1c2938] bg-[#0b1119]">
+    <main className="relative min-h-screen overflow-hidden bg-[#04070f] text-white">
+      <header className="border-b border-[#2b3d58] bg-gradient-to-br from-[#0d1522] to-[#0a1019]">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5">
           <div>
             <div className="text-[11px] font-bold tracking-[0.35em] text-[#7890ad]">
@@ -855,21 +855,21 @@ export default function TeamsAdminPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Link
               href="/admin"
-              className="rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#bcd0e8]"
+              className="rounded border border-[#2b3d58] bg-[#0b1220] px-4 py-2 text-xs font-bold text-[#bcd0e8]"
             >
               ADMIN HUB ↗
             </Link>
 
             <Link
               href="/matches"
-              className="rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#bcd0e8]"
+              className="rounded border border-[#2b3d58] bg-[#0b1220] px-4 py-2 text-xs font-bold text-[#bcd0e8]"
             >
               MATCH CENTER ↗
             </Link>
 
             <Link
               href="/tournament"
-              className="rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#bcd0e8]"
+              className="rounded border border-[#2b3d58] bg-[#0b1220] px-4 py-2 text-xs font-bold text-[#bcd0e8]"
             >
               PUBLIC SITE ↗
             </Link>
@@ -890,7 +890,7 @@ export default function TeamsAdminPage() {
           </div>
         )}
 
-        <section className="mb-8 rounded-xl border border-[#1d2a3a] bg-[#0d141e] p-6">
+        <section className="mb-8 rounded-xl border border-[#263750] bg-gradient-to-br from-[#0d1522] to-[#111020] p-6">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
             <div>
               <div className="text-xs font-bold uppercase tracking-[0.2em] text-[#6f87a4]">
@@ -955,7 +955,7 @@ export default function TeamsAdminPage() {
                     )
                   }
                   placeholder="example-team"
-                  className="w-full rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-3 text-sm outline-none focus:border-[#5d7da3] disabled:opacity-50"
+                  className="w-full rounded border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm outline-none focus:border-[#52e2ff] disabled:opacity-50"
                 />
               </label>
 
@@ -991,7 +991,7 @@ export default function TeamsAdminPage() {
                     )
                   }
                   placeholder="Team name"
-                  className="w-full rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-3 text-sm outline-none focus:border-[#5d7da3]"
+                  className="w-full rounded border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm outline-none focus:border-[#52e2ff]"
                 />
               </label>
 
@@ -1018,7 +1018,7 @@ export default function TeamsAdminPage() {
                     )
                   }
                   placeholder="TAG"
-                  className="w-full rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-3 text-sm uppercase outline-none focus:border-[#5d7da3]"
+                  className="w-full rounded border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm uppercase outline-none focus:border-[#52e2ff]"
                 />
               </label>
 
@@ -1048,7 +1048,7 @@ export default function TeamsAdminPage() {
                       }),
                     )
                   }
-                  className="w-full rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-3 text-sm outline-none focus:border-[#5d7da3]"
+                  className="w-full rounded border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm outline-none focus:border-[#52e2ff]"
                 />
               </label>
             </div>
@@ -1078,7 +1078,7 @@ export default function TeamsAdminPage() {
                     )
                   }
                   placeholder="Captain - Bronze 1"
-                  className="w-full rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-3 text-sm outline-none focus:border-[#5d7da3]"
+                  className="w-full rounded border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm outline-none focus:border-[#52e2ff]"
                 />
               </label>
 
@@ -1108,7 +1108,7 @@ export default function TeamsAdminPage() {
                       }),
                     )
                   }
-                  className="w-full rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-3 text-sm outline-none focus:border-[#5d7da3]"
+                  className="w-full rounded border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm outline-none focus:border-[#52e2ff]"
                 />
               </label>
 
@@ -1138,7 +1138,7 @@ export default function TeamsAdminPage() {
                       }),
                     )
                   }
-                  className="w-full rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-3 text-sm outline-none focus:border-[#5d7da3]"
+                  className="w-full rounded border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm outline-none focus:border-[#52e2ff]"
                 />
               </label>
             </div>
@@ -1163,7 +1163,7 @@ export default function TeamsAdminPage() {
                   </div>
                 )}
 
-                <label className="cursor-pointer rounded border border-[#38506d] bg-[#111b29] px-4 py-3 text-xs font-bold text-[#c1d1e5]">
+                <label className="cursor-pointer rounded border border-[#2b3d58] bg-[#0b1220] px-4 py-3 text-xs font-bold text-[#c1d1e5]">
                   UPLOAD LOGO
                   <input
                     type="file"
@@ -1213,7 +1213,7 @@ export default function TeamsAdminPage() {
                   onClick={
                     addPlayer
                   }
-                  className="rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#c1d1e5]"
+                  className="rounded border border-[#2b3d58] bg-[#0b1220] px-4 py-2 text-xs font-bold text-[#c1d1e5]"
                 >
                   + ADD PLAYER
                 </button>
@@ -1250,7 +1250,7 @@ export default function TeamsAdminPage() {
                           index +
                           1
                         }`}
-                        className="rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-2 text-sm outline-none focus:border-[#5d7da3]"
+                        className="rounded border border-[#2b3d58] bg-[#060b14] px-3 py-2 text-sm outline-none focus:border-[#52e2ff]"
                       />
 
                       <input
@@ -1270,7 +1270,7 @@ export default function TeamsAdminPage() {
                           )
                         }
                         placeholder="Role"
-                        className="rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-2 text-sm outline-none focus:border-[#5d7da3]"
+                        className="rounded border border-[#2b3d58] bg-[#060b14] px-3 py-2 text-sm outline-none focus:border-[#52e2ff]"
                       />
 
                       <button
@@ -1318,7 +1318,7 @@ export default function TeamsAdminPage() {
           </form>
         </section>
 
-        <section className="rounded-xl border border-[#1d2a3a] bg-[#0d141e]">
+        <section className="rounded-xl border border-[#263750] bg-gradient-to-br from-[#0d1522] to-[#111020]">
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#1d2a3a] p-5">
             <div>
               <div className="text-xs font-bold uppercase tracking-[0.2em] text-[#6f87a4]">
@@ -1345,10 +1345,10 @@ export default function TeamsAdminPage() {
                   )
                 }
                 placeholder="Search teams..."
-                className="rounded border border-[#2b3b4f] bg-[#080e16] px-3 py-2 text-sm outline-none focus:border-[#5d7da3]"
+                className="rounded border border-[#2b3d58] bg-[#060b14] px-3 py-2 text-sm outline-none focus:border-[#52e2ff]"
               />
 
-              <label className="cursor-pointer rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#c1d1e5]">
+              <label className="cursor-pointer rounded border border-[#2b3d58] bg-[#0b1220] px-4 py-2 text-xs font-bold text-[#c1d1e5]">
                 IMPORT CSV
                 <input
                   type="file"
@@ -1365,7 +1365,7 @@ export default function TeamsAdminPage() {
                 onClick={
                   exportCsv
                 }
-                className="rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#c1d1e5]"
+                className="rounded border border-[#2b3d58] bg-[#0b1220] px-4 py-2 text-xs font-bold text-[#c1d1e5]"
               >
                 EXPORT CSV
               </button>
@@ -1375,7 +1375,7 @@ export default function TeamsAdminPage() {
                 onClick={
                   loadTeams
                 }
-                className="rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#c1d1e5]"
+                className="rounded border border-[#2b3d58] bg-[#0b1220] px-4 py-2 text-xs font-bold text-[#c1d1e5]"
               >
                 REFRESH
               </button>
@@ -1514,7 +1514,7 @@ export default function TeamsAdminPage() {
                             team,
                           )
                         }
-                        className="flex-1 rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#c1d1e5]"
+                        className="flex-1 rounded border border-[#2b3d58] bg-[#0b1220] px-4 py-2 text-xs font-bold text-[#c1d1e5]"
                       >
                         EDIT
                       </button>
