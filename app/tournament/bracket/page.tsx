@@ -221,9 +221,9 @@ function TeamSlot({
   label: string;
 }) {
   return (
-    <div className="flex min-h-[76px] items-center justify-between border-b border-white/10 px-5 py-4 last:border-b-0">
+    <div className="flex min-h-[76px] items-center justify-between border-b border-white/[0.08] bg-white/[0.01] px-5 py-4 last:border-b-0">
       <div className="flex min-w-0 items-center gap-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-white/[0.03]">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#52e2ff]/25 bg-[#060b14] shadow-[0_0_18px_rgba(39,217,255,0.07)]">
           {team?.logo ? (
             <img
               src={team.logo}
@@ -585,9 +585,9 @@ export default function TournamentBracketPage() {
       : undefined;
 
   return (
-    <main className="min-h-screen bg-[#070b11] text-white">
+    <main className="relative min-h-screen overflow-hidden bg-[#050810] text-white">
       <div className="mx-auto max-w-[1500px] px-5 py-8 md:px-8 lg:px-10">
-        <header className="mb-8 border-b border-white/10 pb-7">
+        <header className="mb-8 border-b border-[#263750] pb-7">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <div className="mb-3 flex items-center gap-3">
@@ -611,7 +611,7 @@ export default function TournamentBracketPage() {
             <nav className="flex flex-wrap gap-2">
               <Link
                 href="/tournament"
-                className="rounded-lg border border-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-white/50 transition hover:border-white/20 hover:text-white"
+                className="rounded-xl border border-[#2b3d58] bg-[#0b1220] px-4 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#a9b8cc] transition hover:border-[#52e2ff]/50 hover:text-[#52e2ff]"
               >
                 Tournament Home
               </Link>
@@ -633,10 +633,10 @@ export default function TournamentBracketPage() {
           </div>
         </header>
 
-        <section className="mb-8 rounded-2xl border border-white/10 bg-[#091019]">
+        <section className="mb-8 overflow-hidden rounded-2xl border border-[#2b3d58] bg-gradient-to-br from-[#0d1522] via-[#0a1019] to-[#111020] shadow-[0_15px_50px_rgba(0,0,0,0.25)]">
           <div className="flex flex-col border-b border-white/10 px-5 py-5 md:flex-row md:items-center md:justify-between md:px-7">
             <div className="flex items-center gap-4">
-              <div className="bg-red-400 px-4 py-3 text-xs font-black uppercase tracking-wide text-white">
+              <div className="bg-[#ff3158]/80 px-4 py-3 text-xs font-black uppercase tracking-wide text-white shadow-[0_0_20px_rgba(255,49,88,0.16)]">
                 Phase 2
               </div>
 
@@ -657,7 +657,7 @@ export default function TournamentBracketPage() {
           </div>
 
           <div className="grid gap-4 p-5 md:grid-cols-2 md:p-8 lg:grid-cols-4">
-            <div className="border border-cyan-400/20 bg-cyan-400/[0.025] p-5">
+            <div className="rounded-xl border border-cyan-400/25 bg-gradient-to-br from-cyan-400/[0.07] to-purple-500/[0.04] p-5">
               <div className="text-sm font-black uppercase text-cyan-300">
                 Qualifier 1
               </div>
@@ -671,7 +671,7 @@ export default function TournamentBracketPage() {
               </p>
             </div>
 
-            <div className="border border-red-400/20 bg-red-400/[0.025] p-5">
+            <div className="rounded-xl border border-red-400/25 bg-red-400/[0.07] p-5">
               <div className="text-sm font-black uppercase text-red-300">
                 Eliminator
               </div>
@@ -685,7 +685,7 @@ export default function TournamentBracketPage() {
               </p>
             </div>
 
-            <div className="border border-yellow-400/20 bg-yellow-400/[0.025] p-5">
+            <div className="rounded-xl border border-yellow-400/25 bg-yellow-400/[0.07] p-5">
               <div className="text-sm font-black uppercase text-yellow-300">
                 Qualifier 2
               </div>
@@ -699,7 +699,7 @@ export default function TournamentBracketPage() {
               </p>
             </div>
 
-            <div className="border border-emerald-400/20 bg-emerald-400/[0.025] p-5">
+            <div className="rounded-xl border border-emerald-400/25 bg-emerald-400/[0.07] p-5">
               <div className="text-sm font-black uppercase text-emerald-300">
                 Grand Final
               </div>
