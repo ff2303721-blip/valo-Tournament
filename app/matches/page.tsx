@@ -150,6 +150,42 @@ function toDateTimeLocal(value?: string) {
   )}`;
 }
 
+function getDateTimeParts(value?: string) {
+  if (!value) return { date: "", hour: "12", minute: "00", period: "AM" };
+
+  const local = toDateTimeLocal(value);
+  if (!local) return { date: "", hour: "12", minute: "00", period: "AM" };
+
+  const [date, time] = local.split("T");
+  const [hours, minutes] = time.split(":").map(Number);
+
+  return {
+    date,
+    hour: String(hours % 12 || 12).padStart(2, "0"),
+    minute: String(minutes).padStart(2, "0"),
+    period: hours >= 12 ? "PM" : "AM",
+  };
+}
+
+function buildScheduledAt(
+  date: string,
+  hour: string,
+  minute: string,
+  period: string,
+) {
+  if (!date) return "";
+
+  let hours = Number(hour) % 12;
+  if (period === "PM") hours += 12;
+
+  const local = `${date}T${String(hours).padStart(2, "0")}:${String(Number(minute)).padStart(2, "0")}`;
+  const parsed = new Date(local);
+
+  return Number.isNaN(parsed.getTime())
+    ? ""
+    : parsed.toISOString();
+}
+
 export default function MatchCenterPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
@@ -159,6 +195,10 @@ export default function MatchCenterPage() {
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [scheduleDate, setScheduleDate] = useState("");
+  const [scheduleHour, setScheduleHour] = useState("12");
+  const [scheduleMinute, setScheduleMinute] = useState("00");
+  const [schedulePeriod, setSchedulePeriod] = useState("AM");
   const editorPanelRef = useRef<HTMLDivElement | null>(null);
 
   const [error, setError] = useState("");
@@ -379,6 +419,11 @@ export default function MatchCenterPage() {
       return;
     }
 
+    setScheduleDate("");
+    setScheduleHour("12");
+    setScheduleMinute("00");
+    setSchedulePeriod("AM");
+
     setEditor({
       id: `M${String(nextFixture.matchNumber).padStart(2, "0")}`,
       matchNumber: String(nextFixture.matchNumber),
@@ -407,6 +452,12 @@ export default function MatchCenterPage() {
       );
       return;
     }
+
+    const scheduleParts = getDateTimeParts(match.scheduledAt);
+    setScheduleDate(scheduleParts.date);
+    setScheduleHour(scheduleParts.hour);
+    setScheduleMinute(scheduleParts.minute);
+    setSchedulePeriod(scheduleParts.period);
 
     setEditor({
       id: match.id,
@@ -509,9 +560,12 @@ export default function MatchCenterPage() {
       stage: "Group Stage",
       team1Id: editor.team1Id,
       team2Id: editor.team2Id,
-      scheduledAt: editor.scheduledAt
-        ? new Date(editor.scheduledAt).toISOString()
-        : "",
+      scheduledAt: buildScheduledAt(
+        scheduleDate,
+        scheduleHour,
+        scheduleMinute,
+        schedulePeriod,
+      ),
       map: editor.map || "TBD",
       bestOf: Number(editor.bestOf),
       team1Score: score1,
@@ -1251,6 +1305,47 @@ export default function MatchCenterPage() {
                   </button>
                 </div>
                 <div className="grid gap-4 md:grid-cols-3">
+                  <label>
+                    <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#52e2ff]">DATE</span>
+                    <input
+                      type="date"
+                      value={scheduleDate}
+                      onChange={(event) => setScheduleDate(event.target.value)}
+                      className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm font-bold text-white"
+                    />
+                  </label>
+
+                  <div>
+                    <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#ff5275]">TIME · 12 HOUR</span>
+                    <div className="grid grid-cols-3 gap-2">
+                      <select value={scheduleHour} onChange={(event) => setScheduleHour(event.target.value)} className="rounded-xl border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm font-bold text-white">
+                        {Array.from({ length: 12 }, (_, index) => {
+                          const value = String(index + 1).padStart(2, "0");
+                          return <option key={value}>{value}</option>;
+                        })}
+                      </select>
+                      <select value={scheduleMinute} onChange={(event) => setScheduleMinute(event.target.value)} className="rounded-xl border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm font-bold text-white">
+                        {Array.from({ length: 60 }, (_, index) => {
+                          const value = String(index).padStart(2, "0");
+                          return <option key={value}>{value}</option>;
+                        })}
+                      </select>
+                      <select value={schedulePeriod} onChange={(event) => setSchedulePeriod(event.target.value)} className="rounded-xl border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm font-bold text-white">
+                        <option>AM</option>
+                        <option>PM</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#b68cff]">SCHEDULE PREVIEW</span>
+                    <div className="rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm font-bold text-white">
+                      {scheduleDate ? `${scheduleDate} · ${scheduleHour}:${scheduleMinute} ${schedulePeriod}` : "DATE / TIME NOT SET"}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 grid gap-4 md:grid-cols-3">
                   <label>
                     <span className="mb-2 block text-[10px] font-black text-[#52e2ff]">TEAM 1</span>
                     <select value={editor.team1Id} onChange={(event) => setEditor((current) => ({ ...current, team1Id: event.target.value, team2Id: event.target.value === current.team2Id ? "" : current.team2Id }))} className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm font-bold text-white">
