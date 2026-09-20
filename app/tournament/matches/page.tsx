@@ -110,18 +110,18 @@ function statusClass(
   status: MatchStatus,
 ) {
   if (status === "Live") {
-    return "border-red-900/60 bg-red-950/30 text-red-300";
+    return "border-red-400/40 bg-red-500/10 text-red-300 shadow-[0_0_18px_rgba(248,113,113,0.12)]";
   }
 
   if (status === "Completed") {
-    return "border-emerald-900/60 bg-emerald-950/20 text-emerald-300";
+    return "border-emerald-400/40 bg-emerald-500/10 text-emerald-300 shadow-[0_0_18px_rgba(52,211,153,0.10)]";
   }
 
   if (status === "Cancelled") {
-    return "border-red-900/40 bg-red-950/20 text-red-300";
+    return "border-red-400/30 bg-red-500/10 text-red-300";
   }
 
-  return "border-[#30445d] bg-[#111b29] text-[#aabbd0]";
+  return "border-[#52e2ff]/25 bg-[#52e2ff]/[0.06] text-[#a9dff0]";
 }
 
 export default function PublicMatchesPage() {
@@ -314,13 +314,14 @@ export default function PublicMatchesPage() {
     ]);
 
   return (
-    <main className="min-h-screen bg-[#080c12] text-white">
-      <header className="border-b border-[#1c2938] bg-[#0b1119]">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-5">
+    <main className="min-h-screen overflow-hidden bg-[#050810] text-white">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_10%,rgba(255,49,88,0.12),transparent_25%),radial-gradient(circle_at_85%_20%,rgba(39,217,255,0.10),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.10),transparent_35%)]" />
+      <header className="relative border-b border-[#243247] bg-[#080d17]/95 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-7">
           <div>
             <Link
               href="/tournament"
-              className="text-xs font-bold text-[#7890ad] hover:text-white"
+              className="text-xs font-black uppercase tracking-wider text-[#52e2ff] transition hover:text-white"
             >
               ← Tournament Central
             </Link>
@@ -329,26 +330,26 @@ export default function PublicMatchesPage() {
               <TournamentBrand compact />
             </div>
 
-            <h1 className="mt-3 text-3xl font-black">
+            <h1 className="mt-4 bg-gradient-to-r from-white via-[#ffdce4] to-[#ff5275] bg-clip-text text-4xl font-black uppercase tracking-tight text-transparent">
               MATCHES
             </h1>
 
-            <p className="mt-1 text-sm text-[#687e99]">
+            <p className="mt-2 text-sm text-[#7f91aa]">
               Official tournament fixtures and results
             </p>
           </div>
 
           <Link
             href="/tournament"
-            className="rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#bcd0e8]"
+            className="rounded-xl border border-[#52e2ff]/30 bg-[#52e2ff]/[0.06] px-5 py-3 text-[10px] font-black uppercase tracking-wider text-[#9eeeff] transition hover:border-[#ff5275]/40 hover:bg-[#ff5275]/10 hover:text-white"
           >
             TOURNAMENT HOME
           </Link>
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-6 py-8">
-        <section className="mb-6 rounded-xl border border-[#1d2a3a] bg-[#0d141e] p-5">
+      <div className="relative mx-auto max-w-7xl px-6 py-8">
+        <section className="mb-6 rounded-2xl border border-[#2a3b55] bg-gradient-to-br from-[#0d1522] via-[#0a101b] to-[#111021] p-5 shadow-[0_0_45px_rgba(39,217,255,0.05)]">
           <div className="grid gap-4 lg:grid-cols-[1fr_200px_200px]">
             <input
               value={search}
@@ -358,7 +359,7 @@ export default function PublicMatchesPage() {
                 )
               }
               placeholder="Search match, team, map..."
-              className="rounded border border-[#2b3b4f] bg-[#080e16] px-4 py-3 text-sm outline-none focus:border-[#5d7da3]"
+              className="rounded-xl border border-[#2b3b4f] bg-[#060b14] px-4 py-3 text-sm outline-none transition focus:border-[#52e2ff]/60 focus:ring-1 focus:ring-[#52e2ff]/20"
             />
 
             <select
@@ -446,7 +447,7 @@ export default function PublicMatchesPage() {
           !error &&
           filteredMatches.length >
             0 && (
-            <div className="grid gap-4">
+            <div className="grid gap-5">
               {filteredMatches.map(
                 (match) => {
                   const team1 =
@@ -469,11 +470,13 @@ export default function PublicMatchesPage() {
                       href={`/tournament/matches/${encodeURIComponent(
                         match.id,
                       )}`}
-                      className="group rounded-xl border border-[#1d2a3a] bg-[#0d141e] p-5 transition hover:border-[#405975] hover:bg-[#101925]"
+                      className="group relative overflow-hidden rounded-2xl border border-[#263750] bg-gradient-to-br from-[#0d1521] via-[#0a1019] to-[#101020] p-5 shadow-[0_12px_40px_rgba(0,0,0,0.22)] transition duration-300 hover:-translate-y-1 hover:border-[#52e2ff]/50 hover:shadow-[0_16px_55px_rgba(39,217,255,0.10)]"
                     >
+                      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ff3158] to-transparent opacity-70" />
+
                       <div className="flex flex-wrap items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                          <span className="rounded border border-[#2b3b4f] bg-[#111b29] px-3 py-1 text-[10px] font-black text-[#7890ad]">
+                          <span className="rounded-lg border border-[#52e2ff]/30 bg-[#52e2ff]/[0.07] px-3 py-1 text-[10px] font-black text-[#72e9ff]">
                             M
                             {String(
                               match.matchNumber,
@@ -483,17 +486,17 @@ export default function PublicMatchesPage() {
                             )}
                           </span>
 
-                          <span className="text-xs font-bold text-[#7188a5]">
+                          <span className="text-xs font-black uppercase tracking-wider text-[#8195b0]">
                             {
                               match.stage
                             }
                           </span>
 
-                          <span className="text-xs text-[#52677f]">
+                          <span className="text-xs font-bold text-[#ff5275]">
                             •
                           </span>
 
-                          <span className="text-xs text-[#7188a5]">
+                          <span className="text-xs font-bold text-[#8195b0]">
                             {
                               match.map
                             }
@@ -511,18 +514,18 @@ export default function PublicMatchesPage() {
                         </span>
                       </div>
 
-                      <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+                      <div className="mt-7 grid grid-cols-[1fr_auto_1fr] items-center gap-4 rounded-xl border border-white/[0.06] bg-black/10 p-4">
                         <div className="text-right">
                           <div className="flex items-center justify-end gap-3">
                             <div>
-                              <div className="font-black">
+                              <div className="font-black uppercase tracking-tight text-white">
                                 {
                                   team1?.name ??
                                   "TBD"
                                 }
                               </div>
 
-                              <div className="mt-1 text-[10px] font-bold text-[#647a94]">
+                              <div className="mt-1 text-[10px] font-black uppercase tracking-wider text-[#637a96]">
                                 {
                                   team1?.tag ??
                                   "TBD"
@@ -536,10 +539,10 @@ export default function PublicMatchesPage() {
                                   team1.logo
                                 }
                                 alt=""
-                                className="h-12 w-12 rounded border border-[#2d4056] bg-[#080e16] object-contain p-1"
+                                className="h-14 w-14 rounded-xl border border-[#52e2ff]/25 bg-[#060b14] object-contain p-1.5 shadow-[0_0_20px_rgba(39,217,255,0.08)]"
                               />
                             ) : (
-                              <div className="flex h-12 w-12 items-center justify-center rounded border border-[#2d4056] bg-[#080e16] text-[10px] font-black text-[#7188a5]">
+                              <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-[#52e2ff]/25 bg-[#060b14] text-[10px] font-black text-[#72e9ff]">
                                 {(
                                   team1?.tag ??
                                   "TBD"
@@ -553,7 +556,7 @@ export default function PublicMatchesPage() {
                         </div>
 
                         <div className="text-center">
-                          <div className="text-3xl font-black">
+                          <div className="text-4xl font-black tracking-tight text-white">
                             {
                               match.team1Score
                             }{" "}
@@ -565,7 +568,7 @@ export default function PublicMatchesPage() {
                             }
                           </div>
 
-                          <div className="mt-1 text-[9px] font-bold uppercase tracking-wider text-[#52677f]">
+                          <div className="mt-1 text-[9px] font-black uppercase tracking-[0.2em] text-[#52e2ff]">
                             BO
                             {
                               match.bestOf
@@ -614,14 +617,14 @@ export default function PublicMatchesPage() {
                         </div>
                       </div>
 
-                      <div className="mt-5 flex flex-wrap justify-between gap-3 border-t border-[#1c2938] pt-4 text-[10px] text-[#617994]">
+                      <div className="mt-5 flex flex-wrap justify-between gap-3 border-t border-white/[0.07] pt-4 text-[10px] font-bold text-[#617994]">
                         <span>
                           {formatDate(
                             match.scheduledAt,
                           )}
                         </span>
 
-                        <span className="font-bold text-[#7890ad] group-hover:text-white">
+                        <span className="font-black uppercase tracking-wider text-[#52e2ff] transition group-hover:text-[#ff5275]">
                           VIEW MATCH →
                         </span>
                       </div>
