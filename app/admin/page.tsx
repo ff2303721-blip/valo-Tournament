@@ -24,6 +24,12 @@ export default function Home() {
             <button className="rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#bcd0e8]">
               RESET TOURNAMENT DATA
             </button>
+            <Link
+  href="/matches"
+  className="rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#bcd0e8]"
+>
+  MATCH CENTER ↗
+</Link>
 
             <Link
               href="/teams"
