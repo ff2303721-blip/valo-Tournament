@@ -447,7 +447,7 @@ export default function PublicMatchesPage() {
           !error &&
           filteredMatches.length >
             0 && (
-            <div className="grid gap-5">
+            <div className="grid gap-4 lg:grid-cols-2">
               {filteredMatches.map(
                 (match) => {
                   const team1 =
@@ -470,7 +470,7 @@ export default function PublicMatchesPage() {
                       href={`/tournament/matches/${encodeURIComponent(
                         match.id,
                       )}`}
-                      className="group relative overflow-hidden rounded-2xl border border-[#263750] bg-gradient-to-br from-[#0d1521] via-[#0a1019] to-[#101020] p-5 shadow-[0_12px_40px_rgba(0,0,0,0.22)] transition duration-300 hover:-translate-y-1 hover:border-[#52e2ff]/50 hover:shadow-[0_16px_55px_rgba(39,217,255,0.10)]"
+                      className="group relative overflow-hidden rounded-xl border border-[#263750] bg-gradient-to-br from-[#0d1521] via-[#0a1019] to-[#101020] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.20)] transition duration-300 hover:-translate-y-0.5 hover:border-[#52e2ff]/50 hover:shadow-[0_12px_40px_rgba(39,217,255,0.10)]"
                     >
                       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ff3158] to-transparent opacity-70" />
 
@@ -514,18 +514,18 @@ export default function PublicMatchesPage() {
                         </span>
                       </div>
 
-                      <div className="mt-7 grid grid-cols-[1fr_auto_1fr] items-center gap-4 rounded-xl border border-white/[0.06] bg-black/10 p-4">
+                      <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-lg border border-white/[0.06] bg-black/10 p-3">
                         <div className="text-right">
                           <div className="flex items-center justify-end gap-3">
                             <div>
-                              <div className="font-black uppercase tracking-tight text-white">
+                              <div className="text-sm font-black uppercase tracking-tight text-white">
                                 {
                                   team1?.name ??
                                   "TBD"
                                 }
                               </div>
 
-                              <div className="mt-1 text-[10px] font-black uppercase tracking-wider text-[#637a96]">
+                              <div className="mt-0.5 text-[9px] font-black uppercase tracking-wider text-[#637a96]">
                                 {
                                   team1?.tag ??
                                   "TBD"
@@ -539,10 +539,10 @@ export default function PublicMatchesPage() {
                                   team1.logo
                                 }
                                 alt=""
-                                className="h-14 w-14 rounded-xl border border-[#52e2ff]/25 bg-[#060b14] object-contain p-1.5 shadow-[0_0_20px_rgba(39,217,255,0.08)]"
+                                className="h-10 w-10 rounded-lg border border-[#52e2ff]/25 bg-[#060b14] object-contain p-1 shadow-[0_0_14px_rgba(39,217,255,0.08)]"
                               />
                             ) : (
-                              <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-[#52e2ff]/25 bg-[#060b14] text-[10px] font-black text-[#72e9ff]">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#52e2ff]/25 bg-[#060b14] text-[9px] font-black text-[#72e9ff]">
                                 {(
                                   team1?.tag ??
                                   "TBD"
@@ -556,7 +556,7 @@ export default function PublicMatchesPage() {
                         </div>
 
                         <div className="text-center">
-                          <div className="text-4xl font-black tracking-tight text-white">
+                          <div className="text-2xl font-black tracking-tight text-white">
                             {
                               match.team1Score
                             }{" "}
@@ -568,7 +568,7 @@ export default function PublicMatchesPage() {
                             }
                           </div>
 
-                          <div className="mt-1 text-[9px] font-black uppercase tracking-[0.2em] text-[#52e2ff]">
+                          <div className="mt-0.5 text-[8px] font-black uppercase tracking-[0.18em] text-[#52e2ff]">
                             BO
                             {
                               match.bestOf
@@ -617,7 +617,7 @@ export default function PublicMatchesPage() {
                         </div>
                       </div>
 
-                      <div className="mt-5 flex flex-wrap justify-between gap-3 border-t border-white/[0.07] pt-4 text-[10px] font-bold text-[#617994]">
+                      <div className="mt-3 flex flex-wrap justify-between gap-2 border-t border-white/[0.07] pt-3 text-[9px] font-bold text-[#617994]">
                         <span>
                           {formatDate(
                             match.scheduledAt,
