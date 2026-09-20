@@ -677,6 +677,7 @@ export default function MatchCenterPage() {
       team1Score: existing?.team1Score || 0,
       team2Score: existing?.team2Score || 0,
       status: existing?.status || "Scheduled",
+      startingSide: existing?.startingSide,
       winnerId: existing?.winnerId,
       mvpPlayerId: existing?.mvpPlayerId,
       topFraggerPlayerId:
