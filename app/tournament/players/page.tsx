@@ -423,11 +423,11 @@ export default function PlayerStatisticsPage() {
     );
 
   return (
-    <main className="min-h-screen bg-[#050a10] px-4 py-7 text-white md:px-8">
+    <main className="relative min-h-screen overflow-hidden bg-[#050810] px-4 py-7 text-white md:px-8"><div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_10%_8%,rgba(255,49,88,0.12),transparent_25%),radial-gradient(circle_at_90%_15%,rgba(39,217,255,0.10),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.10),transparent_35%)]" />
       <div className="mx-auto max-w-[1280px]">
 
         {/* HEADER */}
-        <header className="flex flex-col justify-between gap-6 border-b border-white/10 pb-7 md:flex-row md:items-end">
+        <header className="relative flex flex-col justify-between gap-6 border-b border-[#263750] pb-7 md:flex-row md:items-end">
           <div>
             <div className="text-[9px] font-black tracking-[0.32em] text-cyan-400 uppercase">
               Valorant Tournament
@@ -445,7 +445,7 @@ export default function PlayerStatisticsPage() {
 
           <Link
             href="/tournament"
-            className="border border-white/10 px-5 py-3 text-[9px] font-black tracking-[0.14em] uppercase hover:border-cyan-400/40 hover:text-cyan-400"
+            className="rounded-xl border border-[#2b3d58] bg-[#0b1220] px-5 py-3 text-[9px] font-black tracking-[0.14em] uppercase transition hover:border-[#52e2ff]/50 hover:text-[#52e2ff]"
           >
             ← Tournament Central
           </Link>
@@ -479,7 +479,7 @@ export default function PlayerStatisticsPage() {
         </section>
 
         {/* FILTER BAR */}
-        <section className="mt-7 border border-white/10 bg-[#0b1119]">
+        <section className="relative mt-7 overflow-hidden rounded-2xl border border-[#2b3d58] bg-gradient-to-br from-[#0d1522] via-[#0a1019] to-[#111020] shadow-[0_15px_50px_rgba(0,0,0,0.25)]">
           <div className="flex flex-col gap-5 p-5 lg:flex-row lg:items-end lg:justify-between">
 
             <div>
@@ -507,7 +507,7 @@ export default function PlayerStatisticsPage() {
                       event.target.value
                     )
                   }
-                  className="min-w-[190px] border border-white/10 bg-[#080c12] px-4 py-3 text-[10px] font-black uppercase outline-none focus:border-cyan-400"
+                  className="min-w-[190px] rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-[10px] font-black uppercase outline-none transition focus:border-[#52e2ff] focus:ring-1 focus:ring-[#52e2ff]/20"
                 >
                   {STAGES.map(
                     (stage) => (
@@ -535,7 +535,7 @@ export default function PlayerStatisticsPage() {
                       event.target.value
                     )
                   }
-                  className="min-w-[180px] border border-white/10 bg-[#080c12] px-4 py-3 text-[10px] font-black uppercase outline-none focus:border-cyan-400"
+                  className="min-w-[180px] rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-[10px] font-black uppercase outline-none transition focus:border-[#52e2ff] focus:ring-1 focus:ring-[#52e2ff]/20"
                 >
                   <option value="ALL">
                     ALL TEAMS
@@ -601,11 +601,11 @@ export default function PlayerStatisticsPage() {
         </div>
 
         {/* TABLE */}
-        <section className="mt-5 overflow-hidden border border-white/10 bg-[#0b1119]">
+        <section className="relative mt-5 overflow-hidden rounded-2xl border border-[#2b3d58] bg-[#0a1019]">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1150px] border-collapse">
               <thead>
-                <tr className="border-b border-white/10 bg-white/[0.02]">
+                <tr className="border-b border-[#263750] bg-[#111b28]">
                   <Th>#</Th>
 
                   <Th align="left">
@@ -756,7 +756,7 @@ function PlayerTableRow({
     );
 
   return (
-    <tr className="border-b border-white/5 hover:bg-white/[0.025]">
+    <tr className="border-b border-white/[0.06] transition hover:bg-cyan-400/[0.025]">
 
       {/* NUMBER */}
       <td className="px-4 py-5 text-center">
@@ -771,7 +771,7 @@ function PlayerTableRow({
       {/* PLAYER */}
       <td className="px-4 py-5">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center border border-white/10 bg-[#080c12] text-[9px] font-black text-cyan-400">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#52e2ff]/25 bg-[#060b14] text-[9px] font-black text-[#52e2ff] shadow-[0_0_14px_rgba(39,217,255,0.08)]">
             {initials}
           </div>
 
@@ -914,7 +914,7 @@ function SummaryCard({
         : "text-white";
 
   return (
-    <div className="border border-white/10 bg-[#0b1119] p-5">
+    <div className="rounded-xl border border-[#263750] bg-gradient-to-br from-[#0d1521] to-[#0a1019] p-5">
       <div className="text-[8px] font-black tracking-[0.2em] text-white/30 uppercase">
         {label}
       </div>
@@ -934,7 +934,7 @@ function FilterBadge({
   children: React.ReactNode;
 }) {
   return (
-    <div className="border border-white/10 bg-[#0b1119] px-3 py-2 text-[8px] font-black tracking-wider text-white/40 uppercase">
+    <div className="rounded-lg border border-[#263750] bg-[#0a1019] px-3 py-2 text-[8px] font-black tracking-wider text-[#8195b0] uppercase">
       {children}
     </div>
   );
@@ -948,7 +948,7 @@ function InfoCard({
   text: string;
 }) {
   return (
-    <div className="border border-white/10 bg-[#0b1119] p-4">
+    <div className="rounded-xl border border-[#263750] bg-gradient-to-br from-[#0d1521] to-[#0a1019] p-4">
       <div className="text-[9px] font-black text-cyan-400">
         {title}
       </div>
