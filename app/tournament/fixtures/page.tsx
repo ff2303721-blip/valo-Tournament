@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { TournamentBrand } from "../components/tournament-brand";
 import { useEffect, useMemo, useState } from "react";
 
 type MatchStatus =
@@ -442,7 +443,11 @@ export default function FixturesPage() {
               ← TOURNAMENT CENTRAL
             </Link>
 
-            <h1 className="mt-2 bg-gradient-to-r from-white via-[#ffedf1] to-[#ff5275] bg-clip-text text-3xl font-black tracking-tight text-transparent md:text-4xl">
+            <div className="mt-2">
+              <TournamentBrand compact />
+            </div>
+
+            <h1 className="mt-3 text-2xl font-black uppercase text-white md:text-3xl">
               FIXTURES
             </h1>
 
