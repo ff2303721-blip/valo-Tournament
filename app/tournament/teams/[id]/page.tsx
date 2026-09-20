@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { TournamentBrand } from "../components/tournament-brand";
+import { TournamentBrand } from "../../components/tournament-brand";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
