@@ -177,11 +177,11 @@ export default function PublicMatchDetailPage({
               resolved.id,
             )}`,
             {
-              cache: "no-store",
+              cache: "force-cache",
             },
           ),
           fetch("/api/teams", {
-            cache: "no-store",
+            cache: "force-cache",
           }),
         ]);
 
