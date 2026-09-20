@@ -1,636 +1,417 @@
 "use client";
 
 import Link from "next/link";
-import { use, useEffect, useMemo, useState } from "react";
-import type { Match, PlayerStat } from "@/app/data/matches";
-import type { Team } from "@/app/data/teams";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { useParams } from "next/navigation";
 
-type Props = {
-  params: Promise<{
-    id: string;
-  }>;
+type Team = {
+  id: string;
+  name: string;
+  tag: string;
+  seed: number;
+  logo?: string;
+  wins: number;
+  losses: number;
+  captainRank?: string;
+  players: Player[];
 };
 
-type EditableStat = PlayerStat & {
-  teamName: string;
+type Player = {
+  id: string;
+  name: string;
+  role?: string;
 };
 
-type OCRResult = {
-  text: string;
-  score1: number | null;
-  score2: number | null;
+type PlayerStat = {
+  playerId: string;
+  playerName: string;
+  teamId: string;
+  kills: number;
+  deaths: number;
+  assists: number;
+  acs: number;
+  adr: number;
+  kast: number;
 };
 
-function normalizeMatch(match: Match): Match {
-  return {
-    ...match,
-    team1Id: match.team1Id ?? "",
-    team2Id: match.team2Id ?? "",
-    scheduledAt: match.scheduledAt ?? "",
-    playerStats: match.playerStats ?? [],
-  };
-}
+type Match = {
+  id: string;
+  matchNumber: number;
+  stage: string;
+  team1Id: string;
+  team2Id: string;
+  scheduledAt: string;
+  map: string;
+  bestOf: number;
+  team1Score: number;
+  team2Score: number;
+  status: "Scheduled" | "Live" | "Completed" | "Cancelled";
+  winnerId?: string;
+  mvpPlayerId?: string;
+  topFraggerPlayerId?: string;
+  playerStats: PlayerStat[];
+  createdAt: string;
+};
 
-function parseScore(text: string): {
-  score1: number | null;
-  score2: number | null;
-} {
-  const cleaned = text
-    .replace(/[|]/g, ":")
-    .replace(/[—–-]/g, ":")
-    .replace(/\s+/g, " ");
+type EditableStat = PlayerStat;
 
-  const patterns = [
-    /\b(\d{1,2})\s*[:]\s*(\d{1,2})\b/,
-    /\b(\d{1,2})\s+(\d{1,2})\b/,
-  ];
+function formatDate(value: string) {
+  if (!value) return "TBD";
 
-  for (const pattern of patterns) {
-    const match = cleaned.match(pattern);
+  const date = new Date(value);
 
-    if (!match) continue;
-
-    const score1 = Number(match[1]);
-    const score2 = Number(match[2]);
-
-    if (
-      Number.isInteger(score1) &&
-      Number.isInteger(score2) &&
-      score1 >= 0 &&
-      score2 >= 0 &&
-      score1 <= 99 &&
-      score2 <= 99
-    ) {
-      return {
-        score1,
-        score2,
-      };
-    }
+  if (Number.isNaN(date.getTime())) {
+    return value;
   }
 
-  return {
-    score1: null,
-    score2: null,
-  };
+  return date.toLocaleString();
+}
+
+function statusClass(status: Match["status"]) {
+  switch (status) {
+    case "Live":
+      return "border-red-500/50 bg-red-500/15 text-red-300";
+    case "Completed":
+      return "border-emerald-500/40 bg-emerald-500/10 text-emerald-300";
+    case "Cancelled":
+      return "border-zinc-500/40 bg-zinc-500/10 text-zinc-300";
+    default:
+      return "border-yellow-500/40 bg-yellow-500/10 text-yellow-300";
+  }
 }
 
 function numberValue(value: string) {
   const parsed = Number(value);
-
-  if (!Number.isFinite(parsed)) {
-    return 0;
-  }
-
-  return parsed;
+  return Number.isFinite(parsed) ? parsed : 0;
 }
 
-export default function MatchResultPage({
-  params,
-}: Props) {
-  const { id } = use(params);
+export default function MatchResultRecorderPage() {
+  const params = useParams<{ id: string }>();
+  const matchId = params?.id;
 
-  const [match, setMatch] = useState<Match | null>(
-    null,
-  );
-
+  const [match, setMatch] = useState<Match | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
-  const [stats, setStats] = useState<EditableStat[]>(
-    [],
-  );
+  const [stats, setStats] = useState<EditableStat[]>([]);
 
-  const [team1Score, setTeam1Score] = useState("0");
-  const [team2Score, setTeam2Score] = useState("0");
-
-  const [mvpPlayerId, setMvpPlayerId] =
-    useState("");
-  const [topFraggerPlayerId, setTopFraggerPlayerId] =
-    useState("");
+  const [selectedMvp, setSelectedMvp] = useState("");
+  const [selectedTopFragger, setSelectedTopFragger] = useState("");
 
   const [ocrText, setOcrText] = useState("");
-  const [ocrLoading, setOcrLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [ocrRunning, setOcrRunning] = useState(false);
+
   const [loading, setLoading] = useState(true);
-
-  const [screenshot, setScreenshot] =
-    useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] =
-    useState<string>("");
-
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  const team1 = useMemo(
-    () =>
-      teams.find(
-        (team) => team.id === match?.team1Id,
-      ),
-    [teams, match],
-  );
+  const [team1Score, setTeam1Score] = useState(0);
+  const [team2Score, setTeam2Score] = useState(0);
 
-  const team2 = useMemo(
-    () =>
-      teams.find(
-        (team) => team.id === match?.team2Id,
-      ),
-    [teams, match],
-  );
+  const [winnerId, setWinnerId] = useState("");
 
-  const winnerId = useMemo(() => {
-    const score1 = Number(team1Score);
-    const score2 = Number(team2Score);
+  const teamById = useMemo(() => {
+    const map = new Map<string, Team>();
 
-    if (
-      !Number.isFinite(score1) ||
-      !Number.isFinite(score2) ||
-      score1 === score2
-    ) {
-      return "";
+    for (const team of teams) {
+      map.set(team.id, team);
     }
 
-    return score1 > score2
-      ? match?.team1Id ?? ""
-      : match?.team2Id ?? "";
-  }, [
-    team1Score,
-    team2Score,
-    match,
-  ]);
+    return map;
+  }, [teams]);
 
-  const completedStats = useMemo(
-    () =>
-      stats.filter(
-        (stat) =>
-          stat.kills > 0 ||
-          stat.deaths > 0 ||
-          stat.assists > 0 ||
-          stat.acs > 0,
-      ),
-    [stats],
-  );
+  const team1 = match ? teamById.get(match.team1Id) : undefined;
+  const team2 = match ? teamById.get(match.team2Id) : undefined;
 
-  useEffect(() => {
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
+  const playerOptions = useMemo(() => {
+    const players = [...stats];
+
+    return players.sort((a, b) => {
+      const teamA = teamById.get(a.teamId)?.name ?? "";
+      const teamB = teamById.get(b.teamId)?.name ?? "";
+
+      return (
+        teamA.localeCompare(teamB) ||
+        a.playerName.localeCompare(b.playerName)
+      );
+    });
+  }, [stats, teamById]);
 
   useEffect(() => {
+    if (!matchId) return;
+
+    let cancelled = false;
+
     async function loadData() {
       try {
         setLoading(true);
         setError("");
+        setMessage("");
 
-        const [
-          matchResponse,
-          teamsResponse,
-        ] = await Promise.all([
-          fetch(
-            `/api/matches/${encodeURIComponent(id)}`,
-            {
-              cache: "no-store",
-            },
-          ),
+        const [matchResponse, teamsResponse] = await Promise.all([
+          fetch(`/api/matches/${encodeURIComponent(matchId)}`, {
+            cache: "no-store",
+          }),
           fetch("/api/teams", {
             cache: "no-store",
           }),
         ]);
 
-        const matchData =
-          await matchResponse.json();
-
-        const teamsData =
-          await teamsResponse.json();
-
         if (!matchResponse.ok) {
-          throw new Error(
-            matchData.error ||
-              "Failed to load match.",
-          );
+          throw new Error("Unable to load match.");
         }
 
         if (!teamsResponse.ok) {
-          throw new Error(
-            teamsData.error ||
-              "Failed to load teams.",
-          );
+          throw new Error("Unable to load teams.");
         }
 
-        const loadedMatch =
-          normalizeMatch(matchData.match);
+        const matchData: Match = await matchResponse.json();
+        const teamsData: Team[] = await teamsResponse.json();
 
-        const loadedTeams =
-          teamsData.teams ?? [];
+        if (cancelled) return;
 
-        setMatch(loadedMatch);
-        setTeams(loadedTeams);
+        setMatch(matchData);
+        setTeams(teamsData);
 
-        setTeam1Score(
-          String(
-            loadedMatch.team1Score ?? 0,
-          ),
+        const incomingStats = Array.isArray(matchData.playerStats)
+          ? matchData.playerStats
+          : [];
+
+        setStats(
+          incomingStats.map((player) => ({
+            playerId: player.playerId ?? "",
+            playerName: player.playerName ?? "",
+            teamId: player.teamId ?? "",
+            kills: Number(player.kills ?? 0),
+            deaths: Number(player.deaths ?? 0),
+            assists: Number(player.assists ?? 0),
+            acs: Number(player.acs ?? 0),
+            adr: Number(player.adr ?? 0),
+            kast: Number(player.kast ?? 0),
+          })),
         );
 
-        setTeam2Score(
-          String(
-            loadedMatch.team2Score ?? 0,
-          ),
-        );
+        setTeam1Score(Number(matchData.team1Score ?? 0));
+        setTeam2Score(Number(matchData.team2Score ?? 0));
+        setWinnerId(matchData.winnerId ?? "");
+        setSelectedMvp(matchData.mvpPlayerId ?? "");
+        setSelectedTopFragger(matchData.topFraggerPlayerId ?? "");
+      } catch (loadError) {
+        if (cancelled) return;
 
-        setMvpPlayerId(
-          loadedMatch.mvpPlayerId ?? "",
-        );
-
-        setTopFraggerPlayerId(
-          loadedMatch.topFraggerPlayerId ??
-            "",
-        );
-
-        const teamMap = new Map(
-          loadedTeams.map(
-            (team: Team) => [
-              team.id,
-              team,
-            ],
-          ),
-        );
-
-        const loadedStats: EditableStat[] =
-          loadedMatch.playerStats.map(
-            (stat) => ({
-              ...stat,
-              teamName:
-                teamMap.get(stat.teamId)
-                  ?.name ?? "Unknown Team",
-            }),
-          );
-
-        setStats(loadedStats);
-      } catch (err) {
         setError(
-          err instanceof Error
-            ? err.message
-            : "Failed to load match.",
+          loadError instanceof Error
+            ? loadError.message
+            : "Unable to load match.",
         );
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
     loadData();
-  }, [id]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [matchId]);
 
   function updateStat(
-    playerId: string,
-    field:
-      | "kills"
-      | "deaths"
-      | "assists"
-      | "acs"
-      | "adr"
-      | "kast",
+    index: number,
+    field: keyof EditableStat,
     value: string,
   ) {
     setStats((current) =>
-      current.map((stat) => {
-        if (stat.playerId !== playerId) {
+      current.map((stat, statIndex) => {
+        if (statIndex !== index) {
           return stat;
         }
 
-        if (
-          field === "adr" ||
-          field === "kast"
-        ) {
+        if (field === "playerName" || field === "playerId" || field === "teamId") {
           return {
             ...stat,
-            [field]: Math.max(
-              0,
-              numberValue(value),
-            ),
+            [field]: value,
           };
         }
 
         return {
           ...stat,
-          [field]: Math.max(
-            0,
-            Math.round(numberValue(value)),
-          ),
+          [field]: numberValue(value),
         };
       }),
     );
   }
 
-  function handleScreenshot(
-    file: File | null,
-  ) {
-    setError("");
-    setMessage("");
+  function addPlayer() {
+    if (!match) return;
 
-    if (!file) {
-      setScreenshot(null);
-      setPreviewUrl("");
-      return;
-    }
+    const defaultTeamId = match.team1Id || match.team2Id || "";
 
-    if (!file.type.startsWith("image/")) {
-      setError(
-        "Please upload a valid image file.",
-      );
-      return;
-    }
+    setStats((current) => [
+      ...current,
+      {
+        playerId: "",
+        playerName: "",
+        teamId: defaultTeamId,
+        kills: 0,
+        deaths: 0,
+        assists: 0,
+        acs: 0,
+        adr: 0,
+        kast: 0,
+      },
+    ]);
+  }
 
-    if (file.size > 10 * 1024 * 1024) {
-      setError(
-        "Screenshot must be smaller than 10 MB.",
-      );
-      return;
-    }
-
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-    }
-
-    setScreenshot(file);
-    setPreviewUrl(
-      URL.createObjectURL(file),
+  function removePlayer(index: number) {
+    setStats((current) =>
+      current.filter((_, statIndex) => statIndex !== index),
     );
   }
 
-  async function runOCR() {
-    if (!screenshot) {
-      setError(
-        "Upload a match scoreboard screenshot first.",
-      );
+  async function handleScreenshot(
+    event: ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
       return;
     }
 
+    setOcrRunning(true);
+    setError("");
+    setMessage("");
+    setOcrText("");
+
     try {
-      setOcrLoading(true);
-      setError("");
-      setMessage("");
+      const Tesseract = await import("tesseract.js");
 
-      const Tesseract =
-        await import("tesseract.js");
+      const result = await Tesseract.recognize(file, "eng", {
+        logger: (info) => {
+          if (
+            info.status === "recognizing text" &&
+            typeof info.progress === "number"
+          ) {
+            setMessage(
+              `OCR ${Math.round(info.progress * 100)}%`,
+            );
+          }
+        },
+      });
 
-      const result =
-        await Tesseract.recognize(
-          screenshot,
-          "eng",
-          {
-            logger: () => {},
-          },
-        );
+      setOcrText(result.data.text);
 
-      const text =
-        result.data.text || "";
-
-      setOcrText(text);
-
-      const parsed = parseScore(text);
-
-      if (
-        parsed.score1 !== null &&
-        parsed.score2 !== null
-      ) {
-        setTeam1Score(
-          String(parsed.score1),
-        );
-
-        setTeam2Score(
-          String(parsed.score2),
-        );
-
-        setMessage(
-          "OCR detected a possible final score. Verify it before saving.",
-        );
-      } else {
-        setMessage(
-          "OCR completed, but no reliable score was detected. Enter the score manually.",
-        );
-      }
-    } catch (err) {
+      setMessage(
+        "OCR completed. Review and enter the extracted values below.",
+      );
+    } catch (ocrError) {
       setError(
-        err instanceof Error
-          ? err.message
+        ocrError instanceof Error
+          ? ocrError.message
           : "OCR failed.",
       );
     } finally {
-      setOcrLoading(false);
+      setOcrRunning(false);
     }
   }
 
-  function clearOCR() {
-    setOcrText("");
-    setScreenshot(null);
-
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-    }
-
-    setPreviewUrl("");
-  }
-
-  function validateResult() {
+  function determineWinner() {
     if (!match) {
-      return "Match data is not loaded.";
+      return "";
     }
 
-    const score1 = Number(team1Score);
-    const score2 = Number(team2Score);
-
-    if (
-      !Number.isInteger(score1) ||
-      !Number.isInteger(score2)
-    ) {
-      return "Scores must be whole numbers.";
+    if (team1Score > team2Score) {
+      return match.team1Id;
     }
 
-    if (
-      score1 < 0 ||
-      score2 < 0
-    ) {
-      return "Scores cannot be negative.";
+    if (team2Score > team1Score) {
+      return match.team2Id;
     }
 
-    if (score1 === score2) {
-      return "A completed Valorant match cannot have a tied final score.";
-    }
-
-    if (
-      !match.team1Id ||
-      !match.team2Id
-    ) {
-      return "Both teams must be assigned before recording the result.";
-    }
-
-    return "";
+    return winnerId;
   }
 
   async function saveResult() {
     if (!match) return;
 
-    const validationError =
-      validateResult();
+    setSaving(true);
+    setError("");
+    setMessage("");
 
-    if (validationError) {
-      setError(validationError);
+    const calculatedWinner = determineWinner();
+
+    if (!calculatedWinner) {
+      setError(
+        "Enter a winning score or select the winner.",
+      );
+      setSaving(false);
       return;
     }
 
     try {
-      setSaving(true);
-      setError("");
-      setMessage("");
-
-      const score1 =
-        Number(team1Score);
-      const score2 =
-        Number(team2Score);
-
-      const calculatedWinnerId =
-        score1 > score2
-          ? match.team1Id
-          : match.team2Id;
-
-      const payload = {
-        id: match.id,
-        matchNumber:
-          match.matchNumber,
-        stage: match.stage,
-        team1Id:
-          match.team1Id,
-        team2Id:
-          match.team2Id,
-        scheduledAt:
-          match.scheduledAt,
-        map: match.map,
-        bestOf:
-          match.bestOf,
-        team1Score:
-          score1,
-        team2Score:
-          score2,
-        status: "Completed",
-        winnerId:
-          calculatedWinnerId,
-        mvpPlayerId:
-          mvpPlayerId || undefined,
-        topFraggerPlayerId:
-          topFraggerPlayerId ||
-          undefined,
-        playerStats:
-          stats.map((stat) => ({
-            playerId:
-              stat.playerId,
-            playerName:
-              stat.playerName,
-            teamId:
-              stat.teamId,
-            kills:
-              Math.max(
-                0,
-                Math.round(
-                  stat.kills,
-                ),
-              ),
-            deaths:
-              Math.max(
-                0,
-                Math.round(
-                  stat.deaths,
-                ),
-              ),
-            assists:
-              Math.max(
-                0,
-                Math.round(
-                  stat.assists,
-                ),
-              ),
-            acs:
-              Math.max(
-                0,
-                Math.round(
-                  stat.acs,
-                ),
-              ),
-            adr:
-              Math.max(
-                0,
-                Number(stat.adr) || 0,
-              ),
-            kast:
-              Math.max(
-                0,
-                Number(stat.kast) || 0,
-              ),
-          })),
-      };
-
-      const response =
-        await fetch(
-          `/api/matches/${encodeURIComponent(
-            match.id,
-          )}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type":
-                "application/json",
-            },
-            body: JSON.stringify(
-              payload,
-            ),
+      const response = await fetch(
+        `/api/matches/${encodeURIComponent(match.id)}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify({
+            matchNumber: match.matchNumber,
+            stage: match.stage,
+            team1Id: match.team1Id || null,
+            team2Id: match.team2Id || null,
+            scheduledAt: match.scheduledAt || null,
+            map: match.map,
+            bestOf: match.bestOf,
+            team1Score,
+            team2Score,
+            status: "Completed",
+            winnerId: calculatedWinner,
+            mvpPlayerId: selectedMvp || null,
+            topFraggerPlayerId: selectedTopFragger || null,
+            playerStats: stats.map((stat) => ({
+              playerId: stat.playerId || null,
+              playerName: stat.playerName,
+              teamId: stat.teamId || null,
+              kills: Number(stat.kills) || 0,
+              deaths: Number(stat.deaths) || 0,
+              assists: Number(stat.assists) || 0,
+              acs: Number(stat.acs) || 0,
+              adr: Number(stat.adr) || 0,
+              kast: Number(stat.kast) || 0,
+            })),
+          }),
+        },
+      );
 
-      const data =
-        await response.json();
+      const data = await response.json().catch(() => null);
 
       if (!response.ok) {
         throw new Error(
-          data.error ||
-            "Failed to save match result.",
+          data?.error || "Unable to save match result.",
         );
       }
 
-      const savedMatch =
-        normalizeMatch(
-          data.match,
-        );
-
-      setMatch(savedMatch);
+      setMatch(data);
+      setStats(data.playerStats ?? []);
+      setWinnerId(data.winnerId ?? calculatedWinner);
+      setSelectedMvp(data.mvpPlayerId ?? selectedMvp);
+      setSelectedTopFragger(
+        data.topFraggerPlayerId ?? selectedTopFragger,
+      );
+      setTeam1Score(Number(data.team1Score ?? team1Score));
+      setTeam2Score(Number(data.team2Score ?? team2Score));
 
       setMessage(
-        `${match.id} result saved successfully.`,
+        "Match result saved successfully.",
       );
-
-      /*
-       * Ask Match Center to check the automatic
-       * tournament progression immediately after
-       * the result has been saved.
-       *
-       * The Match Center page remains the owner of
-       * the M13–M16 generation rules.
-       */
-      try {
-        await fetch("/api/matches", {
-          cache: "no-store",
-        });
-      } catch {
-        /*
-         * Result itself is already saved.
-         * A Match Center refresh will still detect
-         * the completed result.
-         */
-      }
-    } catch (err) {
+    } catch (saveError) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to save result.",
+        saveError instanceof Error
+          ? saveError.message
+          : "Unable to save match result.",
       );
     } finally {
       setSaving(false);
@@ -639,14 +420,15 @@ export default function MatchResultPage({
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#070a10] text-white">
-        <div className="mx-auto max-w-6xl px-4 py-16 text-center">
-          <div className="text-sm font-black tracking-wider text-red-400">
-            MATCH CENTER
-          </div>
-
-          <div className="mt-3 text-2xl font-black">
-            Loading match...
+      <main className="min-h-screen bg-[#070a12] px-6 py-10 text-white">
+        <div className="mx-auto max-w-7xl">
+          <div className="rounded-2xl border border-cyan-400/20 bg-[#0d1320] p-8 shadow-[0_0_50px_rgba(34,211,238,0.08)]">
+            <p className="text-sm font-bold uppercase tracking-[0.25em] text-cyan-300">
+              Match Center
+            </p>
+            <h1 className="mt-3 text-3xl font-black">
+              Loading result recorder...
+            </h1>
           </div>
         </div>
       </main>
@@ -655,23 +437,26 @@ export default function MatchResultPage({
 
   if (!match) {
     return (
-      <main className="min-h-screen bg-[#070a10] text-white">
-        <div className="mx-auto max-w-6xl px-4 py-16">
-          <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-8 text-center">
-            <div className="text-xl font-black">
-              MATCH NOT FOUND
-            </div>
+      <main className="min-h-screen bg-[#070a12] px-6 py-10 text-white">
+        <div className="mx-auto max-w-4xl">
+          <div className="rounded-2xl border border-red-500/30 bg-[#120d16] p-8">
+            <p className="text-sm font-bold uppercase tracking-[0.25em] text-red-300">
+              Match Center
+            </p>
 
-            <p className="mt-2 text-sm text-red-200">
-              {error ||
-                "The requested match does not exist."}
+            <h1 className="mt-3 text-3xl font-black">
+              Match not found
+            </h1>
+
+            <p className="mt-3 text-zinc-400">
+              {error || "The requested match does not exist."}
             </p>
 
             <Link
               href="/matches"
-              className="mt-6 inline-flex rounded bg-red-500 px-5 py-3 text-xs font-black"
+              className="mt-6 inline-flex rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-5 py-3 text-sm font-bold text-cyan-200"
             >
-              BACK TO MATCH CENTER
+              ← Back to Match Center
             </Link>
           </div>
         </div>
@@ -679,658 +464,474 @@ export default function MatchResultPage({
     );
   }
 
-  const isAutomatic =
-    match.matchNumber >= 13;
-
   return (
-    <main className="min-h-screen bg-[#070a10] text-white">
-      <div className="mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8">
-        <header className="mb-6">
-          <div className="flex flex-col gap-4 border-b border-[#1d2a3b] pb-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <Link
-                href="/matches"
-                className="text-xs font-black tracking-wider text-[#7b8da5] hover:text-white"
-              >
-                ← MATCH CENTER
-              </Link>
+    <main className="min-h-screen bg-[#070a12] px-4 py-6 text-white sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <header className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <Link
+              href="/matches"
+              className="text-sm font-bold text-cyan-300 hover:text-cyan-200"
+            >
+              ← Match Center
+            </Link>
 
-              <div className="mt-4 flex flex-wrap items-center gap-3">
-                <div className="rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs font-black text-red-300">
-                  M
-                  {String(
-                    match.matchNumber,
-                  ).padStart(2, "0")}
-                </div>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <span className="rounded-full border border-red-400/30 bg-red-400/10 px-3 py-1 text-xs font-black uppercase tracking-wider text-red-300">
+                M{String(match.matchNumber).padStart(2, "0")}
+              </span>
 
-                <div className="rounded border border-[#2a3a50] bg-[#101722] px-3 py-2 text-xs font-black text-[#b7c7da]">
-                  {match.stage}
-                </div>
+              <span className="rounded-full border border-purple-400/30 bg-purple-400/10 px-3 py-1 text-xs font-black uppercase tracking-wider text-purple-300">
+                {match.stage}
+              </span>
 
-                {isAutomatic && (
-                  <div className="rounded border border-purple-500/30 bg-purple-500/10 px-3 py-2 text-xs font-black text-purple-300">
-                    AUTOMATIC PHASE 2
-                  </div>
-                )}
-              </div>
-
-              <h1 className="mt-4 text-3xl font-black sm:text-4xl">
-                RECORD MATCH RESULT
-              </h1>
-
-              <p className="mt-2 text-sm text-[#70829a]">
-                {match.map} · BO
-                {match.bestOf}
-                {match.scheduledAt
-                  ? ` · ${new Date(
-                      match.scheduledAt,
-                    ).toLocaleString()}`
-                  : ""}
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <Link
-                href={`/tournament/matches/${encodeURIComponent(
-                  match.id,
+              <span
+                className={`rounded-full border px-3 py-1 text-xs font-black uppercase tracking-wider ${statusClass(
+                  match.status,
                 )}`}
-                className="rounded border border-[#304159] bg-[#111a27] px-4 py-2 text-xs font-black text-[#c0cee0]"
               >
-                PUBLIC MATCH ↗
-              </Link>
-
-              <Link
-                href="/tournament"
-                className="rounded border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-black text-red-300"
-              >
-                TOURNAMENT ↗
-              </Link>
+                {match.status}
+              </span>
             </div>
+
+            <h1 className="mt-3 text-3xl font-black sm:text-4xl">
+              Result Recorder
+            </h1>
+
+            <p className="mt-2 text-sm text-zinc-400">
+              Upload the scoreboard screenshot, review OCR output,
+              enter player statistics, and save the official result.
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <Link
+              href={`/tournament/matches/${match.id}`}
+              className="rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm font-bold text-zinc-200 hover:border-cyan-400/40"
+            >
+              Public Match Page
+            </Link>
           </div>
         </header>
 
         {error && (
-          <div className="mb-5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          <div className="mb-5 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm font-semibold text-red-300">
             {error}
           </div>
         )}
 
         {message && (
-          <div className="mb-5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+          <div className="mb-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm font-semibold text-emerald-300">
             {message}
           </div>
         )}
 
-        <section className="mb-6 rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-5">
-          <div className="grid items-center gap-6 md:grid-cols-[1fr_auto_1fr]">
-            <div className="rounded-xl border border-[#25364d] bg-[#0f1722] p-6 text-center md:text-right">
-              <div className="text-[10px] font-black tracking-[0.2em] text-[#687a91]">
-                TEAM 1
+        <section className="grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
+          <div className="rounded-2xl border border-cyan-400/20 bg-[#0d1320] p-5 shadow-[0_0_40px_rgba(34,211,238,0.05)]">
+            <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+              <div className="flex-1">
+                <p className="text-xs font-black uppercase tracking-[0.25em] text-zinc-500">
+                  Team 1
+                </p>
+
+                <h2 className="mt-2 text-2xl font-black text-cyan-200">
+                  {team1?.name ?? match.team1Id ?? "TBD"}
+                </h2>
+
+                {team1?.tag && (
+                  <p className="mt-1 text-xs font-bold text-zinc-500">
+                    {team1.tag}
+                  </p>
+                )}
               </div>
 
-              <div className="mt-3 text-xl font-black">
-                {team1?.name ??
-                  "TBD"}
-              </div>
+              <div className="flex items-center gap-3">
+                <input
+                  type="number"
+                  min={0}
+                  value={team1Score}
+                  onChange={(event) =>
+                    setTeam1Score(
+                      Math.max(0, numberValue(event.target.value)),
+                    )
+                  }
+                  className="w-24 rounded-xl border border-cyan-400/30 bg-[#080d17] px-4 py-4 text-center text-3xl font-black text-white outline-none focus:border-cyan-300"
+                />
 
-              <div className="mt-2 text-xs text-[#62758e]">
-                {team1?.tag ?? ""}
-              </div>
-            </div>
-
-            <div className="text-center">
-              <div className="text-xs font-black tracking-[0.25em] text-red-400">
-                FINAL SCORE
-              </div>
-
-              <div className="mt-2 text-5xl font-black">
-                {team1Score}
-                <span className="mx-3 text-[#44556b]">
+                <span className="text-xl font-black text-zinc-600">
                   :
                 </span>
-                {team2Score}
+
+                <input
+                  type="number"
+                  min={0}
+                  value={team2Score}
+                  onChange={(event) =>
+                    setTeam2Score(
+                      Math.max(0, numberValue(event.target.value)),
+                    )
+                  }
+                  className="w-24 rounded-xl border border-purple-400/30 bg-[#080d17] px-4 py-4 text-center text-3xl font-black text-white outline-none focus:border-purple-300"
+                />
               </div>
 
-              <div className="mt-2 text-[10px] font-black tracking-wider text-[#62758c]">
-                {winnerId
-                  ? `WINNER: ${
-                      winnerId ===
-                      match.team1Id
-                        ? team1?.name
-                        : team2?.name
-                    }`
-                  : "ENTER FINAL SCORE"}
+              <div className="flex-1 text-left md:text-right">
+                <p className="text-xs font-black uppercase tracking-[0.25em] text-zinc-500">
+                  Team 2
+                </p>
+
+                <h2 className="mt-2 text-2xl font-black text-purple-200">
+                  {team2?.name ?? match.team2Id ?? "TBD"}
+                </h2>
+
+                {team2?.tag && (
+                  <p className="mt-1 text-xs font-bold text-zinc-500">
+                    {team2.tag}
+                  </p>
+                )}
               </div>
             </div>
 
-            <div className="rounded-xl border border-[#25364d] bg-[#0f1722] p-6 text-center">
-              <div className="text-[10px] font-black tracking-[0.2em] text-[#687a91]">
-                TEAM 2
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-xl border border-zinc-800 bg-[#090e18] p-4">
+                <p className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+                  Map
+                </p>
+                <p className="mt-2 text-lg font-black">
+                  {match.map || "TBD"}
+                </p>
               </div>
 
-              <div className="mt-3 text-xl font-black">
-                {team2?.name ??
-                  "TBD"}
+              <div className="rounded-xl border border-zinc-800 bg-[#090e18] p-4">
+                <p className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+                  Format
+                </p>
+                <p className="mt-2 text-lg font-black">
+                  BO{match.bestOf}
+                </p>
               </div>
 
-              <div className="mt-2 text-xs text-[#62758e]">
-                {team2?.tag ?? ""}
+              <div className="rounded-xl border border-zinc-800 bg-[#090e18] p-4">
+                <p className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+                  Scheduled
+                </p>
+                <p className="mt-2 text-sm font-black">
+                  {formatDate(match.scheduledAt)}
+                </p>
               </div>
             </div>
           </div>
+
+          <div className="rounded-2xl border border-purple-400/20 bg-[#0d1320] p-5">
+            <p className="text-xs font-black uppercase tracking-[0.25em] text-purple-300">
+              Result
+            </p>
+
+            <h2 className="mt-2 text-2xl font-black">
+              Match Outcome
+            </h2>
+
+            <label className="mt-5 block text-xs font-black uppercase tracking-wider text-zinc-500">
+              Winner
+            </label>
+
+            <select
+              value={winnerId}
+              onChange={(event) =>
+                setWinnerId(event.target.value)
+              }
+              className="mt-2 w-full rounded-xl border border-zinc-700 bg-[#080d17] px-4 py-3 text-sm font-bold text-white outline-none focus:border-purple-400"
+            >
+              <option value="">Auto from score</option>
+
+              {team1 && (
+                <option value={team1.id}>
+                  {team1.name}
+                </option>
+              )}
+
+              {team2 && (
+                <option value={team2.id}>
+                  {team2.name}
+                </option>
+              )}
+            </select>
+
+            <label className="mt-5 block text-xs font-black uppercase tracking-wider text-zinc-500">
+              MVP
+            </label>
+
+            <select
+              value={selectedMvp}
+              onChange={(event) =>
+                setSelectedMvp(event.target.value)
+              }
+              className="mt-2 w-full rounded-xl border border-zinc-700 bg-[#080d17] px-4 py-3 text-sm font-bold text-white outline-none focus:border-purple-400"
+            >
+              <option value="">Select MVP</option>
+
+              {playerOptions.map((player) => (
+                <option
+                  key={`mvp-${player.playerId}-${player.playerName}`}
+                  value={player.playerId}
+                >
+                  {player.playerName}
+                </option>
+              ))}
+            </select>
+
+            <label className="mt-5 block text-xs font-black uppercase tracking-wider text-zinc-500">
+              Top Fragger
+            </label>
+
+            <select
+              value={selectedTopFragger}
+              onChange={(event) =>
+                setSelectedTopFragger(event.target.value)
+              }
+              className="mt-2 w-full rounded-xl border border-zinc-700 bg-[#080d17] px-4 py-3 text-sm font-bold text-white outline-none focus:border-purple-400"
+            >
+              <option value="">Select Top Fragger</option>
+
+              {playerOptions.map((player) => (
+                <option
+                  key={`fragger-${player.playerId}-${player.playerName}`}
+                  value={player.playerId}
+                >
+                  {player.playerName}
+                </option>
+              ))}
+            </select>
+          </div>
         </section>
 
-        <div className="grid gap-6 xl:grid-cols-[420px_1fr]">
-          <section className="space-y-6">
-            <div className="rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-5">
-              <div>
-                <h2 className="text-lg font-black">
-                  FINAL SCORE
-                </h2>
+        <section className="mt-5 rounded-2xl border border-orange-400/20 bg-[#0d1320] p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.25em] text-orange-300">
+                OCR Import
+              </p>
 
-                <p className="mt-1 text-xs text-[#687a91]">
-                  Enter the final map/match score.
-                </p>
-              </div>
-
-              <div className="mt-5 grid grid-cols-2 gap-3">
-                <label>
-                  <span className="mb-2 block text-[9px] font-black tracking-wider text-[#687a91]">
-                    {team1?.tag ??
-                      "TEAM 1"}
-                  </span>
-
-                  <input
-                    type="number"
-                    min="0"
-                    value={team1Score}
-                    onChange={(event) =>
-                      setTeam1Score(
-                        event.target.value,
-                      )
-                    }
-                    className="w-full rounded-lg border border-[#2a3a50] bg-[#0e151f] px-4 py-4 text-center text-2xl font-black outline-none focus:border-red-500/60"
-                  />
-                </label>
-
-                <label>
-                  <span className="mb-2 block text-[9px] font-black tracking-wider text-[#687a91]">
-                    {team2?.tag ??
-                      "TEAM 2"}
-                  </span>
-
-                  <input
-                    type="number"
-                    min="0"
-                    value={team2Score}
-                    onChange={(event) =>
-                      setTeam2Score(
-                        event.target.value,
-                      )
-                    }
-                    className="w-full rounded-lg border border-[#2a3a50] bg-[#0e151f] px-4 py-4 text-center text-2xl font-black outline-none focus:border-red-500/60"
-                  />
-                </label>
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-5">
-              <div>
-                <h2 className="text-lg font-black">
-                  SCOREBOARD OCR
-                </h2>
-
-                <p className="mt-1 text-xs text-[#687a91]">
-                  Upload the scoreboard screenshot and
-                  use OCR as a starting point.
-                </p>
-              </div>
-
-              <label className="mt-5 flex min-h-[170px] cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-[#344861] bg-[#0e151f] p-5 text-center hover:border-red-500/50">
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(event) =>
-                    handleScreenshot(
-                      event.target.files?.[0] ??
-                        null,
-                    )
-                  }
-                />
-
-                {previewUrl ? (
-                  <img
-                    src={previewUrl}
-                    alt="Uploaded scoreboard"
-                    className="max-h-44 max-w-full rounded-lg object-contain"
-                  />
-                ) : (
-                  <>
-                    <div className="text-3xl">
-                      +
-                    </div>
-
-                    <div className="mt-2 text-xs font-black">
-                      UPLOAD SCOREBOARD
-                    </div>
-
-                    <div className="mt-1 text-[10px] text-[#63758c]">
-                      PNG, JPG or WEBP · max 10 MB
-                    </div>
-                  </>
-                )}
-              </label>
-
-              <div className="mt-3 flex gap-2">
-                <button
-                  type="button"
-                  onClick={runOCR}
-                  disabled={
-                    !screenshot ||
-                    ocrLoading
-                  }
-                  className="flex-1 rounded bg-purple-500 px-4 py-3 text-xs font-black text-white hover:bg-purple-400 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  {ocrLoading
-                    ? "READING..."
-                    : "RUN OCR"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={clearOCR}
-                  className="rounded border border-[#304159] bg-[#111a27] px-4 py-3 text-xs font-black text-[#b8c8da]"
-                >
-                  CLEAR
-                </button>
-              </div>
-
-              {ocrText && (
-                <div className="mt-4">
-                  <div className="mb-2 text-[9px] font-black tracking-wider text-[#687a91]">
-                    OCR TEXT
-                  </div>
-
-                  <textarea
-                    value={ocrText}
-                    onChange={(event) =>
-                      setOcrText(
-                        event.target.value,
-                      )
-                    }
-                    rows={8}
-                    className="w-full resize-none rounded-lg border border-[#26364b] bg-[#080d14] p-3 font-mono text-[10px] leading-5 text-[#a9bad0] outline-none"
-                  />
-                </div>
-              )}
-            </div>
-
-            <div className="rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-5">
-              <h2 className="text-lg font-black">
-                MATCH AWARDS
+              <h2 className="mt-2 text-2xl font-black">
+                Scoreboard Screenshot
               </h2>
 
-              <div className="mt-5 space-y-4">
-                <label className="block">
-                  <span className="mb-2 block text-[9px] font-black tracking-wider text-[#687a91]">
-                    MVP
-                  </span>
-
-                  <select
-                    value={mvpPlayerId}
-                    onChange={(event) =>
-                      setMvpPlayerId(
-                        event.target.value,
-                      )
-                    }
-                    className="w-full rounded-lg border border-[#26364b] bg-[#0e151f] px-3 py-3 text-sm outline-none"
-                  >
-                    <option value="">
-                      Select MVP
-                    </option>
-
-                    {stats.map((stat) => (
-                      <option
-                        key={`mvp-${stat.playerId}`}
-                        value={stat.playerId}
-                      >
-                        {stat.playerName} ·{" "}
-                        {stat.teamName}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="block">
-                  <span className="mb-2 block text-[9px] font-black tracking-wider text-[#687a91]">
-                    TOP FRAGGER
-                  </span>
-
-                  <select
-                    value={
-                      topFraggerPlayerId
-                    }
-                    onChange={(event) =>
-                      setTopFraggerPlayerId(
-                        event.target.value,
-                      )
-                    }
-                    className="w-full rounded-lg border border-[#26364b] bg-[#0e151f] px-3 py-3 text-sm outline-none"
-                  >
-                    <option value="">
-                      Select Top Fragger
-                    </option>
-
-                    {stats.map((stat) => (
-                      <option
-                        key={`frag-${stat.playerId}`}
-                        value={stat.playerId}
-                      >
-                        {stat.playerName} ·{" "}
-                        {stat.teamName}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-            </div>
-          </section>
-
-          <section className="rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-5">
-            <div className="flex flex-col gap-3 border-b border-[#1d2a3b] pb-5 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <h2 className="text-lg font-black">
-                  PLAYER STATISTICS
-                </h2>
-
-                <p className="mt-1 text-xs text-[#687a91]">
-                  Edit the scoreboard statistics before
-                  publishing the result.
-                </p>
-              </div>
-
-              <div className="text-xs text-[#687a91]">
-                {completedStats.length} players with
-                entered stats
-              </div>
+              <p className="mt-2 text-sm text-zinc-400">
+                Upload the final scoreboard screenshot. OCR output is
+                provided as raw text for manual verification.
+              </p>
             </div>
 
-            {stats.length === 0 ? (
-              <div className="py-16 text-center">
-                <div className="text-sm font-black">
-                  No player statistics found
-                </div>
+            <label className="inline-flex cursor-pointer items-center justify-center rounded-xl border border-orange-400/30 bg-orange-400/10 px-5 py-3 text-sm font-black text-orange-200 hover:bg-orange-400/15">
+              {ocrRunning ? "Running OCR..." : "Upload Screenshot"}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleScreenshot}
+                disabled={ocrRunning}
+                className="hidden"
+              />
+            </label>
+          </div>
 
-                <p className="mt-2 text-xs text-[#687a91]">
-                  Team rosters need to be available before
-                  player statistics can be recorded.
-                </p>
-              </div>
-            ) : (
-              <div className="mt-5 space-y-6">
-                {[team1, team2]
-                  .filter(
-                    (
-                      team,
-                    ): team is Team =>
-                      Boolean(team),
-                  )
-                  .map((team) => {
-                    const teamStats =
-                      stats.filter(
-                        (stat) =>
-                          stat.teamId ===
-                          team.id,
-                      );
+          {ocrText && (
+            <textarea
+              value={ocrText}
+              onChange={(event) =>
+                setOcrText(event.target.value)
+              }
+              className="mt-5 min-h-48 w-full rounded-xl border border-zinc-800 bg-[#080d17] p-4 font-mono text-xs text-zinc-300 outline-none focus:border-orange-400/50"
+              placeholder="OCR output..."
+            />
+          )}
+        </section>
 
-                    return (
-                      <div
-                        key={team.id}
-                        className="overflow-hidden rounded-xl border border-[#26364b]"
-                      >
-                        <div className="border-b border-[#26364b] bg-[#101925] px-4 py-3">
-                          <div className="text-sm font-black">
-                            {team.name}
-                          </div>
+        <section className="mt-5 rounded-2xl border border-emerald-400/20 bg-[#0d1320] p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-300">
+                Player Statistics
+              </p>
 
-                          <div className="mt-1 text-[9px] font-black tracking-wider text-[#65778f]">
-                            {team.tag}
-                          </div>
-                        </div>
+              <h2 className="mt-2 text-2xl font-black">
+                Scoreboard Stats
+              </h2>
 
-                        <div className="overflow-x-auto">
-                          <table className="w-full min-w-[800px] text-left">
-                            <thead>
-                              <tr className="border-b border-[#1e2b3d] bg-[#0d141e] text-[8px] font-black tracking-wider text-[#61738b]">
-                                <th className="px-3 py-3">
-                                  PLAYER
-                                </th>
-                                <th className="px-2 py-3 text-center">
-                                  K
-                                </th>
-                                <th className="px-2 py-3 text-center">
-                                  D
-                                </th>
-                                <th className="px-2 py-3 text-center">
-                                  A
-                                </th>
-                                <th className="px-2 py-3 text-center">
-                                  ACS
-                                </th>
-                                <th className="px-2 py-3 text-center">
-                                  ADR
-                                </th>
-                                <th className="px-2 py-3 text-center">
-                                  KAST
-                                </th>
-                                <th className="px-3 py-3">
-                                  AWARDS
-                                </th>
-                              </tr>
-                            </thead>
-
-                            <tbody>
-                              {teamStats.map(
-                                (stat) => {
-                                  const isMvp =
-                                    mvpPlayerId ===
-                                    stat.playerId;
-
-                                  const isFragger =
-                                    topFraggerPlayerId ===
-                                    stat.playerId;
-
-                                  return (
-                                    <tr
-                                      key={
-                                        stat.playerId
-                                      }
-                                      className="border-b border-[#151f2c] last:border-b-0"
-                                    >
-                                      <td className="px-3 py-3">
-                                        <div className="text-xs font-black">
-                                          {
-                                            stat.playerName
-                                          }
-                                        </div>
-                                      </td>
-
-                                      {(
-                                        [
-                                          "kills",
-                                          "deaths",
-                                          "assists",
-                                          "acs",
-                                        ] as const
-                                      ).map(
-                                        (field) => (
-                                          <td
-                                            key={
-                                              field
-                                            }
-                                            className="px-2 py-3"
-                                          >
-                                            <input
-                                              type="number"
-                                              min="0"
-                                              value={
-                                                stat[
-                                                  field
-                                                ]
-                                              }
-                                              onChange={(
-                                                event,
-                                              ) =>
-                                                updateStat(
-                                                  stat.playerId,
-                                                  field,
-                                                  event
-                                                    .target
-                                                    .value,
-                                                )
-                                              }
-                                              className="w-16 rounded border border-[#293b52] bg-[#0d141e] px-2 py-2 text-center text-xs font-black outline-none focus:border-red-500/50"
-                                            />
-                                          </td>
-                                        ),
-                                      )}
-
-                                      <td className="px-2 py-3">
-                                        <input
-                                          type="number"
-                                          min="0"
-                                          step="0.01"
-                                          value={
-                                            stat.adr
-                                          }
-                                          onChange={(
-                                            event,
-                                          ) =>
-                                            updateStat(
-                                              stat.playerId,
-                                              "adr",
-                                              event
-                                                .target
-                                                .value,
-                                            )
-                                          }
-                                          className="w-20 rounded border border-[#293b52] bg-[#0d141e] px-2 py-2 text-center text-xs font-black outline-none focus:border-red-500/50"
-                                        />
-                                      </td>
-
-                                      <td className="px-2 py-3">
-                                        <input
-                                          type="number"
-                                          min="0"
-                                          max="100"
-                                          step="0.01"
-                                          value={
-                                            stat.kast
-                                          }
-                                          onChange={(
-                                            event,
-                                          ) =>
-                                            updateStat(
-                                              stat.playerId,
-                                              "kast",
-                                              event
-                                                .target
-                                                .value,
-                                            )
-                                          }
-                                          className="w-20 rounded border border-[#293b52] bg-[#0d141e] px-2 py-2 text-center text-xs font-black outline-none focus:border-red-500/50"
-                                        />
-                                      </td>
-
-                                      <td className="px-3 py-3">
-                                        <div className="flex flex-wrap gap-1">
-                                          {isMvp && (
-                                            <button
-                                              type="button"
-                                              onClick={() =>
-                                                setMvpPlayerId(
-                                                  "",
-                                                )
-                                              }
-                                              className="rounded bg-yellow-500/15 px-2 py-1 text-[8px] font-black text-yellow-300"
-                                            >
-                                              MVP
-                                            </button>
-                                          )}
-
-                                          {isFragger && (
-                                            <button
-                                              type="button"
-                                              onClick={() =>
-                                                setTopFraggerPlayerId(
-                                                  "",
-                                                )
-                                              }
-                                              className="rounded bg-red-500/15 px-2 py-1 text-[8px] font-black text-red-300"
-                                            >
-                                              TOP FRAG
-                                            </button>
-                                          )}
-
-                                          {!isMvp &&
-                                            !isFragger && (
-                                              <span className="text-[9px] text-[#52647b]">
-                                                —
-                                              </span>
-                                            )}
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  );
-                                },
-                              )}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            )}
-
-            <div className="mt-6 rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-4">
-              <div className="text-[10px] font-black tracking-wider text-yellow-300">
-                RESULT CHECK
-              </div>
-
-              <div className="mt-2 text-xs leading-5 text-[#8b98a9]">
-                Saving this page marks the match as
-                <strong className="mx-1 text-white">
-                  Completed
-                </strong>
-                and records the winner in Supabase.
-                Phase 2 progression is determined from the
-                completed tournament results.
-              </div>
+              <p className="mt-2 text-sm text-zinc-400">
+                Verify the OCR data and correct every player row before
+                saving.
+              </p>
             </div>
 
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={saveResult}
-                disabled={saving}
-                className="flex-1 rounded bg-red-500 px-5 py-4 text-xs font-black tracking-wider text-white hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {saving
-                  ? "SAVING RESULT..."
-                  : "SAVE FINAL RESULT"}
-              </button>
+            <button
+              type="button"
+              onClick={addPlayer}
+              className="rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-5 py-3 text-sm font-black text-emerald-200 hover:bg-emerald-400/15"
+            >
+              + Add Player
+            </button>
+          </div>
 
-              <Link
-                href="/matches"
-                className="rounded border border-[#304159] bg-[#111a27] px-6 py-4 text-center text-xs font-black text-[#bdcce0] hover:bg-[#182435]"
-              >
-                CANCEL
-              </Link>
-            </div>
-          </section>
-        </div>
+          <div className="mt-5 overflow-x-auto rounded-xl border border-zinc-800">
+            <table className="min-w-[1050px] w-full border-collapse">
+              <thead>
+                <tr className="bg-[#080d17] text-left">
+                  {[
+                    "Player",
+                    "Team",
+                    "K",
+                    "D",
+                    "A",
+                    "ACS",
+                    "ADR",
+                    "KAST",
+                    "",
+                  ].map((heading) => (
+                    <th
+                      key={heading}
+                      className="border-b border-zinc-800 px-3 py-3 text-xs font-black uppercase tracking-wider text-zinc-500"
+                    >
+                      {heading}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+
+              <tbody>
+                {stats.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={9}
+                      className="px-5 py-10 text-center text-sm text-zinc-500"
+                    >
+                      No player statistics yet. Add players manually
+                      or use the OCR screenshot as reference.
+                    </td>
+                  </tr>
+                ) : (
+                  stats.map((stat, index) => (
+                    <tr
+                      key={`${stat.playerId || "new"}-${index}`}
+                      className="border-b border-zinc-900 last:border-b-0"
+                    >
+                      <td className="px-3 py-3">
+                        <input
+                          value={stat.playerName}
+                          onChange={(event) =>
+                            updateStat(
+                              index,
+                              "playerName",
+                              event.target.value,
+                            )
+                          }
+                          className="w-44 rounded-lg border border-zinc-800 bg-[#080d17] px-3 py-2 text-sm font-bold outline-none focus:border-cyan-400/50"
+                          placeholder="Player name"
+                        />
+                      </td>
+
+                      <td className="px-3 py-3">
+                        <select
+                          value={stat.teamId}
+                          onChange={(event) =>
+                            updateStat(
+                              index,
+                              "teamId",
+                              event.target.value,
+                            )
+                          }
+                          className="w-44 rounded-lg border border-zinc-800 bg-[#080d17] px-3 py-2 text-sm font-bold outline-none focus:border-cyan-400/50"
+                        >
+                          <option value="">Select team</option>
+
+                          {teams.map((team) => (
+                            <option
+                              key={team.id}
+                              value={team.id}
+                            >
+                              {team.name}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+
+                      {(
+                        [
+                          "kills",
+                          "deaths",
+                          "assists",
+                          "acs",
+                          "adr",
+                          "kast",
+                        ] as Array<keyof EditableStat>
+                      ).map((field) => (
+                        <td
+                          key={field}
+                          className="px-3 py-3"
+                        >
+                          <input
+                            type="number"
+                            min={0}
+                            step={
+                              field === "adr" || field === "kast"
+                                ? "0.01"
+                                : "1"
+                            }
+                            value={String(stat[field])}
+                            onChange={(event) =>
+                              updateStat(
+                                index,
+                                field,
+                                event.target.value,
+                              )
+                            }
+                            className="w-20 rounded-lg border border-zinc-800 bg-[#080d17] px-3 py-2 text-center text-sm font-bold outline-none focus:border-cyan-400/50"
+                          />
+                        </td>
+                      ))}
+
+                      <td className="px-3 py-3">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            removePlayer(index)
+                          }
+                          className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs font-black text-red-300"
+                        >
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section className="mt-5 flex flex-col gap-4 rounded-2xl border border-red-500/20 bg-[#0d1320] p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.25em] text-red-300">
+              Finalize
+            </p>
+
+            <h2 className="mt-2 text-xl font-black">
+              Save Official Result
+            </h2>
+
+            <p className="mt-1 text-sm text-zinc-500">
+              Saving marks this match as Completed.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={saveResult}
+            disabled={saving}
+            className="rounded-xl border border-red-400/30 bg-red-500/15 px-7 py-4 text-sm font-black uppercase tracking-wider text-red-200 transition hover:bg-red-500/25 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {saving ? "Saving..." : "Save Result"}
+          </button>
+        </section>
       </div>
     </main>
   );
