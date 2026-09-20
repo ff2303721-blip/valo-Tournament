@@ -1263,7 +1263,7 @@ export default function TournamentDashboard() {
               </section>
 
 
-              <section className="relative overflow-hidden rounded-xl border border-[#ff3158]/30 bg-[#0b101b] p-6">
+              <section className="relative overflow-hidden rounded-xl border border-[#ff3158]/30 bg-[#0b101b] p-4 sm:p-6">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(255,49,88,0.10),transparent_28%),radial-gradient(circle_at_85%_80%,rgba(39,217,255,0.08),transparent_30%)]" />
 
                 <div className="relative">
@@ -1287,52 +1287,12 @@ export default function TournamentDashboard() {
                     </div>
                   </div>
 
-                  <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                    {[
-                      {
-                        name: "SHEIKH KUNJAPPU",
-                        label: "Official Sponsor",
-                        accent: "border-[#ff3158]/30",
-                      },
-                      {
-                        name: "OSDF CLAN",
-                        label: "Official Sponsor",
-                        accent: "border-white/15",
-                      },
-                      {
-                        name: "DEUZ X GAMING",
-                        label: "Official Sponsor",
-                        accent: "border-[#9c5cff]/30",
-                      },
-                      {
-                        name: "AGON DESANTOS",
-                        label: "Official Sponsor",
-                        accent: "border-[#27d9ff]/30",
-                      },
-                    ].map((sponsor) => (
-                      <div
-                        key={sponsor.name}
-                        className={`group relative overflow-hidden rounded-xl border ${sponsor.accent} bg-[#080e18] p-5 text-center transition hover:-translate-y-1 hover:bg-[#0d1522]`}
-                      >
-                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-white/10 bg-white/[0.03]">
-                          <span className="text-xl font-black text-white/80">
-                            {sponsor.name
-                              .split(" ")
-                              .map((word) => word[0])
-                              .slice(0, 2)
-                              .join("")}
-                          </span>
-                        </div>
-
-                        <div className="mt-4 text-sm font-black uppercase tracking-tight text-white">
-                          {sponsor.name}
-                        </div>
-
-                        <div className="mt-1 text-[8px] font-black uppercase tracking-[0.18em] text-[#61718c]">
-                          {sponsor.label}
-                        </div>
-                      </div>
-                    ))}
+                  <div className="mt-5 overflow-hidden rounded-xl border border-white/10 bg-black">
+                    <img
+                      src="/sponsors-banner.png"
+                      alt="Official tournament sponsors: Sheikh Kunjappu, OSDF Clan, Deuz X Gaming, and Agon Desantos"
+                      className="block h-auto w-full object-cover"
+                    />
                   </div>
                 </div>
               </section>
