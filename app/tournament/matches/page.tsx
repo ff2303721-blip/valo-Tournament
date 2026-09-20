@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { TournamentBrand } from "../components/tournament-brand";
 import { useEffect, useMemo, useState } from "react";
 
 type MatchStatus =
@@ -324,7 +325,11 @@ export default function PublicMatchesPage() {
               ← Tournament Central
             </Link>
 
-            <h1 className="mt-2 text-3xl font-black">
+            <div className="mt-2">
+              <TournamentBrand compact />
+            </div>
+
+            <h1 className="mt-3 text-3xl font-black">
               MATCHES
             </h1>
 
