@@ -457,7 +457,7 @@ export default function PublicMatchDetailPage({
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_8%_8%,rgba(255,49,88,0.15),transparent_25%),radial-gradient(circle_at_92%_18%,rgba(39,217,255,0.12),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.12),transparent_36%)]" />
       <div className="pointer-events-none fixed inset-0 opacity-30 [background-image:linear-gradient(120deg,transparent_0%,rgba(255,49,88,0.025)_48%,transparent_50%),linear-gradient(300deg,transparent_0%,rgba(82,226,255,0.025)_55%,transparent_57%)]" />
 
-      <header className="relative border-b border-[#263750] bg-[#060b14]/95 backdrop-blur-xl">
+      <header className="relative overflow-hidden border-b border-[#263750] bg-gradient-to-r from-[#110812] via-[#080d18] to-[#06131a] backdrop-blur-xl">
         <div className="mx-auto max-w-[1400px] px-5 py-5 sm:px-8">
           <div className="flex flex-wrap items-start justify-between gap-5">
             <div>
@@ -480,13 +480,13 @@ export default function PublicMatchDetailPage({
             </div>
           </div>
 
-          <div className="mt-7">
+          <div className="mt-8">
             <div className="text-[10px] font-black uppercase tracking-[0.32em] text-[#52e2ff]">
               MATCH {String(match.matchNumber).padStart(2, "0")}
             </div>
             <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
               <div>
-                <h1 className="text-4xl font-black uppercase leading-none tracking-tight sm:text-5xl">
+                <h1 className="text-5xl font-black uppercase leading-none tracking-tight sm:text-6xl">
                   <span className="text-white">{match.stage.split(" ")[0]}</span>{" "}
                   <span className="bg-gradient-to-r from-[#ff5275] to-[#ff9ab0] bg-clip-text text-transparent">
                     {match.stage.split(" ").slice(1).join(" ") || match.stage}
@@ -501,26 +501,27 @@ export default function PublicMatchDetailPage({
         </div>
       </header>
 
-      <div className="relative mx-auto max-w-[1400px] px-5 py-7 sm:px-8">
-        <section className="relative overflow-hidden rounded-2xl border border-[#2b3d58] bg-gradient-to-br from-[#0d1522] via-[#09111c] to-[#0a1019] shadow-[0_20px_80px_rgba(0,0,0,0.35)]">
-          <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#ff3158] via-[#ff5275] to-[#52e2ff]" />
-          <div className="absolute left-0 top-0 h-full w-1/3 bg-[radial-gradient(circle_at_25%_50%,rgba(255,49,88,0.13),transparent_62%)]" />
-          <div className="absolute right-0 top-0 h-full w-1/3 bg-[radial-gradient(circle_at_75%_50%,rgba(39,217,255,0.13),transparent_62%)]" />
+      <div className="relative mx-auto max-w-[1440px] px-5 py-8 sm:px-8">
+        <section className="relative overflow-hidden rounded-[24px] border border-[#405675] bg-gradient-to-br from-[#160b18] via-[#0a1220] to-[#06151b] shadow-[0_25px_90px_rgba(0,0,0,0.45)]">
+          <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#ff174f] via-[#ff4f9a] to-[#23e6ff]" />
+          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#8b2cff]/70 to-transparent" />
+          <div className="absolute left-0 top-0 h-full w-1/2 bg-[radial-gradient(circle_at_15%_50%,rgba(255,20,79,0.24),transparent_60%)]" />
+          <div className="absolute right-0 top-0 h-full w-1/2 bg-[radial-gradient(circle_at_85%_50%,rgba(35,230,255,0.24),transparent_60%)]" />
 
-          <div className="relative grid gap-7 p-5 sm:p-8 lg:grid-cols-[1fr_1.1fr_1fr] lg:items-center">
+          <div className="relative grid gap-6 p-5 sm:p-9 lg:grid-cols-[1fr_1.15fr_1fr] lg:items-center">
             <div className={`text-center lg:text-left ${team1Won ? "scale-[1.02]" : ""}`}>
               {team1?.logo ? (
                 <img
                   src={team1.logo}
                   alt=""
-                  className="mx-auto h-24 w-24 rounded-2xl border border-[#ff3158]/40 bg-[#060b14] object-contain p-2 shadow-[0_0_35px_rgba(255,49,88,0.10)] lg:mx-0"
+                  className="mx-auto h-28 w-28 rounded-3xl border-2 border-[#ff3158]/50 bg-[#090d17] object-contain p-2 shadow-[0_0_45px_rgba(255,49,88,0.22)] lg:mx-0"
                 />
               ) : (
-                <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-2xl border border-[#ff3158]/40 bg-[#060b14] text-xl font-black text-[#ff6685] shadow-[0_0_35px_rgba(255,49,88,0.08)] lg:mx-0">
+                <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-3xl border-2 border-[#ff3158]/50 bg-[#120914] text-2xl font-black text-[#ff6685] shadow-[0_0_45px_rgba(255,49,88,0.18)] lg:mx-0">
                   {(team1?.tag ?? "TBD").slice(0, 3)}
                 </div>
               )}
-              <div className="mt-4 text-xl font-black uppercase">{team1?.name ?? "TBD"}</div>
+              <div className="mt-5 text-2xl font-black uppercase tracking-tight text-white">{team1?.name ?? "TBD"}</div>
               <div className="mt-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#7188a5]">
                 {team1?.tag ?? "TBD"} {team1Won && " · WINNER"}
               </div>
@@ -530,20 +531,20 @@ export default function PublicMatchDetailPage({
               <div className="text-[9px] font-black uppercase tracking-[0.32em] text-[#7188a5]">
                 MATCH SCORE
               </div>
-              <div className="mt-2 text-6xl font-black tracking-tight sm:text-7xl">
+              <div className="mt-2 text-7xl font-black tracking-tight sm:text-8xl drop-shadow-[0_0_28px_rgba(255,79,154,0.18)]">
                 {match.team1Score}
                 <span className="mx-3 text-[#ff5275]">-</span>
                 {match.team2Score}
               </div>
               <div className="mx-auto mt-3 h-px w-44 bg-gradient-to-r from-transparent via-[#52e2ff] to-transparent" />
 
-              <div className="mx-auto mt-5 max-w-sm overflow-hidden rounded-xl border border-[#405675] bg-[#07101a]">
+              <div className="mx-auto mt-6 max-w-md overflow-hidden rounded-2xl border border-[#52e2ff]/40 bg-[#07101a] shadow-[0_0_35px_rgba(39,217,255,0.10)]">
                 <div className="flex h-8 items-center justify-center border-b border-white/[0.06] text-[9px] font-black uppercase tracking-[0.25em] text-[#52e2ff]">
                   MAP
                 </div>
-                <div className="relative flex min-h-28 items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_30%_30%,rgba(255,49,88,0.24),transparent_35%),radial-gradient(circle_at_70%_60%,rgba(39,217,255,0.22),transparent_40%),linear-gradient(135deg,#111a29,#080d16)]">
+                <div className="relative flex min-h-32 items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_25%_35%,rgba(255,20,79,0.38),transparent_35%),radial-gradient(circle_at_75%_65%,rgba(35,230,255,0.32),transparent_42%),linear-gradient(135deg,#1a0c1b,#07131d)]">
                   <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(135deg,transparent_24%,rgba(255,255,255,0.12)_25%,transparent_26%),linear-gradient(315deg,transparent_24%,rgba(255,255,255,0.08)_25%,transparent_26%)] [background-size:36px_36px]" />
-                  <div className="relative text-2xl font-black uppercase tracking-[0.12em] text-white drop-shadow-[0_0_18px_rgba(82,226,255,0.25)]">
+                  <div className="relative text-3xl font-black uppercase tracking-[0.14em] text-white drop-shadow-[0_0_22px_rgba(82,226,255,0.45)]">
                     {mapName}
                   </div>
                 </div>
@@ -555,21 +556,21 @@ export default function PublicMatchDetailPage({
                 <img
                   src={team2.logo}
                   alt=""
-                  className="mx-auto h-24 w-24 rounded-2xl border border-[#52e2ff]/40 bg-[#060b14] object-contain p-2 shadow-[0_0_35px_rgba(39,217,255,0.10)] lg:ml-auto lg:mr-0"
+                  className="mx-auto h-28 w-28 rounded-3xl border-2 border-[#52e2ff]/50 bg-[#070d15] object-contain p-2 shadow-[0_0_45px_rgba(39,217,255,0.22)] lg:ml-auto lg:mr-0"
                 />
               ) : (
-                <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-2xl border border-[#52e2ff]/40 bg-[#060b14] text-xl font-black text-[#72e9ff] shadow-[0_0_35px_rgba(39,217,255,0.08)] lg:ml-auto lg:mr-0">
+                <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-3xl border-2 border-[#52e2ff]/50 bg-[#07131a] text-2xl font-black text-[#72e9ff] shadow-[0_0_45px_rgba(39,217,255,0.18)] lg:ml-auto lg:mr-0">
                   {(team2?.tag ?? "TBD").slice(0, 3)}
                 </div>
               )}
-              <div className="mt-4 text-xl font-black uppercase">{team2?.name ?? "TBD"}</div>
+              <div className="mt-5 text-2xl font-black uppercase tracking-tight text-white">{team2?.name ?? "TBD"}</div>
               <div className="mt-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#7188a5]">
                 {team2?.tag ?? "TBD"} {team2Won && " · WINNER"}
               </div>
             </div>
           </div>
 
-          <div className="relative grid border-t border-white/[0.07] bg-[#07101a]/70 sm:grid-cols-3">
+          <div className="relative grid border-t border-[#263750] bg-gradient-to-r from-[#100914]/80 via-[#07101a]/90 to-[#06151a]/80 sm:grid-cols-3">
             <div className="border-b border-white/[0.07] px-5 py-4 text-center sm:border-b-0 sm:border-r">
               <div className="text-[9px] font-black uppercase tracking-[0.2em] text-[#607791]">DATE</div>
               <div className="mt-1 text-sm font-black">{dateLabel}</div>
