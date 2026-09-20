@@ -1869,7 +1869,7 @@ export default function MatchCenterPage() {
               </div>
             </div>
           </div>
-        )
+        )}
       </div>
     </main>
   );
