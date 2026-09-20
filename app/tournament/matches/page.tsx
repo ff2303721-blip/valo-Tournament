@@ -13,21 +13,17 @@ import {
   teams as initialTeams,
 } from "../../data/teams";
 
-const MATCHES_STORAGE_KEY =
-  "tournament-matches";
-
-const TEAMS_STORAGE_KEY =
-  "tournament-teams";
+const MATCHES_STORAGE_KEY = "tournament-matches";
+const TEAMS_STORAGE_KEY = "tournament-teams";
 
 function loadTeams(): Team[] {
   if (typeof window === "undefined") {
     return initialTeams;
   }
 
-  const stored =
-    window.localStorage.getItem(
-      TEAMS_STORAGE_KEY
-    );
+  const stored = window.localStorage.getItem(
+    TEAMS_STORAGE_KEY,
+  );
 
   if (!stored) {
     return initialTeams;
@@ -51,10 +47,9 @@ function loadMatches(): Match[] {
     return [];
   }
 
-  const stored =
-    window.localStorage.getItem(
-      MATCHES_STORAGE_KEY
-    );
+  const stored = window.localStorage.getItem(
+    MATCHES_STORAGE_KEY,
+  );
 
   if (!stored) {
     return [];
@@ -73,9 +68,7 @@ function loadMatches(): Match[] {
   return [];
 }
 
-function formatDate(
-  value: string
-) {
+function formatDate(value: string) {
   if (!value) {
     return "TBD";
   }
@@ -86,109 +79,73 @@ function formatDate(
     return "TBD";
   }
 
-  return date.toLocaleString(
-    undefined,
-    {
-      dateStyle: "medium",
-      timeStyle: "short",
-    }
-  );
+  return date.toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
 }
 
-function teamInitials(
-  name: string
-) {
+function teamInitials(name: string) {
   return (
     name
       .split(/\s+/)
       .filter(Boolean)
       .slice(0, 2)
-      .map((word) =>
-        word[0]?.toUpperCase()
-      )
+      .map((word) => word[0]?.toUpperCase())
       .join("") || "TM"
   );
 }
 
 export default function PublicMatchesPage() {
-  const [teams, setTeams] =
-    useState<Team[]>([]);
-
-  const [matches, setMatches] =
-    useState<Match[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [matches, setMatches] = useState<Match[]>([]);
 
   const [filter, setFilter] =
-    useState<"All" | MatchStatus>(
-      "All"
-    );
+    useState<"All" | MatchStatus>("All");
 
-  const [search, setSearch] =
-    useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     setTeams(loadTeams());
     setMatches(loadMatches());
   }, []);
 
-  const filteredMatches =
-    useMemo(() => {
-      const query =
-        search
-          .trim()
-          .toLowerCase();
+  const filteredMatches = useMemo(() => {
+    const query = search.trim().toLowerCase();
 
-      return [...matches]
-        .filter((match) => {
-          if (
-            filter !== "All" &&
-            match.status !== filter
-          ) {
-            return false;
-          }
+    return [...matches]
+      .filter((match) => {
+        if (
+          filter !== "All" &&
+          match.status !== filter
+        ) {
+          return false;
+        }
 
-          if (!query) {
-            return true;
-          }
+        if (!query) {
+          return true;
+        }
 
-          const team1 =
-            teams.find(
-              (team) =>
-                team.id ===
-                match.team1Id
-            );
-
-          const team2 =
-            teams.find(
-              (team) =>
-                team.id ===
-                match.team2Id
-            );
-
-          return (
-            team1?.name
-              .toLowerCase()
-              .includes(query) ||
-            team2?.name
-              .toLowerCase()
-              .includes(query) ||
-            match.stage
-              .toLowerCase()
-              .includes(query) ||
-            `match ${match.matchNumber}`
-              .includes(query)
-          );
-        })
-        .sort(
-          (a, b) =>
-            a.matchNumber -
-            b.matchNumber
+        const team1 = teams.find(
+          (team) => team.id === match.team1Id,
         );
-    }, [
-      matches,
-      teams,
-      filter,
-      search,
-    ]);
+
+        const team2 = teams.find(
+          (team) => team.id === match.team2Id,
+        );
+
+        return (
+          team1?.name.toLowerCase().includes(query) ||
+          team2?.name.toLowerCase().includes(query) ||
+          match.stage.toLowerCase().includes(query) ||
+          `match ${match.matchNumber}`.includes(query)
+        );
+      })
+      .sort(
+        (a, b) =>
+          a.matchNumber - b.matchNumber,
+      );
+  }, [matches, teams, filter, search]);
 
   return (
     <main className="min-h-screen bg-[#080c12] text-white">
@@ -196,7 +153,7 @@ export default function PublicMatchesPage() {
         <header className="mb-8 border-b border-white/10 pb-6">
           <Link
             href="/tournament"
-            className="text-xs font-bold uppercase tracking-[0.2em] text-white/40 hover:text-white"
+            className="inline-block text-xs font-bold uppercase tracking-[0.2em] text-white/40 transition hover:text-white"
           >
             ← Tournament Central
           </Link>
@@ -208,15 +165,17 @@ export default function PublicMatchesPage() {
           <h1 className="mt-2 text-4xl font-black uppercase">
             All Matches
           </h1>
+
+          <p className="mt-3 text-sm text-white/35">
+            Public tournament match schedule and results.
+          </p>
         </header>
 
         <div className="mb-6 flex flex-col gap-3 border border-white/10 bg-white/[0.03] p-4 lg:flex-row">
           <input
             value={search}
             onChange={(event) =>
-              setSearch(
-                event.target.value
-              )
+              setSearch(event.target.value)
             }
             placeholder="Search teams, stage or match..."
             className="flex-1 border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none placeholder:text-white/20 focus:border-cyan-400/50"
@@ -226,10 +185,9 @@ export default function PublicMatchesPage() {
             value={filter}
             onChange={(event) =>
               setFilter(
-                event.target
-                  .value as
+                event.target.value as
                   | "All"
-                  | MatchStatus
+                  | MatchStatus,
               )
             }
             className="border border-white/10 bg-[#0b1017] px-4 py-3 text-sm font-bold outline-none"
@@ -256,8 +214,7 @@ export default function PublicMatchesPage() {
           </select>
         </div>
 
-        {filteredMatches.length ===
-        0 ? (
+        {filteredMatches.length === 0 ? (
           <div className="border border-dashed border-white/10 py-20 text-center">
             <p className="text-xs font-black uppercase tracking-wider text-white/25">
               No matches found
@@ -265,15 +222,13 @@ export default function PublicMatchesPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {filteredMatches.map(
-              (match) => (
-                <PublicMatch
-                  key={match.id}
-                  match={match}
-                  teams={teams}
-                />
-              )
-            )}
+            {filteredMatches.map((match) => (
+              <PublicMatch
+                key={match.id}
+                match={match}
+                teams={teams}
+              />
+            ))}
           </div>
         )}
       </div>
@@ -288,19 +243,13 @@ function PublicMatch({
   match: Match;
   teams: Team[];
 }) {
-  const team1 =
-    teams.find(
-      (team) =>
-        team.id ===
-        match.team1Id
-    );
+  const team1 = teams.find(
+    (team) => team.id === match.team1Id,
+  );
 
-  const team2 =
-    teams.find(
-      (team) =>
-        team.id ===
-        match.team2Id
-    );
+  const team2 = teams.find(
+    (team) => team.id === match.team2Id,
+  );
 
   return (
     <Link
@@ -323,22 +272,15 @@ function PublicMatch({
         </div>
 
         <span className="text-[9px] font-bold uppercase tracking-wider text-white/25">
-          {formatDate(
-            match.scheduledAt
-          )}
+          {formatDate(match.scheduledAt)}
         </span>
       </div>
 
       <div className="grid items-center gap-6 p-6 md:grid-cols-[1fr_140px_1fr]">
         <PublicTeam
           team={team1}
-          score={
-            match.team1Score
-          }
-          winner={
-            match.winnerId ===
-            match.team1Id
-          }
+          score={match.team1Score}
+          winner={match.winnerId === match.team1Id}
           align="left"
         />
 
@@ -358,13 +300,8 @@ function PublicMatch({
 
         <PublicTeam
           team={team2}
-          score={
-            match.team2Score
-          }
-          winner={
-            match.winnerId ===
-            match.team2Id
-          }
+          score={match.team2Score}
+          winner={match.winnerId === match.team2Id}
           align="right"
         />
       </div>
@@ -408,9 +345,7 @@ function PublicTeam({
           />
         ) : (
           <span className="text-xs font-black text-white/30">
-            {teamInitials(
-              team.name
-            )}
+            {teamInitials(team.name)}
           </span>
         )}
       </div>
