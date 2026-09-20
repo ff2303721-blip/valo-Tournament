@@ -585,7 +585,7 @@ export default function TournamentBracketPage() {
       : undefined;
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#050810] text-white">
+    <main className="relative min-h-screen overflow-hidden bg-[#050810]/80 text-white">
       <div className="mx-auto max-w-[1500px] px-5 py-8 md:px-8 lg:px-10">
         <header className="mb-8 border-b border-[#263750] pb-7">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
