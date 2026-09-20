@@ -320,6 +320,28 @@ export default function MatchCenterPage() {
     );
   }
 
+  function TeamLogo({
+    team,
+  }: {
+    team?: Team;
+  }) {
+    return (
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#52e2ff]/25 bg-[#060b14] shadow-[0_0_18px_rgba(39,217,255,0.08)]">
+        {team?.logo ? (
+          <img
+            src={team.logo}
+            alt={team ? team.name + " logo" : "Team logo"}
+            className="h-full w-full object-contain p-1.5"
+          />
+        ) : (
+          <span className="text-xs font-black text-[#52e2ff]">
+            {team?.tag?.slice(0, 2).toUpperCase() || "TM"}
+          </span>
+        )}
+      </div>
+    );
+  }
+
   function resetEditor() {
     setEditor(emptyEditor);
     setMessage("");
@@ -1380,12 +1402,20 @@ export default function MatchCenterPage() {
                       </div>
 
                       <div className="mt-5 grid items-center gap-4 md:grid-cols-[1fr_auto_1fr]">
-                        <div className="rounded-lg border border-[#1d2a3b] bg-[#0e151f] p-4 md:text-right">
-                          <div className="text-sm font-black">
+                        <div className="flex items-center justify-end gap-4 rounded-lg border border-[#1d2a3b] bg-[#0e151f] p-4">
+                          <div className="text-sm font-black text-right">
                             {getTeamName(
                               match.team1Id,
                             )}
                           </div>
+
+                          <TeamLogo
+                            team={teams.find(
+                              (team) =>
+                                team.id ===
+                                match.team1Id,
+                            )}
+                          />
                         </div>
 
                         <div className="text-center">
@@ -1407,7 +1437,15 @@ export default function MatchCenterPage() {
                           )}
                         </div>
 
-                        <div className="rounded-lg border border-[#1d2a3b] bg-[#0e151f] p-4">
+                        <div className="flex items-center gap-4 rounded-lg border border-[#1d2a3b] bg-[#0e151f] p-4">
+                          <TeamLogo
+                            team={teams.find(
+                              (team) =>
+                                team.id ===
+                                match.team2Id,
+                            )}
+                          />
+
                           <div className="text-sm font-black">
                             {getTeamName(
                               match.team2Id,
