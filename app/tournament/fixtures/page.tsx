@@ -438,9 +438,9 @@ export default function FixturesPage() {
           <div>
             <Link
               href="/tournament"
-              className="text-[10px] font-black tracking-[0.3em] text-[#52e2ff] hover:text-white"
+              className="inline-flex items-center justify-center rounded-xl border border-[#52e2ff]/40 bg-[#07131c]/90 px-5 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-[#9eeeff] shadow-[0_0_22px_rgba(39,217,255,0.08)] transition hover:border-[#ff5275]/50 hover:bg-[#ff3158]/10 hover:text-white"
             >
-              ← TOURNAMENT CENTRAL
+              ← Tournament Home
             </Link>
 
             <div className="mt-2">
