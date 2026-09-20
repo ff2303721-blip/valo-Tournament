@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const BACKGROUND_IMAGES = [
   "https://images5.alphacoders.com/120/thumb-1920-1202339.png",
@@ -11,18 +12,18 @@ const BACKGROUND_IMAGES = [
 ];
 
 export function TournamentBackground() {
+  const pathname = usePathname();
   const [backgroundImage, setBackgroundImage] = useState(
     BACKGROUND_IMAGES[0],
   );
 
   useEffect(() => {
-    const randomImage =
-      BACKGROUND_IMAGES[
-        Math.floor(Math.random() * BACKGROUND_IMAGES.length)
-      ];
+    const randomIndex = Math.floor(
+      Math.random() * BACKGROUND_IMAGES.length,
+    );
 
-    setBackgroundImage(randomImage);
-  }, []);
+    setBackgroundImage(BACKGROUND_IMAGES[randomIndex]);
+  }, [pathname]);
 
   return (
     <>
@@ -35,11 +36,11 @@ export function TournamentBackground() {
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 z-[1] bg-[#02050b]/72"
+        className="pointer-events-none fixed inset-0 z-[1] bg-[#02050b]/56"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 z-[2] bg-[radial-gradient(circle_at_15%_15%,rgba(255,49,88,0.20),transparent_30%),radial-gradient(circle_at_85%_20%,rgba(39,217,255,0.18),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.16),transparent_38%)]"
+        className="pointer-events-none fixed inset-0 z-[2] bg-[radial-gradient(circle_at_15%_15%,rgba(255,49,88,0.24),transparent_30%),radial-gradient(circle_at_85%_20%,rgba(39,217,255,0.22),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.20),transparent_38%)]"
       />
       <div
         aria-hidden="true"
