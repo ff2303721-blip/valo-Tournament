@@ -703,7 +703,7 @@ export default function PlayerStatisticsPage() {
         </section>
 
         {/* FOOTER */}
-        <footer className="mt-10 flex flex-col justify-between gap-3 border-t border-white/10 py-6 text-[8px] font-black tracking-[0.22em] text-white/20 uppercase md:flex-row">
+        <footer className="mt-10 flex flex-col justify-between gap-3 border-t border-[#263750] py-6 text-[8px] font-black tracking-[0.22em] text-white/20 uppercase md:flex-row">
           <span>
             Valorant Tournament //
             Player Database
