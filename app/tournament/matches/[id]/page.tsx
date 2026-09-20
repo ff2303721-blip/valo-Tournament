@@ -614,6 +614,14 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
                 ["Map", mapName],
                 ["Format", `Best of ${match.bestOf} (BO${match.bestOf})`],
                 ["Status", match.status],
+                [
+                  "Starting Sides",
+                  match.startingSide === "Attack"
+                    ? "Team 1 Attack · Team 2 Defend"
+                    : match.startingSide === "Defend"
+                      ? "Team 1 Defend · Team 2 Attack"
+                      : "Not set",
+                ],
               ].map(([label, value]) => (
                 <div
                   key={label}
