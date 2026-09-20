@@ -57,6 +57,19 @@ type Team = {
   }[];
 };
 
+type TournamentSettings = {
+  tournamentName: string;
+  tagline: string;
+  organizerName: string;
+  prizePool: string;
+  startDate: string | null;
+  endDate: string | null;
+  tournamentStatus: "Upcoming" | "Live" | "Completed";
+  announcement: string;
+  logoUrl: string;
+  bannerUrl: string;
+};
+
 type Standing = {
   team: Team;
   played: number;
@@ -71,6 +84,23 @@ type StandingsView =
   | "group"
   | "qualifiers"
   | "final";
+
+function formatTournamentDate(value?: string | null) {
+  if (!value) {
+    return "Not set";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Not set";
+  }
+
+  return date.toLocaleString([], {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
 
 function getTeam(
   teams: Team[],
@@ -256,6 +286,9 @@ export default function TournamentDashboard() {
   const [matches, setMatches] =
     useState<Match[]>([]);
 
+  const [settings, setSettings] =
+    useState<TournamentSettings | null>(null);
+
   const [loading, setLoading] =
     useState(true);
 
@@ -278,11 +311,15 @@ export default function TournamentDashboard() {
         const [
           teamsResponse,
           matchesResponse,
+          settingsResponse,
         ] = await Promise.all([
           fetch("/api/teams", {
             cache: "no-store",
           }),
           fetch("/api/matches", {
+            cache: "no-store",
+          }),
+          fetch("/api/settings", {
             cache: "no-store",
           }),
         ]);
@@ -292,6 +329,9 @@ export default function TournamentDashboard() {
 
         const matchesData =
           await matchesResponse.json();
+
+        const settingsData =
+          await settingsResponse.json();
 
         if (!teamsResponse.ok) {
           throw new Error(
@@ -304,6 +344,13 @@ export default function TournamentDashboard() {
           throw new Error(
             matchesData.error ||
               "Failed to load matches.",
+          );
+        }
+
+        if (!settingsResponse.ok) {
+          throw new Error(
+            settingsData.error ||
+              "Failed to load tournament settings.",
           );
         }
 
@@ -326,6 +373,30 @@ export default function TournamentDashboard() {
             ? matchesData
             : [],
         );
+
+        setSettings({
+          tournamentName:
+            settingsData.tournamentName ?? "",
+          tagline:
+            settingsData.tagline ?? "",
+          organizerName:
+            settingsData.organizerName ?? "",
+          prizePool:
+            settingsData.prizePool ?? "",
+          startDate:
+            settingsData.startDate ?? null,
+          endDate:
+            settingsData.endDate ?? null,
+          tournamentStatus:
+            settingsData.tournamentStatus ??
+            "Upcoming",
+          announcement:
+            settingsData.announcement ?? "",
+          logoUrl:
+            settingsData.logoUrl ?? "",
+          bannerUrl:
+            settingsData.bannerUrl ?? "",
+        });
       } catch (err) {
         if (!active) {
           return;
@@ -588,6 +659,94 @@ export default function TournamentDashboard() {
                   }
                 </div>
               </div>
+            </section>
+
+            <section className="relative mt-6 overflow-hidden rounded-xl border border-[#263149] bg-[#0b101b] p-6">
+              <div className="flex flex-wrap items-start justify-between gap-6">
+                <div>
+                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#52e2ff]">
+                    TOURNAMENT INFO
+                  </div>
+
+                  <h2 className="mt-1 text-2xl font-black">
+                    {settings?.tournamentName ||
+                      "Tournament Information"}
+                  </h2>
+
+                  {settings?.tagline && (
+                    <p className="mt-1 text-sm text-[#71809a]">
+                      {settings.tagline}
+                    </p>
+                  )}
+                </div>
+
+                <div className="rounded-lg border border-[#27d9ff]/30 bg-[#27d9ff]/10 px-4 py-2">
+                  <div className="text-[9px] font-black uppercase tracking-[0.18em] text-[#52e2ff]">
+                    STATUS
+                  </div>
+
+                  <div className="mt-1 text-sm font-black text-white">
+                    {settings?.tournamentStatus ||
+                      "Upcoming"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="rounded-lg border border-[#263149] bg-[#080e18] p-4">
+                  <div className="text-[9px] font-black uppercase tracking-[0.18em] text-[#61718c]">
+                    START
+                  </div>
+                  <div className="mt-2 text-sm font-black text-white">
+                    {formatTournamentDate(
+                      settings?.startDate,
+                    )}
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-[#263149] bg-[#080e18] p-4">
+                  <div className="text-[9px] font-black uppercase tracking-[0.18em] text-[#61718c]">
+                    END
+                  </div>
+                  <div className="mt-2 text-sm font-black text-white">
+                    {formatTournamentDate(
+                      settings?.endDate,
+                    )}
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-[#263149] bg-[#080e18] p-4">
+                  <div className="text-[9px] font-black uppercase tracking-[0.18em] text-[#61718c]">
+                    ORGANIZER
+                  </div>
+                  <div className="mt-2 text-sm font-black text-white">
+                    {settings?.organizerName ||
+                      "Not set"}
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-[#263149] bg-[#080e18] p-4">
+                  <div className="text-[9px] font-black uppercase tracking-[0.18em] text-[#61718c]">
+                    PRIZE POOL
+                  </div>
+                  <div className="mt-2 text-sm font-black text-[#ffd45c]">
+                    {settings?.prizePool ||
+                      "Not set"}
+                  </div>
+                </div>
+              </div>
+
+              {settings?.announcement && (
+                <div className="mt-4 rounded-lg border border-[#ffd45c]/20 bg-[#ffd45c]/5 p-4">
+                  <div className="text-[9px] font-black uppercase tracking-[0.18em] text-[#ffd45c]">
+                    ANNOUNCEMENT
+                  </div>
+
+                  <p className="mt-2 text-sm leading-6 text-[#c4cede]">
+                    {settings.announcement}
+                  </p>
+                </div>
+              )}
             </section>
 
             <section className="relative mt-6 overflow-hidden rounded-xl border border-[#263149] bg-[#0b101b] p-6">
