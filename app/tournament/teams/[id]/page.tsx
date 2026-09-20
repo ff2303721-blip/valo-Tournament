@@ -239,7 +239,14 @@ export default function PublicTeamDetailsPage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#02050b] text-white">
-      <div className="mx-auto max-w-[1200px] px-5 py-8 sm:px-8">
+      <div
+        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url("${backgroundImage}")` }}
+      />
+      <div className="pointer-events-none fixed inset-0 z-[1] bg-[#02050b]/48" />
+      <div className="pointer-events-none fixed inset-0 z-[2] bg-[linear-gradient(90deg,rgba(255,15,79,0.18),transparent_35%,transparent_65%,rgba(23,224,255,0.18)),linear-gradient(180deg,rgba(2,5,11,0.16),rgba(2,5,11,0.70))]" />
+      <div className="pointer-events-none fixed inset-0 z-[3] bg-[radial-gradient(circle_at_12%_40%,rgba(255,20,79,0.20),transparent_28%),radial-gradient(circle_at_88%_40%,rgba(35,230,255,0.18),transparent_30%)]" />
+      <div className="relative z-10 mx-auto max-w-[1200px] px-5 py-8 sm:px-8">
         <header className="mb-8 flex flex-col gap-5 border-b border-[#263750] pb-6 sm:flex-row sm:items-center sm:justify-between">
           <Link
             href="/tournament/teams"
