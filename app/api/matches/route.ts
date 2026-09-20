@@ -130,6 +130,7 @@ async function getAllMatches(
   client: ReturnType<
     typeof getPublicClient
   >,
+  includeStats = true,
 ) {
   const {
     data: matches,
@@ -152,6 +153,12 @@ async function getAllMatches(
 
   if (!matches?.length) {
     return [];
+  }
+
+  if (!includeStats) {
+    return matches.map((match) =>
+      normalizeMatch(match, []),
+    );
   }
 
   const matchIds =
@@ -192,14 +199,22 @@ async function getAllMatches(
   );
 }
 
-export async function GET() {
+export async function GET(
+  request: NextRequest,
+) {
   try {
     const client =
       getPublicClient();
 
+    const includeStats =
+      request.nextUrl.searchParams.get(
+        "includeStats",
+      ) === "true";
+
     const matches =
       await getAllMatches(
         client,
+        includeStats,
       );
 
     return NextResponse.json(
