@@ -421,6 +421,14 @@ export default function MatchResultRecorderPage() {
   if (loading) {
     return (
       <main className="relative min-h-screen overflow-hidden bg-[#04070f] px-6 py-10 text-white">
+      <div
+        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `linear-gradient(rgba(4,7,15,0.76), rgba(4,7,15,0.91)), url("https://images5.alphacoders.com/120/thumb-1920-1202339.png")`,
+          backgroundAttachment: "fixed",
+        }}
+      />
+      <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_12%_30%,rgba(255,31,91,0.16),transparent_28%),radial-gradient(circle_at_88%_30%,rgba(0,229,255,0.12),transparent_30%)]" />
         <div className="mx-auto max-w-7xl">
           <div className="rounded-2xl border border-[#52e2ff]/30 bg-gradient-to-br from-[#0d1522] to-[#0a1019] p-8 shadow-[0_0_50px_rgba(34,211,238,0.08)]">
             <p className="text-sm font-bold uppercase tracking-[0.25em] text-cyan-300">
