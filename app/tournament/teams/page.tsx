@@ -87,12 +87,14 @@ export default function PublicTeamsPage() {
     <main className="relative min-h-screen overflow-hidden bg-[#050810]/80 text-white"><div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_12%_10%,rgba(255,49,88,0.12),transparent_25%),radial-gradient(circle_at_88%_18%,rgba(39,217,255,0.10),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.10),transparent_35%)]" />
       <div className="relative mx-auto max-w-[1300px] px-5 py-8 sm:px-8">
         <header className="mb-8 border-b border-[#263750] pb-6">
-          <Link
-            href="/tournament"
-            className="text-xs font-black uppercase tracking-[0.2em] text-[#52e2ff] transition hover:text-white"
-          >
-            ← Tournament Central
-          </Link>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <Link
+              href="/tournament"
+              className="inline-flex items-center justify-center rounded-xl border border-[#52e2ff]/40 bg-[#07131c]/90 px-5 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-[#9eeeff] shadow-[0_0_22px_rgba(39,217,255,0.08)] transition hover:border-[#ff5275]/50 hover:bg-[#ff3158]/10 hover:text-white"
+            >
+              ← Tournament Home
+            </Link>
+          </div>
 
           <div className="mt-6">
             <TournamentBrand />
