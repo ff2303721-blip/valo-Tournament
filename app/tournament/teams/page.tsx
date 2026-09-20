@@ -127,7 +127,7 @@ export default function PublicTeamsPage() {
             </p>
           </div>
         ) : sortedTeams.length === 0 ? (
-          <div className="border border-dashed border-white/10 py-20 text-center">
+          <div className="rounded-2xl border border-dashed border-[#2b3d58] bg-[#0b1220]/50 py-20 text-center">
             <p className="text-xs font-black uppercase tracking-wider text-white/25">
               No teams registered
             </p>
