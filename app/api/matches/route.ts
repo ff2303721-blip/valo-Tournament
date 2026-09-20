@@ -99,6 +99,11 @@ function normalizeMatch(
     topFraggerPlayerId:
       match.top_fragger_player_id ??
       undefined,
+    startingSide:
+      match.starting_side === "Attack" ||
+      match.starting_side === "Defend"
+        ? match.starting_side
+        : undefined,
     playerStats: stats.map(
       (stat) => ({
         playerId:
@@ -279,6 +284,7 @@ export async function POST(
       winnerId,
       mvpPlayerId,
       topFraggerPlayerId,
+      startingSide,
       playerStats,
     } = body;
 
@@ -443,6 +449,11 @@ export async function POST(
         top_fragger_player_id:
           topFraggerPlayerId ||
           null,
+        starting_side:
+          startingSide === "Attack" ||
+          startingSide === "Defend"
+            ? startingSide
+            : null,
       });
 
     if (insertError) {
