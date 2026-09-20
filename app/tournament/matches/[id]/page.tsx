@@ -268,31 +268,32 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
 
         setBackgroundImage(randomBackground);
 
-        const [matchResponse, teamsResponse, mapsResponse] =
+        const [matchResponse, teamsResponse] =
           await Promise.all([
-            fetch(`/api/matches/${encodeURIComponent(resolved.id)}`, {
-              cache: "no-store",
-            }),
-            fetch("/api/teams", {
-              cache: "no-store",
-            }),
-            fetch("https://valorant-api.com/v1/maps?language=en-US", {
+            fetch(
+              `/api/matches/${encodeURIComponent(resolved.id)}`,
+              {
+                cache: "no-store",
+              },
+            ),
+            fetch("/api/teams?summary=true", {
               cache: "force-cache",
             }),
           ]);
 
         const matchData = await matchResponse.json();
         const teamsData = await teamsResponse.json();
-        const mapsData = mapsResponse.ok
-          ? await mapsResponse.json()
-          : null;
 
         if (!matchResponse.ok) {
-          throw new Error(matchData.error || "Failed to load match.");
+          throw new Error(
+            matchData.error || "Failed to load match.",
+          );
         }
 
         if (!teamsResponse.ok) {
-          throw new Error(teamsData.error || "Failed to load teams.");
+          throw new Error(
+            teamsData.error || "Failed to load teams.",
+          );
         }
 
         if (!active) return;
@@ -300,23 +301,44 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
         setMatch(matchData);
         setTeams(Array.isArray(teamsData) ? teamsData : []);
 
-        const selectedMap = Array.isArray(mapsData?.data)
-          ? mapsData.data.find(
-              (map: {
-                displayName?: string;
-                splash?: string;
-                listViewIcon?: string;
-              }) =>
-                map.displayName?.toLowerCase() ===
-                String(matchData.map ?? "").trim().toLowerCase(),
-            )
-          : null;
+        // The match content should not wait for external map artwork.
+        // Load the map image in the background after the page is visible.
+        fetch(
+          "https://valorant-api.com/v1/maps?language=en-US",
+          {
+            cache: "force-cache",
+          },
+        )
+          .then(async (response) => {
+            if (!response.ok) return null;
+            return response.json();
+          })
+          .then((mapsData) => {
+            if (!active) return;
 
-        setMapImage(
-          selectedMap?.splash ||
-            selectedMap?.listViewIcon ||
-            "",
-        );
+            const selectedMap = Array.isArray(mapsData?.data)
+              ? mapsData.data.find(
+                  (map: {
+                    displayName?: string;
+                    splash?: string;
+                    listViewIcon?: string;
+                  }) =>
+                    map.displayName?.toLowerCase() ===
+                    String(matchData.map ?? "")
+                      .trim()
+                      .toLowerCase(),
+                )
+              : null;
+
+            setMapImage(
+              selectedMap?.splash ||
+                selectedMap?.listViewIcon ||
+                "",
+            );
+          })
+          .catch(() => {
+            // Keep the neon fallback map panel if artwork is unavailable.
+          });
       } catch (err) {
         if (!active) return;
 
