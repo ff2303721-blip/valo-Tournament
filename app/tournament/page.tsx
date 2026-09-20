@@ -475,11 +475,11 @@ export default function TournamentDashboard() {
               VALORANT ESPORTS
             </div>
 
-            <h1 className="mt-2 bg-gradient-to-r from-white via-[#ffedf1] to-[#ff5275] bg-clip-text text-3xl font-black tracking-tight text-transparent md:text-4xl">
-              TOURNAMENT CENTRAL
-            </h1>
+            <div className="mt-2">
+              <TournamentBrand />
+            </div>
 
-            <p className="mt-1 text-sm text-[#8290aa]">
+            <p className="mt-2 text-sm text-[#8290aa]">
               Official tournament hub
             </p>
           </div>
