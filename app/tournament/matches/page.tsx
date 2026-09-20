@@ -159,10 +159,10 @@ export default function PublicMatchesPage() {
           teamsResponse,
         ] = await Promise.all([
           fetch("/api/matches", {
-            cache: "no-store",
+            cache: "force-cache",
           }),
           fetch("/api/teams", {
-            cache: "no-store",
+            cache: "force-cache",
           }),
         ]);
 
