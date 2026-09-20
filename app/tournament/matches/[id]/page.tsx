@@ -243,6 +243,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
   const [backgroundImage, setBackgroundImage] = useState(
     BACKGROUND_IMAGES[0],
   );
+  const [mapImage, setMapImage] = useState("");
   const [teams, setTeams] = useState<Team[]>([]);
   const [matchId, setMatchId] = useState("");
   const [loading, setLoading] = useState(true);
@@ -267,17 +268,24 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
 
         setBackgroundImage(randomBackground);
 
-        const [matchResponse, teamsResponse] = await Promise.all([
-          fetch(`/api/matches/${encodeURIComponent(resolved.id)}`, {
-            cache: "no-store",
-          }),
-          fetch("/api/teams", {
-            cache: "no-store",
-          }),
-        ]);
+        const [matchResponse, teamsResponse, mapsResponse] =
+          await Promise.all([
+            fetch(`/api/matches/${encodeURIComponent(resolved.id)}`, {
+              cache: "no-store",
+            }),
+            fetch("/api/teams", {
+              cache: "no-store",
+            }),
+            fetch("https://valorant-api.com/v1/maps?language=en-US", {
+              cache: "force-cache",
+            }),
+          ]);
 
         const matchData = await matchResponse.json();
         const teamsData = await teamsResponse.json();
+        const mapsData = mapsResponse.ok
+          ? await mapsResponse.json()
+          : null;
 
         if (!matchResponse.ok) {
           throw new Error(matchData.error || "Failed to load match.");
@@ -291,6 +299,24 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
 
         setMatch(matchData);
         setTeams(Array.isArray(teamsData) ? teamsData : []);
+
+        const selectedMap = Array.isArray(mapsData?.data)
+          ? mapsData.data.find(
+              (map: {
+                displayName?: string;
+                splash?: string;
+                listViewIcon?: string;
+              }) =>
+                map.displayName?.toLowerCase() ===
+                String(matchData.map ?? "").trim().toLowerCase(),
+            )
+          : null;
+
+        setMapImage(
+          selectedMap?.splash ||
+            selectedMap?.listViewIcon ||
+            "",
+        );
       } catch (err) {
         if (!active) return;
 
@@ -486,11 +512,22 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
                 <div className="border-b border-white/[0.07] px-4 py-2 text-[9px] font-black uppercase tracking-[0.28em] text-[#52e2ff]">
                   Map
                 </div>
-                <div className="relative flex h-[104px] items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_24%_40%,rgba(255,20,79,0.35),transparent_34%),radial-gradient(circle_at_78%_62%,rgba(35,230,255,0.30),transparent_38%),linear-gradient(135deg,#190b1a,#07141e)]">
-                  <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(135deg,transparent_24%,rgba(255,255,255,0.14)_25%,transparent_26%),linear-gradient(315deg,transparent_24%,rgba(255,255,255,0.08)_25%,transparent_26%)] [background-size:34px_34px]" />
-                  <span className="relative text-3xl font-black uppercase tracking-[0.12em]">
-                    {mapName}
-                  </span>
+                <div className="relative h-[104px] overflow-hidden bg-[#07101a]">
+                  {mapImage ? (
+                    <img
+                      src={mapImage}
+                      alt={`${mapName} map`}
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_40%,rgba(255,20,79,0.35),transparent_34%),radial-gradient(circle_at_78%_62%,rgba(35,230,255,0.30),transparent_38%),linear-gradient(135deg,#190b1a,#07141e)]" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#02050b]/80 via-[#02050b]/20 to-[#02050b]/20" />
+                  <div className="relative flex h-full items-center justify-center">
+                    <span className="text-3xl font-black uppercase tracking-[0.12em] text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                      {mapName}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
