@@ -77,7 +77,7 @@ export default function PublicTeamDetailsPage() {
         const response = await fetch(
           "/api/teams",
           {
-            cache: "force-cache",
+            cache: "no-store",
           },
         );
 
