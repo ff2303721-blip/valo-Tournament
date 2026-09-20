@@ -137,7 +137,7 @@ export default function PublicTeamDetailsPage() {
 
   if (loading) {
     return (
-      <main className="relative min-h-screen overflow-hidden bg-[#050810] text-white">
+      <main className="relative min-h-screen overflow-hidden bg-[#050810]/80 text-white">
         <div className="mx-auto max-w-[1200px] px-5 py-8 sm:px-8">
           <header className="mb-8 border-b border-[#263750] pb-6">
             <Link
@@ -166,7 +166,7 @@ export default function PublicTeamDetailsPage() {
 
   if (error) {
     return (
-      <main className="relative min-h-screen overflow-hidden bg-[#050810] text-white">
+      <main className="relative min-h-screen overflow-hidden bg-[#050810]/80 text-white">
         <div className="mx-auto max-w-3xl px-6 py-24 text-center">
           <p className="text-[10px] font-black uppercase tracking-[0.25em] text-red-400">
             Database Error
@@ -193,7 +193,7 @@ export default function PublicTeamDetailsPage() {
 
   if (!team) {
     return (
-      <main className="relative min-h-screen overflow-hidden bg-[#050810] text-white">
+      <main className="relative min-h-screen overflow-hidden bg-[#050810]/80 text-white">
         <div className="mx-auto max-w-3xl px-6 py-24 text-center">
           <p className="text-[10px] font-black uppercase tracking-[0.25em] text-red-400">
             Team Not Found
@@ -219,7 +219,7 @@ export default function PublicTeamDetailsPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#050810] text-white">
+    <main className="relative min-h-screen overflow-hidden bg-[#050810]/80 text-white">
       <div className="mx-auto max-w-[1200px] px-5 py-8 sm:px-8">
         <header className="mb-8 flex flex-col gap-5 border-b border-[#263750] pb-6 sm:flex-row sm:items-center sm:justify-between">
           <Link
