@@ -6,26 +6,42 @@ import { FormEvent, useEffect, useState } from "react";
 type Settings = {
   tournamentName: string;
   tagline: string;
+  organizerName: string;
+  prizePool: string;
+  startDate: string;
+  endDate: string;
+  tournamentStatus: "Upcoming" | "Live" | "Completed";
+  announcement: string;
+  logoUrl: string;
+  bannerUrl: string;
 };
 
+const EMPTY_SETTINGS: Settings = {
+  tournamentName: "",
+  tagline: "",
+  organizerName: "",
+  prizePool: "",
+  startDate: "",
+  endDate: "",
+  tournamentStatus: "Upcoming",
+  announcement: "",
+  logoUrl: "",
+  bannerUrl: "",
+};
+
+function toDateInput(value: string | null | undefined) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toISOString().slice(0, 16);
+}
+
 export default function TournamentSettingsPage() {
-  const [settings, setSettings] =
-    useState<Settings>({
-      tournamentName: "",
-      tagline: "",
-    });
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [saving, setSaving] =
-    useState(false);
-
-  const [error, setError] =
-    useState("");
-
-  const [message, setMessage] =
-    useState("");
+  const [settings, setSettings] = useState<Settings>(EMPTY_SETTINGS);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -35,47 +51,37 @@ export default function TournamentSettingsPage() {
         setLoading(true);
         setError("");
 
-        const response = await fetch(
-          "/api/settings",
-          {
-            cache: "no-store",
-          },
-        );
-
-        const data =
-          await response.json();
+        const response = await fetch("/api/settings", { cache: "no-store" });
+        const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(
-            data?.error ||
-              "Unable to load settings.",
-          );
+          throw new Error(data?.error || "Unable to load settings.");
         }
 
-        if (cancelled) {
-          return;
-        }
+        if (cancelled) return;
 
         setSettings({
-          tournamentName:
-            data.tournamentName ?? "",
-          tagline:
-            data.tagline ?? "",
+          tournamentName: data.tournamentName ?? "",
+          tagline: data.tagline ?? "",
+          organizerName: data.organizerName ?? "",
+          prizePool: data.prizePool ?? "",
+          startDate: toDateInput(data.startDate),
+          endDate: toDateInput(data.endDate),
+          tournamentStatus: data.tournamentStatus ?? "Upcoming",
+          announcement: data.announcement ?? "",
+          logoUrl: data.logoUrl ?? "",
+          bannerUrl: data.bannerUrl ?? "",
         });
       } catch (loadError) {
-        if (cancelled) {
-          return;
-        }
-
-        setError(
-          loadError instanceof Error
-            ? loadError.message
-            : "Unable to load settings.",
-        );
-      } finally {
         if (!cancelled) {
-          setLoading(false);
+          setError(
+            loadError instanceof Error
+              ? loadError.message
+              : "Unable to load settings.",
+          );
         }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
 
@@ -86,53 +92,43 @@ export default function TournamentSettingsPage() {
     };
   }, []);
 
-  async function saveSettings(
-    event: FormEvent<HTMLFormElement>,
-  ) {
-    event.preventDefault();
+  function update<K extends keyof Settings>(key: K, value: Settings[K]) {
+    setSettings((current) => ({ ...current, [key]: value }));
+  }
 
+  async function saveSettings(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     setSaving(true);
     setError("");
     setMessage("");
 
     try {
-      const response = await fetch(
-        "/api/settings",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            tournamentName:
-              settings.tournamentName,
-            tagline:
-              settings.tagline,
-          }),
-        },
-      );
+      const response = await fetch("/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(settings),
+      });
 
-      const data =
-        await response.json();
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data?.error ||
-            "Unable to save settings.",
-        );
+        throw new Error(data?.error || "Unable to save settings.");
       }
 
       setSettings({
-        tournamentName:
-          data.tournamentName ?? "",
-        tagline:
-          data.tagline ?? "",
+        tournamentName: data.tournamentName ?? "",
+        tagline: data.tagline ?? "",
+        organizerName: data.organizerName ?? "",
+        prizePool: data.prizePool ?? "",
+        startDate: toDateInput(data.startDate),
+        endDate: toDateInput(data.endDate),
+        tournamentStatus: data.tournamentStatus ?? "Upcoming",
+        announcement: data.announcement ?? "",
+        logoUrl: data.logoUrl ?? "",
+        bannerUrl: data.bannerUrl ?? "",
       });
 
-      setMessage(
-        "Tournament settings saved successfully.",
-      );
+      setMessage("Tournament settings saved successfully.");
     } catch (saveError) {
       setError(
         saveError instanceof Error
@@ -143,6 +139,9 @@ export default function TournamentSettingsPage() {
       setSaving(false);
     }
   }
+
+  const inputClass =
+    "mt-3 w-full rounded-xl border border-white/10 bg-[#080d17] px-5 py-4 text-sm font-bold text-white outline-none transition placeholder:text-white/15 focus:border-cyan-400/50 disabled:opacity-50";
 
   return (
     <main className="min-h-screen bg-[#060a12] text-white">
@@ -165,8 +164,7 @@ export default function TournamentSettingsPage() {
             </h1>
 
             <p className="mt-2 text-sm text-white/40">
-              Change the tournament identity shown across the
-              public website.
+              Control the tournament identity and public information shown across the website.
             </p>
           </div>
 
@@ -190,120 +188,171 @@ export default function TournamentSettingsPage() {
           </div>
         )}
 
-        <form
-          onSubmit={saveSettings}
-          className="overflow-hidden rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-400/[0.06] via-white/[0.03] to-purple-500/[0.06] shadow-[0_0_70px_rgba(34,211,238,0.05)]"
-        >
-          <div className="border-b border-white/10 p-6 sm:p-8">
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400">
-              Public Identity
-            </p>
+        <form onSubmit={saveSettings} className="space-y-6">
+          <section className="overflow-hidden rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-400/[0.06] via-white/[0.03] to-purple-500/[0.06]">
+            <div className="border-b border-white/10 p-6 sm:p-8">
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400">
+                Public Identity
+              </p>
+              <h2 className="mt-2 text-2xl font-black uppercase">Tournament Branding</h2>
+            </div>
 
-            <h2 className="mt-2 text-2xl font-black uppercase">
-              Tournament Name
-            </h2>
+            <div className="grid gap-7 p-6 sm:grid-cols-2 sm:p-8">
+              <div className="sm:col-span-2">
+                <label htmlFor="tournamentName" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                  Tournament Name
+                </label>
+                <input
+                  id="tournamentName"
+                  type="text"
+                  maxLength={100}
+                  value={settings.tournamentName}
+                  onChange={(e) => update("tournamentName", e.target.value)}
+                  disabled={loading || saving}
+                  placeholder="VALORANT TOURNAMENT"
+                  className={inputClass}
+                />
+                <p className="mt-2 text-right text-[10px] font-bold text-white/20">{settings.tournamentName.length}/100</p>
+              </div>
 
-            <p className="mt-2 text-sm leading-6 text-white/40">
-              This is the main name displayed to visitors.
-              Changes are stored in Supabase and shared with
-              everyone.
-            </p>
-          </div>
+              <div className="sm:col-span-2">
+                <label htmlFor="tagline" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                  Tagline
+                </label>
+                <input
+                  id="tagline"
+                  type="text"
+                  maxLength={160}
+                  value={settings.tagline}
+                  onChange={(e) => update("tagline", e.target.value)}
+                  disabled={loading || saving}
+                  placeholder="COMPETITIVE VALORANT"
+                  className={inputClass}
+                />
+              </div>
 
-          <div className="space-y-7 p-6 sm:p-8">
-            <div>
-              <label
-                htmlFor="tournamentName"
-                className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40"
-              >
-                Tournament Name
+              <div>
+                <label htmlFor="organizerName" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                  Organizer
+                </label>
+                <input
+                  id="organizerName"
+                  type="text"
+                  maxLength={100}
+                  value={settings.organizerName}
+                  onChange={(e) => update("organizerName", e.target.value)}
+                  disabled={loading || saving}
+                  placeholder="Tournament organizer"
+                  className={inputClass}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="prizePool" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                  Prize Pool
+                </label>
+                <input
+                  id="prizePool"
+                  type="text"
+                  maxLength={100}
+                  value={settings.prizePool}
+                  onChange={(e) => update("prizePool", e.target.value)}
+                  disabled={loading || saving}
+                  placeholder="₹10,000"
+                  className={inputClass}
+                />
+              </div>
+            </div>
+          </section>
+
+          <section className="overflow-hidden rounded-2xl border border-purple-400/20 bg-purple-400/[0.04]">
+            <div className="border-b border-white/10 p-6 sm:p-8">
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-purple-300">
+                Tournament Schedule
+              </p>
+              <h2 className="mt-2 text-2xl font-black uppercase">Dates & Status</h2>
+            </div>
+
+            <div className="grid gap-7 p-6 sm:grid-cols-3 sm:p-8">
+              <div>
+                <label htmlFor="startDate" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Start Date</label>
+                <input id="startDate" type="datetime-local" value={settings.startDate} onChange={(e) => update("startDate", e.target.value)} disabled={loading || saving} className={inputClass} />
+              </div>
+
+              <div>
+                <label htmlFor="endDate" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">End Date</label>
+                <input id="endDate" type="datetime-local" value={settings.endDate} onChange={(e) => update("endDate", e.target.value)} disabled={loading || saving} className={inputClass} />
+              </div>
+
+              <div>
+                <label htmlFor="tournamentStatus" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Status</label>
+                <select id="tournamentStatus" value={settings.tournamentStatus} onChange={(e) => update("tournamentStatus", e.target.value as Settings["tournamentStatus"])} disabled={loading || saving} className={inputClass}>
+                  <option value="Upcoming">Upcoming</option>
+                  <option value="Live">Live</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <section className="overflow-hidden rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.03]">
+            <div className="border-b border-white/10 p-6 sm:p-8">
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-yellow-300">
+                Public Communication
+              </p>
+              <h2 className="mt-2 text-2xl font-black uppercase">Announcement</h2>
+            </div>
+
+            <div className="p-6 sm:p-8">
+              <label htmlFor="announcement" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                Public Announcement
               </label>
-
-              <input
-                id="tournamentName"
-                type="text"
-                maxLength={100}
-                value={settings.tournamentName}
-                onChange={(event) =>
-                  setSettings(
-                    (current) => ({
-                      ...current,
-                      tournamentName:
-                        event.target.value,
-                    }),
-                  )
-                }
+              <textarea
+                id="announcement"
+                maxLength={500}
+                rows={5}
+                value={settings.announcement}
+                onChange={(e) => update("announcement", e.target.value)}
                 disabled={loading || saving}
-                placeholder="VALORANT TOURNAMENT"
-                className="mt-3 w-full rounded-xl border border-white/10 bg-[#080d17] px-5 py-4 text-lg font-black uppercase text-white outline-none transition placeholder:text-white/15 focus:border-cyan-400/50 disabled:opacity-50"
+                placeholder="Enter an announcement for tournament visitors..."
+                className={inputClass + " resize-y leading-6"}
               />
+              <p className="mt-2 text-right text-[10px] font-bold text-white/20">{settings.announcement.length}/500</p>
+            </div>
+          </section>
 
-              <p className="mt-2 text-right text-[10px] font-bold text-white/20">
-                {settings.tournamentName.length}/100
+          <section className="overflow-hidden rounded-2xl border border-pink-400/20 bg-pink-400/[0.03]">
+            <div className="border-b border-white/10 p-6 sm:p-8">
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-pink-300">
+                Media
               </p>
+              <h2 className="mt-2 text-2xl font-black uppercase">Logo & Banner URLs</h2>
             </div>
 
-            <div>
-              <label
-                htmlFor="tagline"
-                className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40"
-              >
-                Tagline
-              </label>
+            <div className="grid gap-7 p-6 sm:grid-cols-2 sm:p-8">
+              <div>
+                <label htmlFor="logoUrl" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Logo URL</label>
+                <input id="logoUrl" type="url" value={settings.logoUrl} onChange={(e) => update("logoUrl", e.target.value)} disabled={loading || saving} placeholder="https://..." className={inputClass} />
+              </div>
 
-              <input
-                id="tagline"
-                type="text"
-                maxLength={160}
-                value={settings.tagline}
-                onChange={(event) =>
-                  setSettings(
-                    (current) => ({
-                      ...current,
-                      tagline:
-                        event.target.value,
-                    }),
-                  )
-                }
-                disabled={loading || saving}
-                placeholder="COMPETITIVE VALORANT"
-                className="mt-3 w-full rounded-xl border border-white/10 bg-[#080d17] px-5 py-4 text-sm font-bold uppercase text-white outline-none transition placeholder:text-white/15 focus:border-purple-400/50 disabled:opacity-50"
-              />
-
-              <p className="mt-2 text-right text-[10px] font-bold text-white/20">
-                {settings.tagline.length}/160
-              </p>
+              <div>
+                <label htmlFor="bannerUrl" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Banner URL</label>
+                <input id="bannerUrl" type="url" value={settings.bannerUrl} onChange={(e) => update("bannerUrl", e.target.value)} disabled={loading || saving} placeholder="https://..." className={inputClass} />
+              </div>
             </div>
+          </section>
 
-            <div className="rounded-xl border border-yellow-400/15 bg-yellow-400/[0.04] p-4">
-              <p className="text-xs font-bold leading-5 text-yellow-200/70">
-                Changes made here are shared through the tournament
-                database. Visitors do not need to update their browser
-                or local storage.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-3 border-t border-white/10 bg-black/10 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
-            <Link
-              href="/admin"
-              className="text-center text-xs font-black uppercase tracking-wider text-white/30 transition hover:text-white"
-            >
+          <div className="flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
+            <Link href="/admin" className="text-center text-xs font-black uppercase tracking-wider text-white/30 transition hover:text-white">
               Cancel
             </Link>
 
             <button
               type="submit"
-              disabled={
-                loading ||
-                saving ||
-                !settings.tournamentName.trim()
-              }
+              disabled={loading || saving || !settings.tournamentName.trim()}
               className="rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-8 py-4 text-xs font-black uppercase tracking-wider text-cyan-200 transition hover:bg-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {saving
-                ? "Saving..."
-                : "Save Tournament Settings"}
+              {saving ? "Saving..." : "Save Tournament Settings"}
             </button>
           </div>
         </form>
