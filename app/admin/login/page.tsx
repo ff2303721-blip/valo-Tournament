@@ -47,15 +47,15 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#080c12] text-white">
+    <main className="relative min-h-screen overflow-hidden bg-[#04070f] text-white"><div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_15%,rgba(255,49,88,0.18),transparent_28%),radial-gradient(circle_at_85%_20%,rgba(39,217,255,0.12),transparent_30%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.12),transparent_35%)]" />
       <div className="flex min-h-screen items-center justify-center px-5">
-        <div className="w-full max-w-md">
+        <div className="relative w-full max-w-md">
           <div className="mb-8 text-center">
-            <div className="mb-4 text-xs font-bold tracking-[0.35em] text-[#ff4655]">
+            <div className="mb-4 text-xs font-black uppercase tracking-[0.35em] text-[#52e2ff]">
               VALORANT TOURNAMENT
             </div>
 
-            <h1 className="text-3xl font-black tracking-wide">
+            <h1 className="bg-gradient-to-r from-white via-[#ffdce4] to-[#ff5275] bg-clip-text text-3xl font-black uppercase tracking-wide text-transparent">
               ADMIN LOGIN
             </h1>
 
@@ -64,8 +64,8 @@ export default function AdminLoginPage() {
             </p>
           </div>
 
-          <div className="border border-[#2a3749] bg-[#0e141e] shadow-2xl">
-            <div className="border-b border-[#2a3749] px-6 py-4">
+          <div className="overflow-hidden rounded-2xl border border-[#ff3158]/60 bg-gradient-to-br from-[#0d1522] via-[#080e19] to-[#0a1320] shadow-[0_20px_70px_rgba(0,0,0,0.4),0_0_35px_rgba(255,49,88,0.08)]">
+            <div className="border-b border-white/[0.08] bg-white/[0.02] px-6 py-4">
               <div className="text-xs font-bold tracking-[0.2em] text-[#8da5c1]">
                 SECURE ACCESS
               </div>
