@@ -1022,7 +1022,7 @@ function Th({
 
   return (
     <th
-      className={`px-4 py-4 text-${align} text-[8px] font-black tracking-[0.14em] uppercase ${color}`}
+      className={`px-4 py-4 text-${align} text-[11px] font-black tracking-[0.14em] uppercase ${color}`}
     >
       {children}
     </th>
