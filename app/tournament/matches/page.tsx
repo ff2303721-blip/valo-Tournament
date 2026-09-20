@@ -314,7 +314,7 @@ export default function PublicMatchesPage() {
     ]);
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#050810]/80 text-white">
+    <main className="min-h-screen overflow-hidden bg-[#050810]/68 text-white">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_10%,rgba(255,49,88,0.12),transparent_25%),radial-gradient(circle_at_85%_20%,rgba(39,217,255,0.10),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.10),transparent_35%)]" />
       <header className="relative border-b border-[#243247] bg-[#080d17]/95 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-7">
