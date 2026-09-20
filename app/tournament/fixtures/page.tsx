@@ -266,10 +266,10 @@ export default function FixturesPage() {
           matchesResponse,
         ] = await Promise.all([
           fetch("/api/teams", {
-            cache: "no-store",
+            cache: "force-cache",
           }),
           fetch("/api/matches", {
-            cache: "no-store",
+            cache: "force-cache",
           }),
         ]);
 
