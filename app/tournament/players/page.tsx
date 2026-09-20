@@ -867,8 +867,8 @@ function PlayerTableRow({
         <span
           className={
             row.mvp > 0
-              ? "text-[10px] font-black text-yellow-400"
-              : "text-[10px] font-black text-white/20"
+              ? "text-[12px] font-black text-yellow-400"
+              : "text-[12px] font-black text-white/20"
           }
         >
           {row.mvp}
@@ -880,8 +880,8 @@ function PlayerTableRow({
         <span
           className={
             row.topFragger > 0
-              ? "text-[10px] font-black text-cyan-400"
-              : "text-[10px] font-black text-white/20"
+              ? "text-[12px] font-black text-cyan-400"
+              : "text-[12px] font-black text-white/20"
           }
         >
           {row.topFragger}
@@ -920,7 +920,7 @@ function SummaryCard({
       </div>
 
       <div
-        className={`mt-3 text-3xl font-black ${accentClass}`}
+        className={`mt-3 text-4xl font-black ${accentClass}`}
       >
         {value}
       </div>
@@ -1005,21 +1005,21 @@ function StatCell({
   cyan?: boolean;
 }) {
   let className =
-    "text-[10px] font-black text-white";
+    "text-[12px] font-black text-white";
 
   if (positive) {
     className =
-      "text-[10px] font-black text-emerald-400";
+      "text-[12px] font-black text-emerald-400";
   }
 
   if (negative) {
     className =
-      "text-[10px] font-black text-red-400";
+      "text-[12px] font-black text-red-400";
   }
 
   if (cyan) {
     className =
-      "text-[10px] font-black text-cyan-400";
+      "text-[12px] font-black text-cyan-400";
   }
 
   return (
