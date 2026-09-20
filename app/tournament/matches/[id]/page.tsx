@@ -308,7 +308,7 @@ export default function PublicMatchDetailPage({
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#080c12] text-white">
+      <main className="flex min-h-screen items-center justify-center bg-[#04070f] text-white">
         <div className="text-sm text-[#7188a5]">
           Loading match...
         </div>
@@ -318,8 +318,8 @@ export default function PublicMatchDetailPage({
 
   if (!match) {
     return (
-      <main className="min-h-screen bg-[#080c12] px-6 py-10 text-white">
-        <div className="mx-auto max-w-3xl rounded-xl border border-red-900/60 bg-red-950/20 p-8">
+      <main className="min-h-screen bg-[#04070f] px-6 py-10 text-white">
+        <div className="mx-auto max-w-3xl rounded-xl border border-[#ff3158]/40 bg-[#ff3158]/10 p-8">
           <h1 className="text-2xl font-black">
             Match not found
           </h1>
@@ -331,7 +331,7 @@ export default function PublicMatchDetailPage({
 
           <Link
             href="/tournament/matches"
-            className="mt-6 inline-block rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#bcd0e8]"
+            className="mt-6 inline-block rounded border border-[#2b3d58] bg-[#0b1220] px-4 py-2 text-xs font-bold text-[#bcd0e8]"
           >
             ← ALL MATCHES
           </Link>
@@ -343,7 +343,7 @@ export default function PublicMatchDetailPage({
   return (
     <main className="min-h-screen overflow-hidden bg-[#050810] text-white">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_10%,rgba(255,49,88,0.12),transparent_25%),radial-gradient(circle_at_85%_20%,rgba(39,217,255,0.10),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.10),transparent_35%)]" />
-      <header className="relative border-b border-[#243247] bg-[#080d17]/95 backdrop-blur-xl">
+      <header className="relative border-b border-[#243247] bg-[#070c17]/95 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-6 py-5">
           <Link
             href="/tournament/matches"
@@ -802,14 +802,14 @@ export default function PublicMatchDetailPage({
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             href="/tournament/matches"
-            className="rounded border border-[#38506d] bg-[#111b29] px-5 py-3 text-xs font-bold text-[#bcd0e8]"
+            className="rounded border border-[#2b3d58] bg-[#0b1220] px-5 py-3 text-xs font-bold text-[#bcd0e8]"
           >
             ← ALL MATCHES
           </Link>
 
           <Link
             href="/tournament/teams"
-            className="rounded border border-[#38506d] bg-[#111b29] px-5 py-3 text-xs font-bold text-[#bcd0e8]"
+            className="rounded border border-[#2b3d58] bg-[#0b1220] px-5 py-3 text-xs font-bold text-[#bcd0e8]"
           >
             VIEW TEAMS
           </Link>
