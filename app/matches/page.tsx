@@ -923,20 +923,20 @@ export default function MatchCenterPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#070a10] text-white">
-      <div className="mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8">
+    <main className="relative min-h-screen overflow-hidden bg-[#050810] text-white"><div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_10%_8%,rgba(255,49,88,0.13),transparent_24%),radial-gradient(circle_at_90%_15%,rgba(39,217,255,0.11),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.11),transparent_35%)]" />
+      <div className="relative mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8">
         <header className="mb-8">
-          <div className="flex flex-col gap-4 border-b border-[#1c2635] pb-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-4 border-b border-[#2b3d58] pb-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <div className="mb-2 text-xs font-black tracking-[0.35em] text-red-400">
+              <div className="mb-2 text-xs font-black uppercase tracking-[0.35em] text-[#52e2ff]">
                 VALORANT TOURNAMENT
               </div>
 
-              <h1 className="text-3xl font-black tracking-tight sm:text-4xl">
+              <h1 className="bg-gradient-to-r from-white via-[#ffdce4] to-[#ff5275] bg-clip-text text-3xl font-black text-white uppercase tracking-tight text-transparent sm:text-4xl">
                 MATCH CENTER
               </h1>
 
-              <p className="mt-2 max-w-3xl text-sm text-[#7f91a8]">
+              <p className="mt-2 max-w-3xl text-sm text-[#8195b0]">
                 Create and manage the 12 Group Stage
                 fixtures. Qualifiers and the Grand Final
                 are generated automatically from completed
@@ -947,21 +947,21 @@ export default function MatchCenterPage() {
             <div className="flex flex-wrap gap-2">
               <Link
                 href="/admin"
-                className="rounded border border-[#29384d] bg-[#101722] px-4 py-2 text-xs font-black tracking-wide text-[#c9d7e8] hover:bg-[#162131]"
+                className="rounded-xl border border-[#2b3d58] bg-[#0b1220] px-4 py-2 text-[10px] font-black uppercase tracking-wider text-[#a9b8cc] transition hover:border-[#52e2ff]/50 hover:bg-[#52e2ff]/[0.06] hover:text-[#52e2ff]"
               >
                 ADMIN HUB
               </Link>
 
               <Link
                 href="/teams"
-                className="rounded border border-[#29384d] bg-[#101722] px-4 py-2 text-xs font-black tracking-wide text-[#c9d7e8] hover:bg-[#162131]"
+                className="rounded-xl border border-[#2b3d58] bg-[#0b1220] px-4 py-2 text-[10px] font-black uppercase tracking-wider text-[#a9b8cc] transition hover:border-[#52e2ff]/50 hover:bg-[#52e2ff]/[0.06] hover:text-[#52e2ff]"
               >
                 TEAMS
               </Link>
 
               <Link
                 href="/tournament"
-                className="rounded border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-black tracking-wide text-red-300 hover:bg-red-500/15"
+                className="rounded-xl border border-[#ff3158]/40 bg-[#ff3158]/10 px-4 py-2 text-[10px] font-black uppercase tracking-wider text-[#ff6b86] transition hover:bg-[#ff3158]/20"
               >
                 PUBLIC SITE ↗
               </Link>
@@ -970,46 +970,46 @@ export default function MatchCenterPage() {
         </header>
 
         <section className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="rounded-xl border border-[#1d2a3b] bg-[#0d131d] p-5">
-            <div className="text-[10px] font-black tracking-[0.2em] text-[#687a91]">
+          <div className="rounded-2xl border border-[#263750] bg-gradient-to-br from-[#0d1522] via-[#0a1019] to-[#111020] p-5 shadow-[0_10px_35px_rgba(0,0,0,0.20)]">
+            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#52e2ff]">
               TEAMS
             </div>
-            <div className="mt-2 text-3xl font-black">
+            <div className="mt-2 text-3xl font-black text-white">
               {teams.length}
             </div>
           </div>
 
-          <div className="rounded-xl border border-[#1d2a3b] bg-[#0d131d] p-5">
-            <div className="text-[10px] font-black tracking-[0.2em] text-[#687a91]">
+          <div className="rounded-2xl border border-[#263750] bg-gradient-to-br from-[#0d1522] via-[#0a1019] to-[#111020] p-5 shadow-[0_10px_35px_rgba(0,0,0,0.20)]">
+            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#52e2ff]">
               GROUP MATCHES
             </div>
-            <div className="mt-2 text-3xl font-black">
+            <div className="mt-2 text-3xl font-black text-white">
               {groupMatches.length}
-              <span className="ml-2 text-sm text-[#667991]">
+              <span className="ml-2 text-sm text-[#7187a3]">
                 / 12
               </span>
             </div>
           </div>
 
-          <div className="rounded-xl border border-[#1d2a3b] bg-[#0d131d] p-5">
-            <div className="text-[10px] font-black tracking-[0.2em] text-[#687a91]">
+          <div className="rounded-2xl border border-[#263750] bg-gradient-to-br from-[#0d1522] via-[#0a1019] to-[#111020] p-5 shadow-[0_10px_35px_rgba(0,0,0,0.20)]">
+            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#52e2ff]">
               GROUP COMPLETED
             </div>
-            <div className="mt-2 text-3xl font-black">
+            <div className="mt-2 text-3xl font-black text-white">
               {completedGroupMatches}
-              <span className="ml-2 text-sm text-[#667991]">
+              <span className="ml-2 text-sm text-[#7187a3]">
                 / 12
               </span>
             </div>
           </div>
 
-          <div className="rounded-xl border border-[#1d2a3b] bg-[#0d131d] p-5">
-            <div className="text-[10px] font-black tracking-[0.2em] text-[#687a91]">
+          <div className="rounded-2xl border border-[#263750] bg-gradient-to-br from-[#0d1522] via-[#0a1019] to-[#111020] p-5 shadow-[0_10px_35px_rgba(0,0,0,0.20)]">
+            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#52e2ff]">
               PHASE 2
             </div>
-            <div className="mt-2 text-3xl font-black">
+            <div className="mt-2 text-3xl font-black text-white">
               {phase2Matches.length}
-              <span className="ml-2 text-sm text-[#667991]">
+              <span className="ml-2 text-sm text-[#7187a3]">
                 / 4
               </span>
             </div>
@@ -1018,11 +1018,11 @@ export default function MatchCenterPage() {
           <div
             className={`rounded-xl border p-5 ${
               groupStageComplete
-                ? "border-emerald-500/30 bg-emerald-500/10"
+                ? "border-emerald-400/30 bg-emerald-400/10"
                 : "border-[#1d2a3b] bg-[#0d131d]"
             }`}
           >
-            <div className="text-[10px] font-black tracking-[0.2em] text-[#687a91]">
+            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#52e2ff]">
               TOURNAMENT FLOW
             </div>
             <div
@@ -1039,14 +1039,14 @@ export default function MatchCenterPage() {
           </div>
         </section>
 
-        <section className="mb-6 overflow-hidden rounded-xl border border-[#1d2a3b] bg-[#0b111a]">
-          <div className="border-b border-[#1d2a3b] p-5">
+        <section className="mb-6 overflow-hidden rounded-2xl border border-[#2b3d58] bg-gradient-to-br from-[#0d1522] via-[#0a1019] to-[#111020] shadow-[0_15px_50px_rgba(0,0,0,0.22)]">
+          <div className="border-b border-white/[0.07] bg-white/[0.015] p-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <h2 className="text-lg font-black">
+                <h2 className="text-lg font-black uppercase">
                   TOURNAMENT PROGRESSION
                 </h2>
-                <p className="mt-1 text-xs text-[#70829a]">
+                <p className="mt-1 text-xs text-[#8195b0]">
                   Phase 2 is controlled entirely by completed
                   results.
                 </p>
@@ -1056,7 +1056,7 @@ export default function MatchCenterPage() {
                 type="button"
                 onClick={refreshAndProgress}
                 disabled={generating}
-                className="rounded border border-[#33455d] bg-[#111a27] px-4 py-2 text-xs font-black text-[#c8d7e9] hover:bg-[#172234] disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl border border-[#52e2ff]/30 bg-[#52e2ff]/[0.06] px-4 py-2 text-[10px] font-black uppercase tracking-wider text-[#9eeeff] transition hover:border-[#52e2ff]/60 hover:bg-[#52e2ff]/10 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {generating
                   ? "CHECKING..."
@@ -1065,7 +1065,7 @@ export default function MatchCenterPage() {
             </div>
           </div>
 
-          <div className="grid gap-px bg-[#1d2a3b] sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-px bg-[#263750] sm:grid-cols-2 lg:grid-cols-4">
             {[
               {
                 number: "01",
@@ -1113,21 +1113,21 @@ export default function MatchCenterPage() {
                 key={step.number}
                 className="bg-[#0b111a] p-5"
               >
-                <div className="text-xs font-black text-red-400">
+                <div className="text-xs font-black text-[#ff5275]">
                   {step.number}
                 </div>
                 <div className="mt-2 text-sm font-black">
                   {step.title}
                 </div>
-                <div className="mt-1 text-xs text-[#71839a]">
+                <div className="mt-1 text-xs text-[#8195b0]">
                   {step.text}
                 </div>
 
                 <div
                   className={`mt-4 inline-flex rounded-full border px-2 py-1 text-[9px] font-black tracking-wider ${
                     step.active
-                      ? "border-red-500/30 bg-red-500/10 text-red-300"
-                      : "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                      ? "border-[#ff3158]/35 bg-[#ff3158]/10 text-[#ff6b86]"
+                      : "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
                   }`}
                 >
                   {step.active
@@ -1140,29 +1140,29 @@ export default function MatchCenterPage() {
         </section>
 
         {error && (
-          <div className="mb-5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          <div className="mb-5 rounded-xl border border-[#ff3158]/30 bg-[#ff3158]/10 px-4 py-3 text-sm text-[#ff8da3] shadow-[0_0_25px_rgba(255,49,88,0.06)]">
             {error}
           </div>
         )}
 
         {message && (
-          <div className="mb-5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+          <div className="mb-5 rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-300">
             {message}
           </div>
         )}
 
         <div className="grid gap-6 xl:grid-cols-[1fr_400px]">
           <section className="min-w-0">
-            <div className="mb-4 flex flex-col gap-3 rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex rounded-lg border border-[#26364b] bg-[#080d14] p-1">
+            <div className="mb-4 flex flex-col gap-3 rounded-2xl border border-[#2b3d58] bg-gradient-to-r from-[#0d1522] to-[#101020] p-4 shadow-[0_10px_35px_rgba(0,0,0,0.18)] lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex rounded-xl border border-[#2b3d58] bg-[#060b14] p-1">
                 <button
                   type="button"
                   onClick={() =>
                     setActiveSection("group")
                   }
-                  className={`rounded px-4 py-2 text-xs font-black ${
+                  className={`rounded-lg px-4 py-2 text-[10px] font-black uppercase tracking-wider ${
                     activeSection === "group"
-                      ? "bg-red-500 text-white"
+                      ? "bg-gradient-to-r from-[#ff3158] to-[#ff5275] text-white shadow-[0_0_20px_rgba(255,49,88,0.18)]"
                       : "text-[#7d8ea5]"
                   }`}
                 >
@@ -1174,9 +1174,9 @@ export default function MatchCenterPage() {
                   onClick={() =>
                     setActiveSection("phase2")
                   }
-                  className={`rounded px-4 py-2 text-xs font-black ${
+                  className={`rounded-lg px-4 py-2 text-[10px] font-black uppercase tracking-wider ${
                     activeSection === "phase2"
-                      ? "bg-red-500 text-white"
+                      ? "bg-gradient-to-r from-[#ff3158] to-[#ff5275] text-white shadow-[0_0_20px_rgba(255,49,88,0.18)]"
                       : "text-[#7d8ea5]"
                   }`}
                 >
@@ -1191,7 +1191,7 @@ export default function MatchCenterPage() {
                   teams.length !== 4 ||
                   groupMatches.length >= 12
                 }
-                className="rounded bg-red-500 px-4 py-2 text-xs font-black text-white hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-xl bg-gradient-to-r from-[#ff3158] to-[#ff5275] px-4 py-2 text-[10px] font-black uppercase tracking-wider text-white shadow-[0_0_22px_rgba(255,49,88,0.18)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 + NEW GROUP MATCH
               </button>
@@ -1204,7 +1204,7 @@ export default function MatchCenterPage() {
                   setSearch(event.target.value)
                 }
                 placeholder="Search match, team or map..."
-                className="rounded-lg border border-[#26364b] bg-[#0d141f] px-4 py-3 text-sm text-white outline-none placeholder:text-[#53647b] focus:border-red-500/50"
+                className="rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm text-white outline-none placeholder:text-[#53647b] transition focus:border-[#52e2ff]/60 focus:ring-1 focus:ring-[#52e2ff]/15"
               />
 
               <select
@@ -1212,7 +1212,7 @@ export default function MatchCenterPage() {
                 onChange={(event) =>
                   setStatusFilter(event.target.value)
                 }
-                className="rounded-lg border border-[#26364b] bg-[#0d141f] px-4 py-3 text-sm text-white outline-none"
+                className="rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm text-white outline-none transition focus:border-[#52e2ff]/60 focus:ring-1 focus:ring-[#52e2ff]/15"
               >
                 <option value="All">
                   All Statuses
@@ -1236,7 +1236,7 @@ export default function MatchCenterPage() {
                 onChange={(event) =>
                   setStageFilter(event.target.value)
                 }
-                className="rounded-lg border border-[#26364b] bg-[#0d141f] px-4 py-3 text-sm text-white outline-none"
+                className="rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm text-white outline-none transition focus:border-[#52e2ff]/60 focus:ring-1 focus:ring-[#52e2ff]/15"
               >
                 <option value="All">
                   All Stages
@@ -1277,12 +1277,12 @@ export default function MatchCenterPage() {
                   return (
                     <div
                       key={match.id}
-                      className="rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-5"
+                      className="rounded-2xl border border-[#263750] bg-gradient-to-br from-[#0d1522] to-[#0a1019] p-5 shadow-[0_10px_35px_rgba(0,0,0,0.18)]"
                     >
                       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="min-w-[58px] rounded border border-[#2b3d55] bg-[#101925] px-2 py-2 text-center">
-                            <div className="text-[9px] font-black text-[#687b94]">
+                          <div className="min-w-[58px] rounded-xl border border-[#52e2ff]/25 bg-[#060b14] px-2 py-2 text-center shadow-[0_0_18px_rgba(39,217,255,0.06)]">
+                            <div className="text-[9px] font-black uppercase tracking-wider text-[#52e2ff]">
                               MATCH
                             </div>
                             <div className="mt-1 text-sm font-black">
@@ -1293,7 +1293,7 @@ export default function MatchCenterPage() {
                           </div>
 
                           <div>
-                            <div className="text-xs font-black tracking-wider text-red-400">
+                            <div className="text-xs font-black uppercase tracking-wider text-[#ff5275]">
                               {isAutomatic
                                 ? phaseLabel(
                                     match.matchNumber,
@@ -1301,13 +1301,13 @@ export default function MatchCenterPage() {
                                 : "GROUP STAGE"}
                             </div>
 
-                            <div className="mt-1 text-[11px] text-[#667991]">
+                            <div className="mt-1 text-[11px] text-[#8195b0]">
                               {match.map} · BO{match.bestOf}
                             </div>
                           </div>
 
                           {isAutomatic && (
-                            <span className="rounded-full border border-purple-500/30 bg-purple-500/10 px-2 py-1 text-[9px] font-black text-purple-300">
+                            <span className="rounded-full border border-purple-400/35 bg-purple-500/10 px-2 py-1 text-[9px] font-black text-purple-300 text-purple-300">
                               AUTO
                             </span>
                           )}
@@ -1332,7 +1332,7 @@ export default function MatchCenterPage() {
                         </div>
 
                         <div className="text-center">
-                          <div className="text-3xl font-black tracking-wider">
+                          <div className="text-3xl font-black text-white tracking-wider">
                             {match.team1Score}
                             <span className="mx-2 text-[#45566e]">
                               :
@@ -1396,7 +1396,7 @@ export default function MatchCenterPage() {
                                   match,
                                 )
                               }
-                              className="rounded border border-red-900/50 bg-red-950/30 px-3 py-2 text-[10px] font-black text-red-400 hover:bg-red-950/50"
+                              className="rounded-xl border border-[#ff3158]/30 bg-[#ff3158]/10 px-3 py-2 text-[10px] font-black text-[#ff6b86] transition hover:bg-[#ff3158]/20"
                             >
                               DELETE
                             </button>
@@ -1406,7 +1406,7 @@ export default function MatchCenterPage() {
                             href={`/matches/${encodeURIComponent(
                               match.id,
                             )}`}
-                            className="rounded border border-purple-500/30 bg-purple-500/10 px-3 py-2 text-[10px] font-black text-purple-300"
+                            className="rounded-xl border border-purple-400/30 bg-purple-500/10 px-3 py-2 text-[10px] font-black text-purple-300"
                           >
                             VIEW RESULT
                           </Link>
@@ -1420,10 +1420,10 @@ export default function MatchCenterPage() {
           </section>
 
           <aside className="space-y-6">
-            <section className="rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-5">
+            <section className="rounded-2xl border border-[#263750] bg-gradient-to-br from-[#0d1522] to-[#0a1019] p-5 shadow-[0_10px_35px_rgba(0,0,0,0.18)]">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-black">
+                  <h2 className="text-lg font-black uppercase">
                     GROUP STANDINGS
                   </h2>
                   <p className="mt-1 text-[10px] text-[#65778f]">
@@ -1431,7 +1431,7 @@ export default function MatchCenterPage() {
                   </p>
                 </div>
 
-                <span className="rounded border border-[#29394f] bg-[#111a26] px-2 py-1 text-[9px] font-black text-[#7890aa]">
+                <span className="rounded-lg border border-[#52e2ff]/25 bg-[#52e2ff]/[0.05] px-2 py-1 text-[9px] font-black text-[#72e9ff]">
                   LIVE
                 </span>
               </div>
@@ -1482,7 +1482,7 @@ export default function MatchCenterPage() {
               </div>
             </section>
 
-            <section className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5">
+            <section className="rounded-2xl border border-purple-400/25 bg-gradient-to-br from-purple-500/[0.10] via-[#0b111a] to-cyan-500/[0.05] p-5 shadow-[0_12px_40px_rgba(139,92,246,0.08)]">
               <div className="text-[10px] font-black tracking-[0.2em] text-purple-300">
                 AUTOMATIC FLOW
               </div>
@@ -1546,8 +1546,8 @@ export default function MatchCenterPage() {
               </div>
             </section>
 
-            <section className="rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-5">
-              <div className="text-[10px] font-black tracking-[0.2em] text-[#687a91]">
+            <section className="rounded-2xl border border-[#263750] bg-gradient-to-br from-[#0d1522] to-[#0a1019] p-5 shadow-[0_10px_35px_rgba(0,0,0,0.18)]">
+              <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#52e2ff]">
                 ADMIN RULES
               </div>
 
@@ -1595,10 +1595,10 @@ export default function MatchCenterPage() {
           </aside>
         </div>
 
-        <section className="mt-6 rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-5">
+        <section className="mt-6 rounded-2xl border border-[#263750] bg-gradient-to-br from-[#0d1522] to-[#0a1019] p-5 shadow-[0_10px_35px_rgba(0,0,0,0.18)]">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg font-black">
+              <h2 className="text-lg font-black uppercase">
                 GROUP MATCH EDITOR
               </h2>
               <p className="mt-1 text-xs text-[#667991]">
@@ -1610,7 +1610,7 @@ export default function MatchCenterPage() {
               <button
                 type="button"
                 onClick={resetEditor}
-                className="rounded border border-[#304159] bg-[#111a27] px-3 py-2 text-[10px] font-black text-[#b9c9dc]"
+                className="rounded-xl border border-[#2b3d58] bg-[#0b1220] px-3 py-2 text-[10px] font-black uppercase tracking-wider text-[#b9c9dc] transition hover:border-[#52e2ff]/40 hover:text-[#52e2ff]"
               >
                 CLEAR EDITOR
               </button>
@@ -1632,7 +1632,7 @@ export default function MatchCenterPage() {
                 }
                 disabled={Boolean(editor.id)}
                 placeholder="M01"
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none disabled:opacity-50"
+                className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm outline-none transition focus:border-[#52e2ff]/60 disabled:opacity-50"
               />
             </label>
 
@@ -1686,7 +1686,7 @@ export default function MatchCenterPage() {
                       current.map,
                   }));
                 }}
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
+                className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm outline-none transition focus:border-[#52e2ff]/60 focus:ring-1 focus:ring-[#52e2ff]/10"
               >
                 <option value="">
                   Select Match
@@ -1719,7 +1719,7 @@ export default function MatchCenterPage() {
                     map: event.target.value,
                   }))
                 }
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
+                className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm outline-none transition focus:border-[#52e2ff]/60 focus:ring-1 focus:ring-[#52e2ff]/10"
               >
                 <option value="TBD">TBD</option>
                 <option value="Ascent">
@@ -1762,7 +1762,7 @@ export default function MatchCenterPage() {
                     bestOf: event.target.value,
                   }))
                 }
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
+                className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm outline-none transition focus:border-[#52e2ff]/60 focus:ring-1 focus:ring-[#52e2ff]/10"
               >
                 <option value="1">BO1</option>
                 <option value="3">BO3</option>
@@ -1783,7 +1783,7 @@ export default function MatchCenterPage() {
                       event.target.value,
                   }))
                 }
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
+                className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm outline-none transition focus:border-[#52e2ff]/60 focus:ring-1 focus:ring-[#52e2ff]/10"
               >
                 <option value="">
                   Select Team
@@ -1812,7 +1812,7 @@ export default function MatchCenterPage() {
                       event.target.value,
                   }))
                 }
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
+                className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm outline-none transition focus:border-[#52e2ff]/60 focus:ring-1 focus:ring-[#52e2ff]/10"
               >
                 <option value="">
                   Select Team
@@ -1843,7 +1843,7 @@ export default function MatchCenterPage() {
                       event.target.value,
                   }))
                 }
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
+                className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm outline-none transition focus:border-[#52e2ff]/60 focus:ring-1 focus:ring-[#52e2ff]/10"
               />
             </label>
 
@@ -1862,7 +1862,7 @@ export default function MatchCenterPage() {
                       event.target.value,
                   }))
                 }
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
+                className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm outline-none transition focus:border-[#52e2ff]/60 focus:ring-1 focus:ring-[#52e2ff]/10"
               />
             </label>
 
@@ -1879,7 +1879,7 @@ export default function MatchCenterPage() {
                       event.target.value as MatchStatus,
                   }))
                 }
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
+                className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm outline-none transition focus:border-[#52e2ff]/60 focus:ring-1 focus:ring-[#52e2ff]/10"
               >
                 <option value="Scheduled">
                   Scheduled
@@ -1910,7 +1910,7 @@ export default function MatchCenterPage() {
                       event.target.value,
                   }))
                 }
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
+                className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-3 py-3 text-sm outline-none transition focus:border-[#52e2ff]/60 focus:ring-1 focus:ring-[#52e2ff]/10"
               />
             </label>
           </div>
@@ -1920,7 +1920,7 @@ export default function MatchCenterPage() {
               type="button"
               onClick={saveGroupMatch}
               disabled={saving}
-              className="rounded bg-red-500 px-5 py-3 text-xs font-black text-white hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl bg-gradient-to-r from-[#ff3158] to-[#ff5275] px-5 py-3 text-xs font-black uppercase tracking-wider text-white shadow-[0_0_24px_rgba(255,49,88,0.18)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {saving
                 ? "SAVING..."
@@ -1932,14 +1932,14 @@ export default function MatchCenterPage() {
             <button
               type="button"
               onClick={resetEditor}
-              className="rounded border border-[#304159] bg-[#111a27] px-5 py-3 text-xs font-black text-[#b9c9dc] hover:bg-[#182435]"
+              className="rounded-xl border border-[#2b3d58] bg-[#0b1220] px-5 py-3 text-xs font-black uppercase tracking-wider text-[#b9c9dc] transition hover:border-[#52e2ff]/40 hover:text-[#52e2ff]"
             >
               RESET
             </button>
           </div>
         </section>
 
-        <footer className="mt-8 border-t border-[#172231] pt-5 text-center text-[10px] font-bold tracking-wider text-[#4e6078]">
+        <footer className="mt-8 border-t border-[#263750] pt-5 text-center text-[10px] font-black uppercase tracking-wider text-[#617994]">
           GROUP STAGE: M01–M12 MANUAL · M13–M16 AUTOMATIC
         </footer>
       </div>
