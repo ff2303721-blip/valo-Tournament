@@ -4,10 +4,23 @@ import Link from "next/link";
 import { TournamentBrand } from "../components/tournament-brand";
 import { useEffect, useState } from "react";
 
-import {
-  Team,
-  teams as initialTeams,
-} from "../../data/teams";
+type Player = {
+  id: string;
+  name: string;
+  role?: string;
+};
+
+type Team = {
+  id: string;
+  name: string;
+  tag: string;
+  seed: number;
+  logo?: string;
+  wins: number;
+  losses: number;
+  captainRank?: string;
+  players: Player[];
+};
 
 function initials(name: string) {
   return (
@@ -41,7 +54,7 @@ export default function PublicTeamsPage() {
       const response = await fetch(
         "/api/teams",
         {
-          cache: "force-cache",
+          cache: "no-store",
         },
       );
 
@@ -69,7 +82,7 @@ export default function PublicTeamsPage() {
           : "Unable to load registered teams.",
       );
 
-      setTeams(initialTeams);
+      setTeams([]);
     } finally {
       setLoading(false);
     }
