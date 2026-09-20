@@ -423,7 +423,7 @@ export default function PlayerStatisticsPage() {
     );
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#050810] px-4 py-7 text-white md:px-8"><div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_10%_8%,rgba(255,49,88,0.12),transparent_25%),radial-gradient(circle_at_90%_15%,rgba(39,217,255,0.10),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.10),transparent_35%)]" />
+    <main className="relative min-h-screen overflow-hidden bg-[#050810]/68 px-4 py-7 text-white md:px-8"><div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_10%_8%,rgba(255,49,88,0.12),transparent_25%),radial-gradient(circle_at_90%_15%,rgba(39,217,255,0.10),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.10),transparent_35%)]" />
       <div className="mx-auto max-w-[1280px]">
 
         {/* HEADER */}
