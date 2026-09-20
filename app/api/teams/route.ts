@@ -102,9 +102,12 @@ async function buildTeamResponse(
   }));
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const client = getSupabasePublic();
+
+    const summary =
+      request.nextUrl.searchParams.get("summary") === "true";
 
     const { data: teams, error: teamsError } = await client
       .from("teams")
@@ -118,6 +121,27 @@ export async function GET() {
         { error: teamsError.message },
         { status: 500 },
       );
+    }
+
+    const baseResponse = (teams ?? []).map((team) => ({
+      id: team.id,
+      name: team.name,
+      tag: team.tag,
+      seed: team.seed,
+      logo: team.logo ?? "",
+      wins: team.wins ?? 0,
+      losses: team.losses ?? 0,
+      captainRank: team.captain_rank ?? "",
+      players: [],
+    }));
+
+    if (summary) {
+      return NextResponse.json(baseResponse, {
+        headers: {
+          "Cache-Control":
+            "public, s-maxage=30, stale-while-revalidate=120",
+        },
+      });
     }
 
     const teamIds = (teams ?? []).map((team) => team.id);
@@ -170,7 +194,8 @@ export async function GET() {
 
     return NextResponse.json(response, {
       headers: {
-        "Cache-Control": "public, s-maxage=10, stale-while-revalidate=30",
+        "Cache-Control":
+          "public, s-maxage=30, stale-while-revalidate=120",
       },
     });
   } catch (error) {
