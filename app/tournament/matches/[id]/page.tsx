@@ -366,17 +366,17 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
     <main className="relative min-h-screen overflow-x-hidden bg-[#02050b] text-white">
       {/* Real page background */}
       <div
-        className="pointer-events-none fixed inset-0 -z-20 bg-cover bg-center bg-no-repeat"
+        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `url("${BACKGROUND_IMAGE}")`,
           transform: "scale(1.02)",
         }}
       />
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[#02050b]/58" />
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(90deg,rgba(255,15,79,0.16),transparent_34%,transparent_66%,rgba(23,224,255,0.17)),linear-gradient(180deg,rgba(2,5,11,0.42),rgba(2,5,11,0.82))]" />
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_12%_42%,rgba(255,20,79,0.20),transparent_25%),radial-gradient(circle_at_88%_42%,rgba(35,230,255,0.18),transparent_27%)]" />
+      <div className="pointer-events-none fixed inset-0 z-[1] bg-[#02050b]/45" />
+      <div className="pointer-events-none fixed inset-0 z-[2] bg-[linear-gradient(90deg,rgba(255,15,79,0.14),transparent_34%,transparent_66%,rgba(23,224,255,0.14)),linear-gradient(180deg,rgba(2,5,11,0.25),rgba(2,5,11,0.68))]" />
+      <div className="pointer-events-none fixed inset-0 z-[3] bg-[radial-gradient(circle_at_12%_42%,rgba(255,20,79,0.16),transparent_25%),radial-gradient(circle_at_88%_42%,rgba(35,230,255,0.14),transparent_27%)]" />
 
-      <header className="relative border-t border-[#8b2cff]/40 bg-[#030812]/55 backdrop-blur-[2px]">
+      <header className="relative z-10 border-t border-[#8b2cff]/40 bg-[#030812]/55 backdrop-blur-[2px]">
         <div className="mx-auto max-w-[1280px] px-5 py-5 sm:px-8">
           <div className="flex items-start justify-between gap-5">
             <div>
@@ -426,7 +426,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
         </div>
       </header>
 
-      <div className="relative mx-auto max-w-[1280px] px-5 py-7 sm:px-8">
+      <div className="relative z-10 mx-auto max-w-[1280px] px-5 py-7 sm:px-8">
         {/* Main match hero */}
         <section className="relative overflow-hidden rounded-[22px] border border-[#3b5a78] bg-[#060b14]/72 shadow-[0_25px_90px_rgba(0,0,0,0.58)] backdrop-blur-[3px]">
           <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#ff174f] via-[#ff5b9b] to-[#27e4ff]" />
