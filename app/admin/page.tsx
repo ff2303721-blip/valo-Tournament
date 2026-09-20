@@ -6,7 +6,15 @@ export default function Home() {
   const team2 = teams[1];
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#04070f] text-white">
+    <main
+      className="relative min-h-screen overflow-hidden bg-[#04070f] text-white"
+      style={{
+        backgroundImage: `linear-gradient(rgba(4,7,15,0.78), rgba(4,7,15,0.92)), url("https://images5.alphacoders.com/120/thumb-1920-1202339.png")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_8%_12%,rgba(255,31,91,0.18),transparent_25%),radial-gradient(circle_at_88%_12%,rgba(0,229,255,0.13),transparent_27%),radial-gradient(circle_at_55%_90%,rgba(139,92,246,0.12),transparent_35%)]" />
 
       <div className="pointer-events-none fixed inset-0 opacity-40">
