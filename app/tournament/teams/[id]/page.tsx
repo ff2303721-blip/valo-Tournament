@@ -34,6 +34,14 @@ function initials(name: string) {
   );
 }
 
+const BACKGROUND_IMAGES = [
+  "https://images5.alphacoders.com/120/thumb-1920-1202339.png",
+  "https://images4.alphacoders.com/120/1202336.png",
+  "https://wallpapers.com/images/hd/red-valorant-8k-gaming-2h2qxvq2arallyki.jpg",
+  "https://cdn.wallpapersafari.com/4/74/XAY3GaV.jpg",
+  "https://i.pinimg.com/736x/ea/30/ea/ea30ea61571b1086b5502c4f82a5fb0c.jpg",
+];
+
 export default function PublicTeamDetailsPage() {
   const params = useParams();
 
@@ -45,6 +53,13 @@ export default function PublicTeamDetailsPage() {
   const [team, setTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [backgroundImage, setBackgroundImage] = useState(BACKGROUND_IMAGES[0]);
+
+  useEffect(() => {
+    setBackgroundImage(
+      BACKGROUND_IMAGES[Math.floor(Math.random() * BACKGROUND_IMAGES.length)],
+    );
+  }, []);
 
   useEffect(() => {
     if (!teamId) {
@@ -137,8 +152,12 @@ export default function PublicTeamDetailsPage() {
 
   if (loading) {
     return (
-      <main className="relative min-h-screen overflow-hidden bg-[#050810]/80 text-white">
-        <div className="mx-auto max-w-[1200px] px-5 py-8 sm:px-8">
+      <main className="relative min-h-screen overflow-hidden bg-[#02050b] text-white">
+        <div className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url("${backgroundImage}")` }} />
+        <div className="pointer-events-none fixed inset-0 z-[1] bg-[#02050b]/52" />
+        <div className="pointer-events-none fixed inset-0 z-[2] bg-[linear-gradient(90deg,rgba(255,15,79,0.16),transparent_35%,transparent_65%,rgba(23,224,255,0.16)),linear-gradient(180deg,rgba(2,5,11,0.18),rgba(2,5,11,0.72))]" />
+        <div className="pointer-events-none fixed inset-0 z-[3] bg-[radial-gradient(circle_at_12%_38%,rgba(255,20,79,0.18),transparent_28%),radial-gradient(circle_at_88%_38%,rgba(35,230,255,0.16),transparent_30%)]" />
+        <div className="relative z-10 mx-auto max-w-[1200px] px-5 py-8 sm:px-8">
           <header className="mb-8 border-b border-[#263750] pb-6">
             <Link
               href="/tournament/teams"
@@ -166,7 +185,7 @@ export default function PublicTeamDetailsPage() {
 
   if (error) {
     return (
-      <main className="relative min-h-screen overflow-hidden bg-[#050810]/80 text-white">
+      <main className="relative min-h-screen overflow-hidden bg-[#02050b] text-white">
         <div className="mx-auto max-w-3xl px-6 py-24 text-center">
           <p className="text-[10px] font-black uppercase tracking-[0.25em] text-red-400">
             Database Error
@@ -193,7 +212,7 @@ export default function PublicTeamDetailsPage() {
 
   if (!team) {
     return (
-      <main className="relative min-h-screen overflow-hidden bg-[#050810]/80 text-white">
+      <main className="relative min-h-screen overflow-hidden bg-[#02050b] text-white">
         <div className="mx-auto max-w-3xl px-6 py-24 text-center">
           <p className="text-[10px] font-black uppercase tracking-[0.25em] text-red-400">
             Team Not Found
@@ -219,7 +238,7 @@ export default function PublicTeamDetailsPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#050810]/80 text-white">
+    <main className="relative min-h-screen overflow-hidden bg-[#02050b] text-white">
       <div className="mx-auto max-w-[1200px] px-5 py-8 sm:px-8">
         <header className="mb-8 flex flex-col gap-5 border-b border-[#263750] pb-6 sm:flex-row sm:items-center sm:justify-between">
           <Link
