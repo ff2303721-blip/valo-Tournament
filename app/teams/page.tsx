@@ -715,7 +715,7 @@ export default function TeamsPage() {
         <header className="mb-8 flex flex-col gap-5 border-b border-white/10 pb-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <Link
-              href="/"
+              href="/admin"
               className="mb-4 inline-block text-xs font-bold uppercase tracking-[0.2em] text-white/40 transition hover:text-white"
             >
               ← Admin Hub
