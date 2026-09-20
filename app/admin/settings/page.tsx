@@ -254,6 +254,8 @@ export default function TournamentSettingsPage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#04070f] text-white">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_10%_10%,rgba(255,49,88,0.14),transparent_25%),radial-gradient(circle_at_90%_15%,rgba(39,217,255,0.10),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.10),transparent_35%)]" />
+
       <div className="mx-auto max-w-5xl px-5 py-8 sm:px-8">
         <header className="mb-8 flex flex-col gap-5 border-b border-[#263750] pb-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
