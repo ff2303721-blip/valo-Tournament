@@ -250,21 +250,21 @@ export default function TournamentSettingsPage() {
   }
 
   const inputClass =
-    "mt-3 w-full rounded-xl border border-white/10 bg-[#080d17] px-5 py-4 text-sm font-bold text-white outline-none transition placeholder:text-white/15 focus:border-cyan-400/50 disabled:opacity-50";
+    "mt-3 w-full rounded-xl border border-[#263750] bg-[#060b14] px-5 py-4 text-sm font-bold text-white outline-none transition placeholder:text-white/15 focus:border-[#52e2ff]/50 disabled:opacity-50";
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#04070f] bg-[#060a12] text-white">
+    <main className="relative min-h-screen overflow-hidden bg-[#04070f] text-white">
       <div className="mx-auto max-w-5xl px-5 py-8 sm:px-8">
-        <header className="mb-8 flex flex-col gap-5 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
+        <header className="mb-8 flex flex-col gap-5 border-b border-[#263750] pb-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <Link
               href="/admin"
-              className="text-xs font-bold uppercase tracking-[0.2em] text-white/40 transition hover:text-cyan-300"
+              className="text-xs font-bold uppercase tracking-[0.2em] text-[#8195b0] transition hover:text-cyan-300"
             >
               ← Admin Hub
             </Link>
 
-            <p className="mt-5 text-[10px] font-black uppercase tracking-[0.3em] text-cyan-400">
+            <p className="mt-5 text-[10px] font-black uppercase tracking-[0.3em] text-[#52e2ff]">
               Tournament Configuration
             </p>
 
@@ -272,14 +272,14 @@ export default function TournamentSettingsPage() {
               Tournament Settings
             </h1>
 
-            <p className="mt-2 text-sm text-white/40">
+            <p className="mt-2 text-sm text-[#8195b0]">
               Control the tournament identity and public information shown across the website.
             </p>
           </div>
 
           <Link
             href="/tournament"
-            className="rounded-lg border border-cyan-400/20 bg-cyan-400/[0.05] px-5 py-3 text-[10px] font-black uppercase tracking-wider text-cyan-200 transition hover:bg-cyan-400/10"
+            className="rounded-lg border border-cyan-400/20 bg-cyan-400/[0.05] px-5 py-3 text-[10px] font-black uppercase tracking-wider text-cyan-200 transition hover:bg-[#52e2ff]/[0.06]"
           >
             View Public Site →
           </Link>
@@ -299,8 +299,8 @@ export default function TournamentSettingsPage() {
 
         <form onSubmit={saveSettings} className="space-y-6">
           <section className="overflow-hidden rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-400/[0.06] via-white/[0.03] to-purple-500/[0.06]">
-            <div className="border-b border-white/10 p-6 sm:p-8">
-              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400">
+            <div className="border-b border-[#263750] p-6 sm:p-8">
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#52e2ff]">
                 Public Identity
               </p>
               <h2 className="mt-2 text-2xl font-black uppercase">Tournament Branding</h2>
@@ -308,7 +308,7 @@ export default function TournamentSettingsPage() {
 
             <div className="grid gap-7 p-6 sm:grid-cols-2 sm:p-8">
               <div className="sm:col-span-2">
-                <label htmlFor="tournamentName" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                <label htmlFor="tournamentName" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8195b0]">
                   Tournament Name
                 </label>
                 <input
@@ -325,7 +325,7 @@ export default function TournamentSettingsPage() {
               </div>
 
               <div className="sm:col-span-2">
-                <label htmlFor="tagline" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                <label htmlFor="tagline" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8195b0]">
                   Tagline
                 </label>
                 <input
@@ -341,7 +341,7 @@ export default function TournamentSettingsPage() {
               </div>
 
               <div>
-                <label htmlFor="organizerName" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                <label htmlFor="organizerName" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8195b0]">
                   Organizer
                 </label>
                 <input
@@ -357,7 +357,7 @@ export default function TournamentSettingsPage() {
               </div>
 
               <div>
-                <label htmlFor="prizePool" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                <label htmlFor="prizePool" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8195b0]">
                   Prize Pool
                 </label>
                 <input
@@ -375,7 +375,7 @@ export default function TournamentSettingsPage() {
           </section>
 
           <section className="overflow-hidden rounded-2xl border border-purple-400/20 bg-purple-400/[0.04]">
-            <div className="border-b border-white/10 p-6 sm:p-8">
+            <div className="border-b border-[#263750] p-6 sm:p-8">
               <p className="text-[10px] font-black uppercase tracking-[0.25em] text-purple-300">
                 Tournament Schedule
               </p>
@@ -384,7 +384,7 @@ export default function TournamentSettingsPage() {
 
             <div className="grid gap-7 p-6 sm:grid-cols-2 sm:p-8">
               <div>
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8195b0]">
                   Start Date & Time
                 </label>
 
@@ -460,7 +460,7 @@ export default function TournamentSettingsPage() {
               </div>
 
               <div>
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8195b0]">
                   End Date & Time
                 </label>
 
@@ -536,7 +536,7 @@ export default function TournamentSettingsPage() {
               </div>
 
               <div className="sm:col-span-2">
-                <label htmlFor="tournamentStatus" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                <label htmlFor="tournamentStatus" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8195b0]">
                   Status
                 </label>
                 <select
@@ -560,7 +560,7 @@ export default function TournamentSettingsPage() {
           </section>
 
           <section className="overflow-hidden rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.03]">
-            <div className="border-b border-white/10 p-6 sm:p-8">
+            <div className="border-b border-[#263750] p-6 sm:p-8">
               <p className="text-[10px] font-black uppercase tracking-[0.25em] text-yellow-300">
                 Public Communication
               </p>
@@ -568,7 +568,7 @@ export default function TournamentSettingsPage() {
             </div>
 
             <div className="p-6 sm:p-8">
-              <label htmlFor="announcement" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+              <label htmlFor="announcement" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8195b0]">
                 Public Announcement
               </label>
               <textarea
@@ -586,7 +586,7 @@ export default function TournamentSettingsPage() {
           </section>
 
           <section className="overflow-hidden rounded-2xl border border-pink-400/20 bg-pink-400/[0.03]">
-            <div className="border-b border-white/10 p-6 sm:p-8">
+            <div className="border-b border-[#263750] p-6 sm:p-8">
               <p className="text-[10px] font-black uppercase tracking-[0.25em] text-pink-300">
                 Media
               </p>
@@ -595,18 +595,18 @@ export default function TournamentSettingsPage() {
 
             <div className="grid gap-7 p-6 sm:grid-cols-2 sm:p-8">
               <div>
-                <label htmlFor="logoUrl" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Logo URL</label>
+                <label htmlFor="logoUrl" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8195b0]">Logo URL</label>
                 <input id="logoUrl" type="url" value={settings.logoUrl} onChange={(e) => update("logoUrl", e.target.value)} disabled={loading || saving} placeholder="https://..." className={inputClass} />
               </div>
 
               <div>
-                <label htmlFor="bannerUrl" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Banner URL</label>
+                <label htmlFor="bannerUrl" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8195b0]">Banner URL</label>
                 <input id="bannerUrl" type="url" value={settings.bannerUrl} onChange={(e) => update("bannerUrl", e.target.value)} disabled={loading || saving} placeholder="https://..." className={inputClass} />
               </div>
             </div>
           </section>
 
-          <div className="flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 border-t border-[#263750] pt-6 sm:flex-row sm:items-center sm:justify-between">
             <Link href="/admin" className="text-center text-xs font-black uppercase tracking-wider text-white/30 transition hover:text-white">
               Cancel
             </Link>
@@ -614,7 +614,7 @@ export default function TournamentSettingsPage() {
             <button
               type="submit"
               disabled={loading || saving || !settings.tournamentName.trim()}
-              className="rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-8 py-4 text-xs font-black uppercase tracking-wider text-cyan-200 transition hover:bg-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-xl border border-cyan-400/30 bg-[#52e2ff]/[0.06] px-8 py-4 text-xs font-black uppercase tracking-wider text-cyan-200 transition hover:bg-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {saving ? "Saving..." : "Save Tournament Settings"}
             </button>
