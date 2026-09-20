@@ -1254,6 +1254,50 @@ export default function MatchCenterPage() {
               </button>
             </div>
 
+            {showCreateForm && editor.id && (
+              <div className="mb-4 rounded-2xl border border-[#ff3158]/45 bg-[#0b111c] p-5 shadow-[0_0_35px_rgba(255,49,88,0.10)]">
+                <div className="mb-4 flex items-center justify-between">
+                  <div>
+                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#52e2ff]">
+                      {matches.some((match) => match.id === editor.id) ? "EDIT GROUP MATCH" : "CREATE GROUP MATCH"}
+                    </div>
+                    <div className="mt-1 text-xl font-black">{editor.id}</div>
+                  </div>
+                  <button type="button" onClick={resetEditor} className="rounded-lg border border-[#304159] px-4 py-2 text-xs font-black">
+                    CLOSE
+                  </button>
+                </div>
+                <div className="grid gap-4 md:grid-cols-3">
+                  <label>
+                    <span className="mb-2 block text-[10px] font-black text-[#52e2ff]">TEAM 1</span>
+                    <select value={editor.team1Id} onChange={(event) => setEditor((current) => ({ ...current, team1Id: event.target.value, team2Id: event.target.value === current.team2Id ? "" : current.team2Id }))} className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm font-bold text-white">
+                      <option value="">Select Team 1</option>
+                      {sortedTeams.map((team) => <option key={team.id} value={team.id}>{team.name}</option>)}
+                    </select>
+                  </label>
+                  <label>
+                    <span className="mb-2 block text-[10px] font-black text-[#ff5275]">TEAM 2</span>
+                    <select value={editor.team2Id} onChange={(event) => setEditor((current) => ({ ...current, team2Id: event.target.value }))} className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm font-bold text-white">
+                      <option value="">Select Team 2</option>
+                      {sortedTeams.filter((team) => team.id !== editor.team1Id).map((team) => <option key={team.id} value={team.id}>{team.name}</option>)}
+                    </select>
+                  </label>
+                  <label>
+                    <span className="mb-2 block text-[10px] font-black text-[#b68cff]">MAP</span>
+                    <select value={editor.map} onChange={(event) => setEditor((current) => ({ ...current, map: event.target.value }))} className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-sm font-bold text-white">
+                      {["Lotus","Sunset","Haven","Split","Ascent","Bind","Breeze"].map((map) => <option key={map} value={map}>{map}</option>)}
+                    </select>
+                  </label>
+                </div>
+                <div className="mt-4 flex justify-end gap-3">
+                  <button type="button" onClick={resetEditor} className="rounded-xl border border-[#304159] px-5 py-3 text-xs font-black uppercase">CANCEL</button>
+                  <button type="button" onClick={saveGroupMatch} disabled={saving || !editor.team1Id || !editor.team2Id} className="rounded-xl bg-gradient-to-r from-[#ff3158] to-[#ff5275] px-6 py-3 text-xs font-black uppercase text-white disabled:opacity-40">
+                    {saving ? "SAVING..." : matches.some((match) => match.id === editor.id) ? "SAVE CHANGES" : "CREATE MATCH"}
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="mb-4 grid gap-3 md:grid-cols-[1fr_180px_180px]">
               <input
                 value={search}
