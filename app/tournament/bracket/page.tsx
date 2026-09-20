@@ -636,7 +636,7 @@ export default function TournamentBracketPage() {
         <section className="mb-8 overflow-hidden rounded-2xl border border-[#2b3d58] bg-gradient-to-br from-[#0d1522] via-[#0a1019] to-[#111020] shadow-[0_15px_50px_rgba(0,0,0,0.25)]">
           <div className="flex flex-col border-b border-white/10 px-5 py-5 md:flex-row md:items-center md:justify-between md:px-7">
             <div className="flex items-center gap-4">
-              <div className="bg-[#ff3158]/80 px-4 py-3 text-xs font-black uppercase tracking-wide text-white shadow-[0_0_20px_rgba(255,49,88,0.16)]">
+              <div className="bg-gradient-to-r from-[#ff3158] to-[#ff5275] px-4 py-3 text-xs font-black uppercase tracking-wide text-white shadow-[0_0_20px_rgba(255,49,88,0.16)]">
                 Phase 2
               </div>
 
@@ -726,7 +726,7 @@ export default function TournamentBracketPage() {
 
         <section
           id="playoff-bracket"
-          className="rounded-3xl border border-white/10 bg-[#080d14] p-5 md:p-8"
+          className="rounded-3xl border border-[#2b3d58] bg-gradient-to-br from-[#0d1522] via-[#0a1019] to-[#111020] shadow-[0_15px_50px_rgba(0,0,0,0.22)] p-5 md:p-8"
         >
           <div className="mb-8 flex flex-col gap-3 border-b border-white/10 pb-6 md:flex-row md:items-center md:justify-between">
             <div>
@@ -854,13 +854,13 @@ export default function TournamentBracketPage() {
           </div>
         </section>
 
-        <section className="mt-8 rounded-2xl border border-white/10 bg-[#0a1018] p-5 md:p-6">
+        <section className="mt-8 rounded-2xl border border-[#2b3d58] bg-gradient-to-br from-[#0d1522] to-[#0a1019] p-5 md:p-6">
           <div className="text-[10px] font-black uppercase tracking-[0.22em] text-white/30">
             Qualification Flow
           </div>
 
           <div className="mt-5 grid gap-3 md:grid-cols-4">
-            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+            <div className="rounded-xl border border-[#263750] bg-[#0b1220] p-4">
               <div className="text-xs font-black uppercase text-cyan-300">
                 01
               </div>
@@ -874,7 +874,7 @@ export default function TournamentBracketPage() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+            <div className="rounded-xl border border-[#263750] bg-[#0b1220] p-4">
               <div className="text-xs font-black uppercase text-red-300">
                 02
               </div>
@@ -888,7 +888,7 @@ export default function TournamentBracketPage() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+            <div className="rounded-xl border border-[#263750] bg-[#0b1220] p-4">
               <div className="text-xs font-black uppercase text-yellow-300">
                 03
               </div>
@@ -902,7 +902,7 @@ export default function TournamentBracketPage() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+            <div className="rounded-xl border border-[#263750] bg-[#0b1220] p-4">
               <div className="text-xs font-black uppercase text-emerald-300">
                 04
               </div>
