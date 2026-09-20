@@ -256,11 +256,26 @@ export default function Home() {
                 placeholder="Search by team, player or map..."
                 className="rounded-xl border border-[#2b3d58] bg-[#050a12] px-4 py-3 text-sm text-white outline-none placeholder:text-[#5f718a] focus:border-[#52e2ff]"
               />
-              <select className="rounded-xl border border-[#2b3d58] bg-[#050a12] px-4 py-3 text-sm text-white outline-none focus:border-[#52e2ff]">
-                <option>All Stages</option>
+              <select
+                className="rounded-xl border border-[#2b3d58] bg-[#050a12] px-4 py-3 text-sm text-white outline-none focus:border-[#52e2ff]"
+                defaultValue="all"
+              >
+                <option value="all">All Stages</option>
+                <option value="group">Group Stage</option>
+                <option value="qualifiers">Qualifiers</option>
+                <option value="lower-qualifier">Lower Qualifier</option>
+                <option value="grand-final">Grand Final</option>
               </select>
-              <select className="rounded-xl border border-[#2b3d58] bg-[#050a12] px-4 py-3 text-sm text-white outline-none focus:border-[#52e2ff]">
-                <option>All Teams</option>
+              <select
+                className="rounded-xl border border-[#2b3d58] bg-[#050a12] px-4 py-3 text-sm text-white outline-none focus:border-[#52e2ff]"
+                defaultValue="all"
+              >
+                <option value="all">All Teams</option>
+                {teams.map((team) => (
+                  <option key={team.id} value={team.id}>
+                    {team.name}
+                  </option>
+                ))}
               </select>
               <button className="rounded-xl border border-[#2b3d58] bg-[#0a1220] px-4 py-3 text-[10px] font-black uppercase tracking-wider text-[#a9b8cc] transition hover:border-[#ff3158]/50 hover:text-[#ff6b8d]">
                 × Clear
