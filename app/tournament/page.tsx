@@ -529,7 +529,7 @@ export default function TournamentDashboard() {
     standings.slice(0, 4);
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#05070d]/80 text-white">
+    <main className="min-h-screen overflow-hidden bg-[#05070d]/68 text-white">
       <div className="pointer-events-none fixed inset-0 opacity-40">
         <div className="absolute left-[-10%] top-[-15%] h-[500px] w-[500px] rounded-full bg-[#ff174f]/15 blur-[140px]" />
 
