@@ -199,9 +199,16 @@ export default function MatchCenterPage() {
         );
       }
 
-      setTeams(teamsData.teams ?? []);
+      setTeams(
+        Array.isArray(teamsData)
+          ? teamsData
+          : [],
+      );
+
       setMatches(
-        (matchesData.matches ?? []).map(normalizeMatch),
+        Array.isArray(matchesData)
+          ? matchesData.map(normalizeMatch)
+          : [],
       );
     } catch (err) {
       setError(
