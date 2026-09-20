@@ -984,12 +984,12 @@ function InfoCard({
   text: string;
 }) {
   return (
-    <div className="rounded-xl border border-[#263750] bg-gradient-to-br from-[#0d1521] to-[#0a1019] p-6 md:p-7 min-h-[135px]">
-      <div className="text-[16px] font-black tracking-[0.14em] text-cyan-400">
+    <div className="rounded-xl border border-[#263750] bg-gradient-to-br from-[#0d1521] to-[#0a1019] p-6 md:p-7 min-h-[155px]">
+      <div className="text-[20px] font-black tracking-[0.16em] text-cyan-400">
         {title}
       </div>
 
-      <div className="mt-4 text-[12px] leading-5 text-white/50">
+      <div className="mt-4 text-[14px] leading-6 text-white/60">
         {text}
       </div>
     </div>
