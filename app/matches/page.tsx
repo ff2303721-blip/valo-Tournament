@@ -158,6 +158,7 @@ export default function MatchCenterPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -344,6 +345,7 @@ export default function MatchCenterPage() {
 
   function resetEditor() {
     setEditor(emptyEditor);
+    setShowCreateForm(false);
     setMessage("");
     setError("");
   }
@@ -414,6 +416,7 @@ export default function MatchCenterPage() {
       status: "Scheduled",
     });
 
+    setShowCreateForm(true);
     setActiveSection("group");
   }
 
@@ -441,6 +444,7 @@ export default function MatchCenterPage() {
       status: match.status,
     });
 
+    setShowCreateForm(false);
     setActiveSection("group");
     setMessage("");
     setError("");
@@ -1668,7 +1672,7 @@ export default function MatchCenterPage() {
           GROUP STAGE: M01–M12 MANUAL · M13–M16 AUTOMATIC
         </footer>
 
-        {editor.id && !matches.some((match) => match.id === editor.id) && (
+        {showCreateForm && editor.id && !matches.some((match) => match.id === editor.id) && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#02050b]/80 p-4 backdrop-blur-sm">
             <div className="w-full max-w-2xl rounded-2xl border border-[#52e2ff]/30 bg-[#090f19] p-6 shadow-[0_0_60px_rgba(39,217,255,0.12)]">
               <div className="flex items-start justify-between gap-4">
