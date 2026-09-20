@@ -99,6 +99,27 @@ export default function TeamsAdminPage() {
   const [notice, setNotice] =
     useState("");
 
+  const BACKGROUND_IMAGES = [
+    "https://images5.alphacoders.com/120/thumb-1920-1202339.png",
+    "https://images4.alphacoders.com/120/1202336.png",
+    "https://wallpapers.com/images/hd/red-valorant-8k-gaming-2h2qxvq2arallyki.jpg",
+    "https://cdn.wallpapersafari.com/4/74/XAY3GaV.jpg",
+    "https://i.pinimg.com/736x/ea/30/ea/ea30ea61571b1086b5502c4f82a5fb0c.jpg",
+  ];
+
+  const [backgroundImage, setBackgroundImage] =
+    useState(BACKGROUND_IMAGES[0]);
+
+  useEffect(() => {
+    setBackgroundImage(
+      BACKGROUND_IMAGES[
+        Math.floor(
+          Math.random() * BACKGROUND_IMAGES.length,
+        )
+      ],
+    );
+  }, []);
+
   const [search, setSearch] =
     useState("");
 
@@ -840,9 +861,16 @@ export default function TeamsAdminPage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#04070f] text-white">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_10%_10%,rgba(255,49,88,0.14),transparent_25%),radial-gradient(circle_at_90%_15%,rgba(39,217,255,0.10),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.10),transparent_35%)]" />
+      <div
+        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url("${backgroundImage}")`,
+        }}
+      />
+      <div className="pointer-events-none fixed inset-0 z-[1] bg-[#03060d]/70" />
+      <div className="pointer-events-none fixed inset-0 z-[2] bg-[radial-gradient(circle_at_10%_10%,rgba(255,49,88,0.20),transparent_25%),radial-gradient(circle_at_90%_15%,rgba(39,217,255,0.16),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.16),transparent_35%)]" />
 
-      <header className="border-b border-[#2b3d58] bg-gradient-to-br from-[#0d1522] to-[#0a1019]">
+      <header className="relative z-10 border-b border-[#2b3d58] bg-[#080d17]/75 backdrop-blur-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5">
           <div>
             <div className="text-[11px] font-bold tracking-[0.35em] text-[#7890ad]">
@@ -879,7 +907,7 @@ export default function TeamsAdminPage() {
         </div>
       </header>
 
-      <div className="relative mx-auto max-w-7xl px-6 py-8">
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
         {error && (
           <div className="mb-5 rounded border border-red-900/60 bg-red-950/30 px-4 py-3 text-sm text-red-300">
             {error}
