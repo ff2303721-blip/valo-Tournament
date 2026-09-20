@@ -413,8 +413,8 @@ export default function PublicMatchDetailPage({
               </thead>
               <tbody>
                 {stats.map((stat) => {
-                  const isMvp = stat.playerId === match.mvpPlayerId;
-                  const isTopFragger = stat.playerId === match.topFraggerPlayerId;
+                  const isMvp = stat.playerId === match?.mvpPlayerId;
+                  const isTopFragger = stat.playerId === match?.topFraggerPlayerId;
 
                   return (
                     <tr key={stat.playerId} className="border-t border-[#1c2938]">
