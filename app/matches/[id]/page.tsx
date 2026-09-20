@@ -420,7 +420,7 @@ export default function MatchResultRecorderPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#070a12] px-6 py-10 text-white">
+      <main className="relative min-h-screen overflow-hidden bg-[#04070f] bg-[#070a12] px-6 py-10 text-white">
         <div className="mx-auto max-w-7xl">
           <div className="rounded-2xl border border-cyan-400/20 bg-[#0d1320] p-8 shadow-[0_0_50px_rgba(34,211,238,0.08)]">
             <p className="text-sm font-bold uppercase tracking-[0.25em] text-cyan-300">
@@ -437,7 +437,7 @@ export default function MatchResultRecorderPage() {
 
   if (!match) {
     return (
-      <main className="min-h-screen bg-[#070a12] px-6 py-10 text-white">
+      <main className="relative min-h-screen overflow-hidden bg-[#04070f] bg-[#070a12] px-6 py-10 text-white">
         <div className="mx-auto max-w-4xl">
           <div className="rounded-2xl border border-red-500/30 bg-[#120d16] p-8">
             <p className="text-sm font-bold uppercase tracking-[0.25em] text-red-300">
@@ -465,7 +465,7 @@ export default function MatchResultRecorderPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#070a12] px-4 py-6 text-white sm:px-6 lg:px-8">
+    <main className="relative min-h-screen overflow-hidden bg-[#04070f] bg-[#070a12] px-4 py-6 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <header className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
