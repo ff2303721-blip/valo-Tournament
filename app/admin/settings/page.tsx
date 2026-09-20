@@ -253,7 +253,7 @@ export default function TournamentSettingsPage() {
     "mt-3 w-full rounded-xl border border-white/10 bg-[#080d17] px-5 py-4 text-sm font-bold text-white outline-none transition placeholder:text-white/15 focus:border-cyan-400/50 disabled:opacity-50";
 
   return (
-    <main className="min-h-screen bg-[#060a12] text-white">
+    <main className="relative min-h-screen overflow-hidden bg-[#04070f] bg-[#060a12] text-white">
       <div className="mx-auto max-w-5xl px-5 py-8 sm:px-8">
         <header className="mb-8 flex flex-col gap-5 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
