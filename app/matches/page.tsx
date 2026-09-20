@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Match, MatchStatus } from "@/app/data/matches";
 import type { Team } from "@/app/data/teams";
 
@@ -159,6 +159,7 @@ export default function MatchCenterPage() {
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const editorPanelRef = useRef<HTMLDivElement | null>(null);
 
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -394,6 +395,9 @@ export default function MatchCenterPage() {
 
     setShowCreateForm(true);
     setActiveSection("group");
+    requestAnimationFrame(() => {
+      editorPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
   }
 
   function editMatch(match: Match) {
@@ -422,6 +426,9 @@ export default function MatchCenterPage() {
 
     setShowCreateForm(true);
     setActiveSection("group");
+    requestAnimationFrame(() => {
+      editorPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
     setMessage("");
     setError("");
   }
@@ -1237,7 +1244,7 @@ export default function MatchCenterPage() {
                     <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#52e2ff]">
                       {matches.some((match) => match.id === editor.id) ? "EDIT GROUP MATCH" : "CREATE GROUP MATCH"}
                     </div>
-                    <div className="mt-1 text-xl font-black">{editor.id}</div>
+                    <div className="mt-1 flex items-center gap-3"><div className="text-xl font-black">{editor.id}</div><span className="rounded-full border border-[#52e2ff]/30 bg-[#52e2ff]/10 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-[#72e9ff]">NOT SAVED</span></div>
                   </div>
                   <button type="button" onClick={resetEditor} className="rounded-lg border border-[#304159] px-4 py-2 text-xs font-black">
                     CLOSE
