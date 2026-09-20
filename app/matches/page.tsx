@@ -365,108 +365,6 @@ export default function MatchCenterPage() {
     setError("");
   }
 
-  async function createNextTwoGroupMatches() {
-    setError("");
-    setMessage("");
-
-    if (teams.length !== 4) {
-      setError("Four registered teams are required before creating Group Stage matches.");
-      return;
-    }
-
-    const nextFixtures = GROUP_FIXTURES.filter(
-      (fixture) =>
-        !matches.some(
-          (match) =>
-            match.matchNumber === fixture.matchNumber,
-        ),
-    ).slice(0, 2);
-
-    if (nextFixtures.length === 0) {
-      setError("All 12 Group Stage matches already exist.");
-      return;
-    }
-
-    try {
-      setSaving(true);
-
-      const created: string[] = [];
-
-      for (const fixture of nextFixtures) {
-        const team1 = teams.find(
-          (team) => team.seed === fixture.team1Seed,
-        );
-        const team2 = teams.find(
-          (team) => team.seed === fixture.team2Seed,
-        );
-
-        if (!team1 || !team2) {
-          throw new Error(
-            `Unable to find both teams for M${String(
-              fixture.matchNumber,
-            ).padStart(2, "0")}.`,
-          );
-        }
-
-        const matchNumber = fixture.matchNumber;
-        const id = `M${String(matchNumber).padStart(
-          2,
-          "0",
-        )}`;
-
-        const response = await fetch("/api/matches", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id,
-            matchNumber,
-            stage: "Group Stage",
-            team1Id: team1.id,
-            team2Id: team2.id,
-            scheduledAt: "",
-            map: fixture.map,
-            bestOf: 1,
-            team1Score: 0,
-            team2Score: 0,
-            status: "Scheduled",
-            playerStats: [],
-          }),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            data.error ||
-              `Failed to create ${id}.`,
-          );
-        }
-
-        created.push(id);
-      }
-
-      resetEditor();
-      await loadData();
-
-      setMessage(
-        created.length === 2
-          ? `${created[0]} and ${created[1]} created successfully.`
-          : `${created[0]} created successfully.`,
-      );
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to create Group Stage matches.",
-      );
-      await loadData();
-    } finally {
-      setSaving(false);
-    }
-  }
-
   function editMatch(match: Match) {
     if (match.matchNumber > 12) {
       setError(
@@ -1286,34 +1184,17 @@ export default function MatchCenterPage() {
                 </button>
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={createNextTwoGroupMatches}
-                  disabled={
-                    saving ||
-                    teams.length !== 4 ||
-                    groupMatches.length >= 12
-                  }
-                  className="rounded-xl border border-[#52e2ff]/35 bg-[#52e2ff]/[0.08] px-4 py-2 text-[10px] font-black uppercase tracking-wider text-[#72e9ff] shadow-[0_0_20px_rgba(39,217,255,0.08)] transition hover:border-[#52e2ff]/60 hover:bg-[#52e2ff]/15 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  {saving
-                    ? "CREATING..."
-                    : "+ CREATE NEXT 2"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={startNewGroupMatch}
-                  disabled={
-                    teams.length !== 4 ||
-                    groupMatches.length >= 12
-                  }
-                  className="rounded-xl bg-gradient-to-r from-[#ff3158] to-[#ff5275] px-4 py-2 text-[10px] font-black uppercase tracking-wider text-white shadow-[0_0_22px_rgba(255,49,88,0.18)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  + NEW GROUP MATCH
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={startNewGroupMatch}
+                disabled={
+                  teams.length !== 4 ||
+                  groupMatches.length >= 12
+                }
+                className="rounded-xl bg-gradient-to-r from-[#ff3158] to-[#ff5275] px-4 py-2 text-[10px] font-black uppercase tracking-wider text-white shadow-[0_0_22px_rgba(255,49,88,0.18)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                + NEW GROUP MATCH
+              </button>
             </div>
 
             <div className="mb-4 grid gap-3 md:grid-cols-[1fr_180px_180px]">
