@@ -14,9 +14,6 @@ import type {
   Player,
 } from "@/app/data/teams";
 
-const MATCHES_KEY = "tournament-matches";
-const TEAMS_KEY = "tournament-teams";
-
 const STAGES = [
   "All Matches",
   "Group Stage",
@@ -63,7 +60,71 @@ export default function PlayerStatisticsPage() {
   const [search, setSearch] =
     useState("");
 
+  const BACKGROUND_IMAGES = [
+    "https://images5.alphacoders.com/120/thumb-1920-1202339.png",
+    "https://images4.alphacoders.com/120/1202336.png",
+    "https://wallpapers.com/images/hd/red-valorant-8k-gaming-2h2qxvq2arallyki.jpg",
+    "https://cdn.wallpapersafari.com/4/74/XAY3GaV.jpg",
+    "https://i.pinimg.com/736x/ea/30/ea/ea30ea61571b1086b5502c4f82a5fb0c.jpg",
+  ];
+
+  const [backgroundImage, setBackgroundImage] =
+    useState(BACKGROUND_IMAGES[0]);
+
   useEffect(() => {
+    setBackgroundImage(
+      BACKGROUND_IMAGES[
+        Math.floor(
+          Math.random() * BACKGROUND_IMAGES.length,
+        )
+      ],
+    );
+
+    let active = true;
+
+    async function loadData() {
+      try {
+        const [teamsResponse, matchesResponse] =
+          await Promise.all([
+            fetch("/api/teams", {
+              cache: "no-store",
+            }),
+            fetch("/api/matches", {
+              cache: "no-store",
+            }),
+          ]);
+
+        const [teamsData, matchesData] =
+          await Promise.all([
+            teamsResponse.ok
+              ? teamsResponse.json()
+              : [],
+            matchesResponse.ok
+              ? matchesResponse.json()
+              : [],
+          ]);
+
+        if (!active) return;
+
+        setTeams(
+          Array.isArray(teamsData)
+            ? teamsData
+            : [],
+        );
+
+        setMatches(
+          Array.isArray(matchesData)
+            ? matchesData
+            : [],
+        );
+      } catch {
+        if (!active) return;
+
+        setTeams([]);
+        setMatches([]);
+      }
+    }
+
     loadData();
 
     const refresh = () => {
@@ -72,65 +133,32 @@ export default function PlayerStatisticsPage() {
 
     window.addEventListener(
       "tournament-matches-updated",
-      refresh
+      refresh,
     );
 
     window.addEventListener(
       "storage",
-      refresh
+      refresh,
     );
 
-    const interval =
-      window.setInterval(
-        refresh,
-        1000
-      );
+    const interval = window.setInterval(
+      refresh,
+      10000,
+    );
 
     return () => {
+      active = false;
       window.removeEventListener(
         "tournament-matches-updated",
-        refresh
+        refresh,
       );
-
       window.removeEventListener(
         "storage",
-        refresh
+        refresh,
       );
-
-      window.clearInterval(
-        interval
-      );
+      window.clearInterval(interval);
     };
   }, []);
-
-  function loadData() {
-    try {
-      const storedTeams =
-        localStorage.getItem(
-          TEAMS_KEY
-        );
-
-      const storedMatches =
-        localStorage.getItem(
-          MATCHES_KEY
-        );
-
-      setTeams(
-        storedTeams
-          ? JSON.parse(storedTeams)
-          : []
-      );
-
-      setMatches(
-        storedMatches
-          ? JSON.parse(storedMatches)
-          : []
-      );
-    } catch {
-      setTeams([]);
-      setMatches([]);
-    }
-  }
 
   /*
    * Only published/completed matches
@@ -423,8 +451,16 @@ export default function PlayerStatisticsPage() {
     );
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#050810]/68 px-4 py-7 text-white md:px-8"><div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_10%_8%,rgba(255,49,88,0.12),transparent_25%),radial-gradient(circle_at_90%_15%,rgba(39,217,255,0.10),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.10),transparent_35%)]" />
-      <div className="mx-auto max-w-[1280px]">
+    <main className="relative min-h-screen overflow-hidden bg-[#050810] px-4 py-7 text-white md:px-8">
+      <div
+        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url("${backgroundImage}")`,
+        }}
+      />
+      <div className="pointer-events-none fixed inset-0 z-[1] bg-[#03060d]/70" />
+      <div className="pointer-events-none fixed inset-0 z-[2] bg-[radial-gradient(circle_at_10%_8%,rgba(255,49,88,0.20),transparent_25%),radial-gradient(circle_at_90%_15%,rgba(39,217,255,0.16),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.16),transparent_35%)]" />
+      <div className="relative z-10 mx-auto max-w-[1280px]">
 
         {/* HEADER */}
         <header className="relative flex flex-col justify-between gap-6 border-b border-[#263750] pb-7 md:flex-row md:items-end">
