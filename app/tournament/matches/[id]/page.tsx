@@ -122,14 +122,14 @@ function statusClass(
   status: MatchStatus,
 ) {
   if (status === "Live") {
-    return "border-red-900/60 bg-red-950/30 text-red-300";
+    return "border-red-400/40 bg-red-500/10 text-red-300 shadow-[0_0_20px_rgba(248,113,113,0.12)]";
   }
 
   if (status === "Completed") {
-    return "border-emerald-900/60 bg-emerald-950/20 text-emerald-300";
+    return "border-emerald-400/40 bg-emerald-500/10 text-emerald-300 shadow-[0_0_20px_rgba(52,211,153,0.10)]";
   }
 
-  return "border-[#30445d] bg-[#111b29] text-[#aabbd0]";
+  return "border-[#52e2ff]/25 bg-[#52e2ff]/[0.06] text-[#a9dff0]";
 }
 
 export default function PublicMatchDetailPage({
@@ -341,12 +341,13 @@ export default function PublicMatchDetailPage({
   }
 
   return (
-    <main className="min-h-screen bg-[#080c12] text-white">
-      <header className="border-b border-[#1c2938] bg-[#0b1119]">
+    <main className="min-h-screen overflow-hidden bg-[#050810] text-white">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_10%,rgba(255,49,88,0.12),transparent_25%),radial-gradient(circle_at_85%_20%,rgba(39,217,255,0.10),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.10),transparent_35%)]" />
+      <header className="relative border-b border-[#243247] bg-[#080d17]/95 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-6 py-5">
           <Link
             href="/tournament/matches"
-            className="text-xs font-bold text-[#7890ad] hover:text-white"
+            className="text-xs font-black uppercase tracking-wider text-[#52e2ff] transition hover:text-white"
           >
             ← All Matches
           </Link>
@@ -357,7 +358,7 @@ export default function PublicMatchDetailPage({
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
             <div>
-              <div className="text-[10px] font-bold tracking-[0.3em] text-[#627994]">
+              <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[#52e2ff]">
                 MATCH{" "}
                 {String(
                   match.matchNumber,
@@ -367,13 +368,13 @@ export default function PublicMatchDetailPage({
                 )}
               </div>
 
-              <h1 className="mt-1 text-3xl font-black">
+              <h1 className="mt-2 bg-gradient-to-r from-white via-[#ffdce4] to-[#ff5275] bg-clip-text text-4xl font-black uppercase tracking-tight text-transparent">
                 {
                   match.stage
                 }
               </h1>
 
-              <div className="mt-1 text-sm text-[#7188a5]">
+              <div className="mt-2 text-sm font-bold text-[#8195b0]">
                 {match.map} · BO
                 {
                   match.bestOf
@@ -382,7 +383,7 @@ export default function PublicMatchDetailPage({
             </div>
 
             <div
-              className={`rounded border px-4 py-2 text-xs font-black uppercase ${statusClass(
+              className={`rounded-xl border px-4 py-2 text-[10px] font-black uppercase tracking-wider ${statusClass(
                 match.status,
               )}`}
             >
@@ -394,9 +395,11 @@ export default function PublicMatchDetailPage({
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-6 py-8">
-        <section className="rounded-xl border border-[#1d2a3a] bg-[#0d141e] p-8">
-          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-6">
+      <div className="relative mx-auto max-w-7xl px-6 py-8">
+        <section className="relative overflow-hidden rounded-2xl border border-[#2b3d58] bg-gradient-to-br from-[#0d1522] via-[#0a1019] to-[#111020] p-6 shadow-[0_18px_60px_rgba(0,0,0,0.25)] sm:p-8">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ff3158] to-transparent opacity-80" />
+
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 sm:gap-6">
             <div className="text-center">
               {team1?.logo ? (
                 <img
@@ -404,10 +407,10 @@ export default function PublicMatchDetailPage({
                     team1.logo
                   }
                   alt=""
-                  className="mx-auto mb-4 h-28 w-28 rounded-xl border border-[#2d4056] bg-[#080e16] object-contain p-3"
+                  className="mx-auto mb-4 h-24 w-24 rounded-2xl border border-[#52e2ff]/30 bg-[#060b14] object-contain p-2.5 shadow-[0_0_30px_rgba(39,217,255,0.10)] sm:h-28 sm:w-28"
                 />
               ) : (
-                <div className="mx-auto mb-4 flex h-28 w-28 items-center justify-center rounded-xl border border-[#2d4056] bg-[#080e16] text-xl font-black text-[#7188a5]">
+                <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-2xl border border-[#52e2ff]/30 bg-[#060b14] text-xl font-black text-[#72e9ff] shadow-[0_0_30px_rgba(39,217,255,0.08)] sm:h-28 sm:w-28">
                   {(
                     team1?.tag ??
                     "TBD"
@@ -418,14 +421,14 @@ export default function PublicMatchDetailPage({
                 </div>
               )}
 
-              <div className="text-xl font-black">
+              <div className="text-lg font-black uppercase tracking-tight text-white sm:text-xl">
                 {
                   team1?.name ??
                   "TBD"
                 }
               </div>
 
-              <div className="mt-1 text-xs font-bold text-[#647a94]">
+              <div className="mt-1 text-[10px] font-black uppercase tracking-wider text-[#637a96]">
                 {
                   team1?.tag ??
                   "TBD"
@@ -434,11 +437,11 @@ export default function PublicMatchDetailPage({
             </div>
 
             <div className="text-center">
-              <div className="text-5xl font-black tracking-tight">
+              <div className="text-4xl font-black tracking-tight text-white sm:text-5xl">
                 {
                   match.team1Score
                 }{" "}
-                <span className="text-[#3c5068]">
+                <span className="text-[#ff5275]">
                   -
                 </span>{" "}
                 {
@@ -446,7 +449,7 @@ export default function PublicMatchDetailPage({
                 }
               </div>
 
-              <div className="mt-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#607791]">
+              <div className="mt-3 text-[9px] font-black uppercase tracking-[0.22em] text-[#52e2ff]">
                 {match.status ===
                 "Completed"
                   ? "FINAL"
@@ -491,7 +494,7 @@ export default function PublicMatchDetailPage({
             </div>
           </div>
 
-          <div className="mt-8 border-t border-[#1c2938] pt-5 text-center text-xs text-[#657b95]">
+          <div className="mt-7 border-t border-white/[0.07] pt-5 text-center text-xs font-bold text-[#7188a5]">
             {formatDate(
               match.scheduledAt,
             )}
@@ -501,12 +504,12 @@ export default function PublicMatchDetailPage({
         {match.status ===
           "Completed" && (
           <section className="mt-6 grid gap-4 md:grid-cols-3">
-            <div className="rounded-xl border border-[#1d2a3a] bg-[#0d141e] p-5">
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#607791]">
+            <div className="rounded-xl border border-[#263750] bg-gradient-to-br from-[#0d1521] to-[#0a1019] p-5 transition hover:border-[#52e2ff]/30">
+              <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#52e2ff]">
                 WINNER
               </div>
 
-              <div className="mt-2 text-lg font-black text-emerald-400">
+              <div className="mt-2 text-lg font-black text-emerald-300">
                 {getTeamName(
                   teams,
                   match.winnerId,
@@ -542,13 +545,13 @@ export default function PublicMatchDetailPage({
           </section>
         )}
 
-        <section className="mt-6 rounded-xl border border-[#1d2a3a] bg-[#0d141e]">
-          <div className="border-b border-[#1d2a3a] p-6">
+        <section className="mt-6 overflow-hidden rounded-2xl border border-[#263750] bg-gradient-to-br from-[#0d1521] to-[#0a1019]">
+          <div className="border-b border-white/[0.07] bg-white/[0.015] p-6">
             <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#607791]">
               PLAYER STATISTICS
             </div>
 
-            <h2 className="mt-1 text-xl font-black">
+            <h2 className="mt-2 text-xl font-black uppercase">
               Match Performance
             </h2>
           </div>
@@ -561,7 +564,7 @@ export default function PublicMatchDetailPage({
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[850px] text-left">
-                <thead className="bg-[#111b28] text-[10px] uppercase tracking-wider text-[#7188a5]">
+                <thead className="bg-[#111b28] text-[10px] font-black uppercase tracking-wider text-[#52e2ff]">
                   <tr>
                     <th className="px-5 py-3">
                       Player
