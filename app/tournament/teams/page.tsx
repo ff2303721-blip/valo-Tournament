@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { TournamentBrand } from "../components/tournament-brand";
 import { useEffect, useState } from "react";
 
 import {
@@ -93,7 +94,11 @@ export default function PublicTeamsPage() {
             ← Tournament Central
           </Link>
 
-          <p className="mt-6 text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400">
+          <div className="mt-6">
+            <TournamentBrand />
+          </div>
+
+          <p className="mt-5 text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400">
             Registered Rosters
           </p>
 
