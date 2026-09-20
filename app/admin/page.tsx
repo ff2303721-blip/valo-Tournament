@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { teams } from "./data/teams";
+import { teams } from "../data/teams";
 
 export default function Home() {
   const team1 = teams[0];
