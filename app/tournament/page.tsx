@@ -1287,7 +1287,7 @@ export default function TournamentDashboard() {
                     </div>
                   </div>
 
-                  <div className="mt-5 overflow-hidden rounded-xl border border-white/10 bg-black">
+                  <div className="mt-5 overflow-hidden rounded-xl border border-[#263750] bg-gradient-to-br from-[#0b1220] to-[#080d16]">
                     <img
                       src="/sponsors-banner.png"
                       alt="Official tournament sponsors: Sheikh Kunjappu, OSDF Clan, Deuz X Gaming, and Agon Desantos"
