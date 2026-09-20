@@ -660,14 +660,11 @@ export default function FixturesPage() {
                           match.team1Score;
 
                       return (
-                        <Link
+                        <div
                           key={
                             match.id
                           }
-                          href={`/tournament/matches/${encodeURIComponent(
-                            match.id,
-                          )}`}
-                          className="group relative overflow-hidden rounded-xl border border-[#263149] bg-gradient-to-r from-[#0b101b] to-[#0a0f18] transition hover:border-[#405675] hover:shadow-[0_0_30px_rgba(39,217,255,0.06)]"
+                          className="group relative overflow-hidden rounded-xl border border-[#263149] bg-gradient-to-r from-[#0b101b] to-[#0a0f18]"
                         >
                           <div
                             className={`absolute left-0 top-0 h-full w-1 ${
@@ -869,7 +866,7 @@ export default function FixturesPage() {
                               </span>
                             </div>
                           </div>
-                        </Link>
+                        </div>
                       );
                     },
                   )
