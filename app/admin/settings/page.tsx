@@ -16,6 +16,89 @@ type Settings = {
   bannerUrl: string;
 };
 
+type DateTimeParts = {
+  date: string;
+  hour: string;
+  minute: string;
+  meridiem: "AM" | "PM";
+};
+
+const EMPTY_DATE_TIME: DateTimeParts = {
+  date: "",
+  hour: "12",
+  minute: "00",
+  meridiem: "AM",
+};
+
+const HOURS = Array.from({ length: 12 }, (_, index) =>
+  String(index + 1).padStart(2, "0"),
+);
+
+const MINUTES = Array.from({ length: 60 }, (_, index) =>
+  String(index).padStart(2, "0"),
+);
+
+function toDateTimeParts(value: string | null | undefined): DateTimeParts {
+  if (!value) return EMPTY_DATE_TIME;
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return EMPTY_DATE_TIME;
+  }
+
+  const hours = date.getHours();
+
+  return {
+    date: [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, "0"),
+      String(date.getDate()).padStart(2, "0"),
+    ].join("-"),
+    hour: String(hours % 12 || 12).padStart(2, "0"),
+    minute: String(date.getMinutes()).padStart(2, "0"),
+    meridiem: hours >= 12 ? "PM" : "AM",
+  };
+}
+
+function partsToIso(parts: DateTimeParts) {
+  if (!parts.date) return "";
+
+  const [year, month, day] =
+    parts.date.split("-").map(Number);
+
+  let hour = Number(parts.hour);
+
+  if (parts.meridiem === "AM") {
+    if (hour === 12) hour = 0;
+  } else if (hour !== 12) {
+    hour += 12;
+  }
+
+  const date = new Date(
+    year,
+    month - 1,
+    day,
+    hour,
+    Number(parts.minute),
+  );
+
+  return Number.isNaN(date.getTime())
+    ? ""
+    : date.toISOString();
+}
+
+function formatDatePreview(parts: DateTimeParts) {
+  const iso = partsToIso(parts);
+
+  if (!iso) return "Not set";
+
+  return new Date(iso).toLocaleString([], {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
+
 const EMPTY_SETTINGS: Settings = {
   tournamentName: "",
   tagline: "",
@@ -72,6 +155,14 @@ export default function TournamentSettingsPage() {
           logoUrl: data.logoUrl ?? "",
           bannerUrl: data.bannerUrl ?? "",
         });
+
+        setStartDateTime(
+          toDateTimeParts(data.startDate),
+        );
+
+        setEndDateTime(
+          toDateTimeParts(data.endDate),
+        );
       } catch (loadError) {
         if (!cancelled) {
           setError(
@@ -273,20 +364,175 @@ export default function TournamentSettingsPage() {
               <h2 className="mt-2 text-2xl font-black uppercase">Dates & Status</h2>
             </div>
 
-            <div className="grid gap-7 p-6 sm:grid-cols-3 sm:p-8">
+            <div className="grid gap-7 p-6 sm:grid-cols-2 sm:p-8">
               <div>
-                <label htmlFor="startDate" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Start Date</label>
-                <input id="startDate" type="datetime-local" value={settings.startDate} onChange={(e) => update("startDate", e.target.value)} disabled={loading || saving} className={inputClass} />
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                  Start Date & Time
+                </label>
+
+                <input
+                  type="date"
+                  value={startDateTime.date}
+                  onChange={(e) =>
+                    setStartDateTime((current) => ({
+                      ...current,
+                      date: e.target.value,
+                    }))
+                  }
+                  disabled={loading || saving}
+                  className={inputClass}
+                />
+
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  <select
+                    value={startDateTime.hour}
+                    onChange={(e) =>
+                      setStartDateTime((current) => ({
+                        ...current,
+                        hour: e.target.value,
+                      }))
+                    }
+                    disabled={loading || saving}
+                    className={inputClass}
+                  >
+                    {HOURS.map((hour) => (
+                      <option key={hour} value={hour}>
+                        {hour}
+                      </option>
+                    ))}
+                  </select>
+
+                  <select
+                    value={startDateTime.minute}
+                    onChange={(e) =>
+                      setStartDateTime((current) => ({
+                        ...current,
+                        minute: e.target.value,
+                      }))
+                    }
+                    disabled={loading || saving}
+                    className={inputClass}
+                  >
+                    {MINUTES.map((minute) => (
+                      <option key={minute} value={minute}>
+                        {minute}
+                      </option>
+                    ))}
+                  </select>
+
+                  <select
+                    value={startDateTime.meridiem}
+                    onChange={(e) =>
+                      setStartDateTime((current) => ({
+                        ...current,
+                        meridiem: e.target.value as "AM" | "PM",
+                      }))
+                    }
+                    disabled={loading || saving}
+                    className={inputClass}
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+
+                <p className="mt-2 text-[10px] font-bold text-white/25">
+                  12-hour time · {formatDatePreview(startDateTime)}
+                </p>
               </div>
 
               <div>
-                <label htmlFor="endDate" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">End Date</label>
-                <input id="endDate" type="datetime-local" value={settings.endDate} onChange={(e) => update("endDate", e.target.value)} disabled={loading || saving} className={inputClass} />
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                  End Date & Time
+                </label>
+
+                <input
+                  type="date"
+                  value={endDateTime.date}
+                  onChange={(e) =>
+                    setEndDateTime((current) => ({
+                      ...current,
+                      date: e.target.value,
+                    }))
+                  }
+                  disabled={loading || saving}
+                  className={inputClass}
+                />
+
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  <select
+                    value={endDateTime.hour}
+                    onChange={(e) =>
+                      setEndDateTime((current) => ({
+                        ...current,
+                        hour: e.target.value,
+                      }))
+                    }
+                    disabled={loading || saving}
+                    className={inputClass}
+                  >
+                    {HOURS.map((hour) => (
+                      <option key={hour} value={hour}>
+                        {hour}
+                      </option>
+                    ))}
+                  </select>
+
+                  <select
+                    value={endDateTime.minute}
+                    onChange={(e) =>
+                      setEndDateTime((current) => ({
+                        ...current,
+                        minute: e.target.value,
+                      }))
+                    }
+                    disabled={loading || saving}
+                    className={inputClass}
+                  >
+                    {MINUTES.map((minute) => (
+                      <option key={minute} value={minute}>
+                        {minute}
+                      </option>
+                    ))}
+                  </select>
+
+                  <select
+                    value={endDateTime.meridiem}
+                    onChange={(e) =>
+                      setEndDateTime((current) => ({
+                        ...current,
+                        meridiem: e.target.value as "AM" | "PM",
+                      }))
+                    }
+                    disabled={loading || saving}
+                    className={inputClass}
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+
+                <p className="mt-2 text-[10px] font-bold text-white/25">
+                  12-hour time · {formatDatePreview(endDateTime)}
+                </p>
               </div>
 
-              <div>
-                <label htmlFor="tournamentStatus" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Status</label>
-                <select id="tournamentStatus" value={settings.tournamentStatus} onChange={(e) => update("tournamentStatus", e.target.value as Settings["tournamentStatus"])} disabled={loading || saving} className={inputClass}>
+              <div className="sm:col-span-2">
+                <label htmlFor="tournamentStatus" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                  Status
+                </label>
+                <select
+                  id="tournamentStatus"
+                  value={settings.tournamentStatus}
+                  onChange={(e) =>
+                    update(
+                      "tournamentStatus",
+                      e.target.value as Settings["tournamentStatus"],
+                    )
+                  }
+                  disabled={loading || saving}
+                  className={inputClass}
+                >
                   <option value="Upcoming">Upcoming</option>
                   <option value="Live">Live</option>
                   <option value="Completed">Completed</option>
