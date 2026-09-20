@@ -839,7 +839,7 @@ export default function TeamsAdminPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#080c12] text-white">
+    <main className="relative min-h-screen overflow-hidden bg-[#04070f] bg-[#04070f] text-white">
       <header className="border-b border-[#1c2938] bg-[#0b1119]">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5">
           <div>
@@ -877,7 +877,7 @@ export default function TeamsAdminPage() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-6 py-8">
+      <div className="relative mx-auto max-w-7xl px-6 py-8">
         {error && (
           <div className="mb-5 rounded border border-red-900/60 bg-red-950/30 px-4 py-3 text-sm text-red-300">
             {error}
