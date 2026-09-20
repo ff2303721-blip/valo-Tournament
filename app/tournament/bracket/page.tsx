@@ -319,7 +319,7 @@ function PlayoffCard({
     <div
       className={`overflow-hidden rounded-2xl border ${styles.border} ${styles.glow}`}
     >
-      <div className="border-b border-white/10 px-5 py-4">
+      <div className="border-b border-[#263750] px-5 py-4">
         <div className="flex items-center justify-between gap-4">
           <div
             className={`text-xs font-black uppercase tracking-[0.16em] ${styles.title}`}
@@ -354,7 +354,7 @@ function PlayoffCard({
       />
 
       {match && (
-        <div className="border-t border-white/10 px-5 py-3 text-[9px] font-black uppercase tracking-[0.15em] text-white/25">
+        <div className="border-t border-[#263750] px-5 py-3 text-[9px] font-black uppercase tracking-[0.15em] text-white/25">
           BO{match.bestOf} • {match.map || "Map TBD"}
         </div>
       )}
@@ -618,7 +618,7 @@ export default function TournamentBracketPage() {
 
               <Link
                 href="/tournament/fixtures"
-                className="rounded-lg border border-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-white/50 transition hover:border-white/20 hover:text-white"
+                className="rounded-xl border border-[#2b3d58] bg-[#0b1220] px-4 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#a9b8cc] transition hover:border-[#52e2ff]/50 hover:text-[#52e2ff] transition hover:border-white/20 hover:text-white"
               >
                 Fixtures
               </Link>
@@ -634,7 +634,7 @@ export default function TournamentBracketPage() {
         </header>
 
         <section className="mb-8 overflow-hidden rounded-2xl border border-[#2b3d58] bg-gradient-to-br from-[#0d1522] via-[#0a1019] to-[#111020] shadow-[0_15px_50px_rgba(0,0,0,0.25)]">
-          <div className="flex flex-col border-b border-white/10 px-5 py-5 md:flex-row md:items-center md:justify-between md:px-7">
+          <div className="flex flex-col border-b border-[#263750] px-5 py-5 md:flex-row md:items-center md:justify-between md:px-7">
             <div className="flex items-center gap-4">
               <div className="bg-gradient-to-r from-[#ff3158] to-[#ff5275] px-4 py-3 text-xs font-black uppercase tracking-wide text-white shadow-[0_0_20px_rgba(255,49,88,0.16)]">
                 Phase 2
@@ -728,7 +728,7 @@ export default function TournamentBracketPage() {
           id="playoff-bracket"
           className="rounded-3xl border border-[#2b3d58] bg-gradient-to-br from-[#0d1522] via-[#0a1019] to-[#111020] shadow-[0_15px_50px_rgba(0,0,0,0.22)] p-5 md:p-8"
         >
-          <div className="mb-8 flex flex-col gap-3 border-b border-white/10 pb-6 md:flex-row md:items-center md:justify-between">
+          <div className="mb-8 flex flex-col gap-3 border-b border-[#263750] pb-6 md:flex-row md:items-center md:justify-between">
             <div>
               <div className="text-[10px] font-black uppercase tracking-[0.22em] text-white/30">
                 Playoff Stage
@@ -739,7 +739,7 @@ export default function TournamentBracketPage() {
               </h2>
             </div>
 
-            <div className="rounded-lg border border-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.15em] text-white/30">
+            <div className="rounded-xl border border-[#2b3d58] bg-[#0b1220] px-4 py-2 text-[10px] font-black uppercase tracking-[0.15em] text-[#8195b0]">
               4 Team Bracket
             </div>
           </div>
@@ -937,7 +937,7 @@ export default function TournamentBracketPage() {
                 <Link
                   key={team.id}
                   href={`/tournament/teams/${team.id}`}
-                  className="group rounded-2xl border border-white/10 bg-[#0a1018] p-4 transition hover:border-cyan-400/20 hover:bg-white/[0.025]"
+                  className="group rounded-2xl border border-[#263750] bg-gradient-to-br from-[#0d1522] to-[#0a1019] p-4 transition hover:border-[#52e2ff]/40 hover:bg-[#52e2ff]/[0.03]"
                 >
                   <div className="flex items-center gap-4">
                     {team.logo ? (
@@ -947,7 +947,7 @@ export default function TournamentBracketPage() {
                         className="h-12 w-12 rounded-xl object-cover"
                       />
                     ) : (
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-xs font-black text-white/45">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#52e2ff]/25 bg-[#060b14] text-xs font-black text-[#72e9ff] shadow-[0_0_18px_rgba(39,217,255,0.07)]">
                         {team.tag.slice(0, 3).toUpperCase()}
                       </div>
                     )}
