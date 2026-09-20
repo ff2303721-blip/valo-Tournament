@@ -137,12 +137,12 @@ export default function PublicTeamDetailsPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#060a12] text-white">
+      <main className="relative min-h-screen overflow-hidden bg-[#050810] text-white">
         <div className="mx-auto max-w-[1200px] px-5 py-8 sm:px-8">
-          <header className="mb-8 border-b border-white/10 pb-6">
+          <header className="mb-8 border-b border-[#263750] pb-6">
             <Link
               href="/tournament/teams"
-              className="text-xs font-bold uppercase tracking-[0.2em] text-white/40 transition hover:text-white"
+              className="text-xs font-bold uppercase tracking-[0.2em] text-[#8195b0] transition hover:text-white"
             >
               ← All Teams
             </Link>
@@ -166,7 +166,7 @@ export default function PublicTeamDetailsPage() {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-[#060a12] text-white">
+      <main className="relative min-h-screen overflow-hidden bg-[#050810] text-white">
         <div className="mx-auto max-w-3xl px-6 py-24 text-center">
           <p className="text-[10px] font-black uppercase tracking-[0.25em] text-red-400">
             Database Error
@@ -176,7 +176,7 @@ export default function PublicTeamDetailsPage() {
             Team unavailable
           </h1>
 
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-white/40">
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-[#8195b0]">
             {error}
           </p>
 
@@ -193,7 +193,7 @@ export default function PublicTeamDetailsPage() {
 
   if (!team) {
     return (
-      <main className="min-h-screen bg-[#060a12] text-white">
+      <main className="relative min-h-screen overflow-hidden bg-[#050810] text-white">
         <div className="mx-auto max-w-3xl px-6 py-24 text-center">
           <p className="text-[10px] font-black uppercase tracking-[0.25em] text-red-400">
             Team Not Found
@@ -203,13 +203,13 @@ export default function PublicTeamDetailsPage() {
             Team unavailable
           </h1>
 
-          <p className="mt-4 text-sm text-white/40">
+          <p className="mt-4 text-sm text-[#8195b0]">
             This team does not exist in the tournament database.
           </p>
 
           <Link
             href="/tournament/teams"
-            className="mt-8 inline-block rounded-lg border border-white/10 bg-white px-6 py-3 text-[10px] font-black uppercase tracking-wider text-black transition hover:bg-cyan-300"
+            className="mt-8 inline-block rounded-lg border border-[#263750] bg-white px-6 py-3 text-[10px] font-black uppercase tracking-wider text-black transition hover:bg-cyan-300"
           >
             ← All Teams
           </Link>
@@ -219,12 +219,12 @@ export default function PublicTeamDetailsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#060a12] text-white">
+    <main className="relative min-h-screen overflow-hidden bg-[#050810] text-white">
       <div className="mx-auto max-w-[1200px] px-5 py-8 sm:px-8">
-        <header className="mb-8 flex flex-col gap-5 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
+        <header className="mb-8 flex flex-col gap-5 border-b border-[#263750] pb-6 sm:flex-row sm:items-center sm:justify-between">
           <Link
             href="/tournament/teams"
-            className="text-xs font-bold uppercase tracking-[0.2em] text-white/40 transition hover:text-cyan-300"
+            className="text-xs font-bold uppercase tracking-[0.2em] text-[#8195b0] transition hover:text-cyan-300"
           >
             ← All Teams
           </Link>
@@ -238,7 +238,7 @@ export default function PublicTeamDetailsPage() {
         </header>
 
         <section className="overflow-hidden rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-400/[0.08] via-white/[0.03] to-purple-500/[0.08] shadow-[0_0_70px_rgba(34,211,238,0.06)]">
-          <div className="flex flex-col gap-7 border-b border-white/10 p-6 sm:flex-row sm:items-center sm:p-8">
+          <div className="flex flex-col gap-7 border-b border-[#263750] p-6 sm:flex-row sm:items-center sm:p-8">
             <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-cyan-400/20 bg-black/30 shadow-[0_0_35px_rgba(34,211,238,0.08)]">
               {team.logo ? (
                 <img
@@ -326,8 +326,8 @@ export default function PublicTeamDetailsPage() {
           </div>
 
           {team.players.length === 0 ? (
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-8 text-center">
-              <p className="text-sm font-bold text-white/40">
+            <div className="rounded-xl border border-[#263750] bg-gradient-to-br from-[#0d1522] to-[#0a1019] p-8 text-center">
+              <p className="text-sm font-bold text-[#8195b0]">
                 No players registered.
               </p>
             </div>
@@ -337,7 +337,7 @@ export default function PublicTeamDetailsPage() {
                 (player, index) => (
                   <div
                     key={player.id}
-                    className="group flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-5 transition hover:border-cyan-400/30 hover:bg-cyan-400/[0.04]"
+                    className="group flex items-center justify-between rounded-xl border border-[#263750] bg-gradient-to-br from-[#0d1522] to-[#0a1019] p-5 transition hover:border-cyan-400/30 hover:bg-cyan-400/[0.04]"
                   >
                     <div className="flex items-center gap-4">
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-cyan-400/10 bg-black/30 text-[10px] font-black text-cyan-300/50">
@@ -374,7 +374,7 @@ export default function PublicTeamDetailsPage() {
         <div className="mt-10 flex flex-wrap gap-3">
           <Link
             href="/tournament/matches"
-            className="rounded-lg border border-white/10 bg-white/[0.03] px-5 py-3 text-[10px] font-black uppercase tracking-wider text-white/50 transition hover:border-cyan-400/30 hover:bg-cyan-400/[0.05] hover:text-cyan-200"
+            className="rounded-lg border border-[#263750] bg-gradient-to-br from-[#0d1522] to-[#0a1019] px-5 py-3 text-[10px] font-black uppercase tracking-wider text-[#8195b0] transition hover:border-cyan-400/30 hover:bg-cyan-400/[0.05] hover:text-cyan-200"
           >
             View Tournament Matches →
           </Link>
