@@ -84,7 +84,7 @@ export default function PublicTeamsPage() {
   );
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#050810]/80 text-white"><div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_12%_10%,rgba(255,49,88,0.12),transparent_25%),radial-gradient(circle_at_88%_18%,rgba(39,217,255,0.10),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.10),transparent_35%)]" />
+    <main className="relative min-h-screen overflow-hidden bg-[#050810]/68 text-white"><div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_12%_10%,rgba(255,49,88,0.12),transparent_25%),radial-gradient(circle_at_88%_18%,rgba(39,217,255,0.10),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.10),transparent_35%)]" />
       <div className="relative mx-auto max-w-[1300px] px-5 py-8 sm:px-8">
         <header className="mb-8 border-b border-[#263750] pb-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
