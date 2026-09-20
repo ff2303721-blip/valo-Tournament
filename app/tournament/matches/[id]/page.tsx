@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { TournamentBrand } from "../components/tournament-brand";
 import { useEffect, useMemo, useState } from "react";
 
 type MatchStatus =
@@ -349,6 +350,10 @@ export default function PublicMatchDetailPage({
           >
             ← All Matches
           </Link>
+
+          <div className="mb-5">
+            <TournamentBrand compact />
+          </div>
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
             <div>
