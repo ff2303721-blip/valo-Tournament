@@ -126,6 +126,12 @@ export default function TournamentSettingsPage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
+  const [startDateTime, setStartDateTime] =
+    useState<DateTimeParts>(EMPTY_DATE_TIME);
+
+  const [endDateTime, setEndDateTime] =
+    useState<DateTimeParts>(EMPTY_DATE_TIME);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -197,7 +203,11 @@ export default function TournamentSettingsPage() {
       const response = await fetch("/api/settings", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(settings),
+        body: JSON.stringify({
+          ...settings,
+          startDate: partsToIso(startDateTime),
+          endDate: partsToIso(endDateTime),
+        }),
       });
 
       const data = await response.json();
@@ -218,6 +228,14 @@ export default function TournamentSettingsPage() {
         logoUrl: data.logoUrl ?? "",
         bannerUrl: data.bannerUrl ?? "",
       });
+
+      setStartDateTime(
+        toDateTimeParts(data.startDate),
+      );
+
+      setEndDateTime(
+        toDateTimeParts(data.endDate),
+      );
 
       setMessage("Tournament settings saved successfully.");
     } catch (saveError) {
