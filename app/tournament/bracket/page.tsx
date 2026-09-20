@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { TournamentBrand } from "../components/tournament-brand";
 import { useEffect, useMemo, useState } from "react";
 import { matches as defaultMatches, Match } from "../../data/matches";
 import { teams as defaultTeams, Team } from "../../data/teams";
