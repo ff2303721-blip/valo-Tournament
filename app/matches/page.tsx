@@ -350,7 +350,7 @@ export default function MatchCenterPage() {
     setError("");
   }
 
-  async function startNewGroupMatch() {
+  function startNewGroupMatch() {
     setError("");
     setMessage("");
 
@@ -361,29 +361,9 @@ export default function MatchCenterPage() {
       return;
     }
 
-    let latestMatches = matches;
-
-    try {
-      const latestResponse = await fetch(
-        "/api/matches?includeStats=false&admin=true",
-        {
-          cache: "no-store",
-        },
-      );
-
-      const latestData = await latestResponse.json();
-
-      if (latestResponse.ok && Array.isArray(latestData)) {
-        latestMatches = latestData.map(normalizeMatch);
-        setMatches(latestMatches);
-      }
-    } catch {
-      // Continue with the current in-memory list if refresh fails.
-    }
-
     const nextFixture = GROUP_FIXTURES.find(
       (fixture) =>
-        !latestMatches.some(
+        !matches.some(
           (match) =>
             match.id ===
               `M${String(fixture.matchNumber).padStart(2, "0")}` ||
@@ -398,13 +378,9 @@ export default function MatchCenterPage() {
       return;
     }
 
-    const matchNumber = nextFixture.matchNumber;
-
-    // Open the creation form instead of automatically assigning
-    // the fixture teams. The admin can now choose both teams.
     setEditor({
-      id: `M${String(matchNumber).padStart(2, "0")}`,
-      matchNumber: String(matchNumber),
+      id: `M${String(nextFixture.matchNumber).padStart(2, "0")}`,
+      matchNumber: String(nextFixture.matchNumber),
       stage: "Group Stage",
       team1Id: "",
       team2Id: "",
