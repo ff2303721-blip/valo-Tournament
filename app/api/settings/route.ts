@@ -67,8 +67,9 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json({
-      id: data.id,
+    return NextResponse.json(
+      {
+        id: data.id,
       tournamentName: data.tournament_name,
       tagline: data.tagline,
       organizerName: data.organizer_name ?? "",
@@ -79,8 +80,14 @@ export async function GET() {
       announcement: data.announcement ?? "",
       logoUrl: data.logo_url ?? "",
       bannerUrl: data.banner_url ?? "",
-      updatedAt: data.updated_at,
-    });
+        updatedAt: data.updated_at,
+      },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=10, stale-while-revalidate=30",
+        },
+      },
+    );
   } catch (error) {
     console.error("GET /api/settings exception:", error);
     return NextResponse.json(
