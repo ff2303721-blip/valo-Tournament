@@ -1027,7 +1027,15 @@ export default function MatchCenterPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#050810] text-white"><div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_10%_8%,rgba(255,49,88,0.13),transparent_24%),radial-gradient(circle_at_90%_15%,rgba(39,217,255,0.11),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.11),transparent_35%)]" />
+    <main className="relative min-h-screen overflow-hidden bg-[#050810] text-white">
+      <div
+        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `linear-gradient(rgba(4,7,15,0.76), rgba(4,7,15,0.91)), url("https://images5.alphacoders.com/120/thumb-1920-1202339.png")`,
+          backgroundAttachment: "fixed",
+        }}
+      />
+      <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_12%_30%,rgba(255,31,91,0.16),transparent_28%),radial-gradient(circle_at_88%_30%,rgba(0,229,255,0.12),transparent_30%)]" /><div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_10%_8%,rgba(255,49,88,0.13),transparent_24%),radial-gradient(circle_at_90%_15%,rgba(39,217,255,0.11),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.11),transparent_35%)]" />
       <div className="relative mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8">
         <header className="mb-8">
           <div className="flex flex-col gap-4 border-b border-[#2b3d58] pb-6 lg:flex-row lg:items-end lg:justify-between">
