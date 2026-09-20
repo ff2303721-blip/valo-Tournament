@@ -444,7 +444,7 @@ export default function MatchCenterPage() {
       status: match.status,
     });
 
-    setShowCreateForm(false);
+    setShowCreateForm(true);
     setActiveSection("group");
     setMessage("");
     setError("");
@@ -1672,13 +1672,13 @@ export default function MatchCenterPage() {
           GROUP STAGE: M01–M12 MANUAL · M13–M16 AUTOMATIC
         </footer>
 
-        {showCreateForm && editor.id && !matches.some((match) => match.id === editor.id) && (
+        {showCreateForm && editor.id && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#02050b]/80 p-4 backdrop-blur-sm">
             <div className="w-full max-w-2xl rounded-2xl border border-[#52e2ff]/30 bg-[#090f19] p-6 shadow-[0_0_60px_rgba(39,217,255,0.12)]">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#52e2ff]">
-                    CREATE GROUP MATCH
+                    {matches.some((match) => match.id === editor.id) ? "EDIT GROUP MATCH" : "CREATE GROUP MATCH"}
                   </div>
                   <h2 className="mt-2 text-2xl font-black uppercase">
                     {editor.id}
@@ -1820,7 +1820,7 @@ export default function MatchCenterPage() {
                   disabled={saving || !editor.team1Id || !editor.team2Id}
                   className="rounded-xl bg-gradient-to-r from-[#ff3158] to-[#ff5275] px-6 py-3 text-xs font-black uppercase tracking-wider text-white shadow-[0_0_24px_rgba(255,49,88,0.2)] disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  {saving ? "CREATING..." : "CREATE MATCH"}
+                  {saving ? "SAVING..." : matches.some((match) => match.id === editor.id) ? "SAVE CHANGES" : "CREATE MATCH"}
                 </button>
               </div>
             </div>
