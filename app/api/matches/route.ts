@@ -217,12 +217,16 @@ export async function GET(
         includeStats,
       );
 
+    const isAdminRequest =
+      request.nextUrl.searchParams.get("admin") === "true";
+
     return NextResponse.json(
       matches,
       {
         headers: {
-          "Cache-Control":
-            "public, s-maxage=10, stale-while-revalidate=30",
+          "Cache-Control": isAdminRequest
+            ? "no-store, no-cache, must-revalidate"
+            : "public, s-maxage=10, stale-while-revalidate=30",
         },
       },
     );
