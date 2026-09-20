@@ -56,8 +56,13 @@ type PageProps = {
   params: Promise<{ id: string }>;
 };
 
-const BACKGROUND_IMAGE =
-  "https://images5.alphacoders.com/120/thumb-1920-1202339.png";
+const BACKGROUND_IMAGES = [
+  "https://images5.alphacoders.com/120/thumb-1920-1202339.png",
+  "https://images4.alphacoders.com/120/1202336.png",
+  "https://wallpapers.com/images/hd/red-valorant-8k-gaming-2h2qxvq2arallyki.jpg",
+  "https://cdn.wallpapersafari.com/4/74/XAY3GaV.jpg",
+  "https://i.pinimg.com/736x/ea/30/ea/ea30ea61571b1086b5502c4f82a5fb0c.jpg",
+];
 
 function getTeam(teams: Team[], id?: string) {
   return teams.find((team) => team.id === id);
@@ -235,6 +240,9 @@ function StatTable({
 
 export default function PublicMatchDetailPage({ params }: PageProps) {
   const [match, setMatch] = useState<Match | null>(null);
+  const [backgroundImage, setBackgroundImage] = useState(
+    BACKGROUND_IMAGES[0],
+  );
   const [teams, setTeams] = useState<Team[]>([]);
   const [matchId, setMatchId] = useState("");
   const [loading, setLoading] = useState(true);
@@ -249,6 +257,15 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
         if (!active) return;
 
         setMatchId(resolved.id);
+
+        const randomBackground =
+          BACKGROUND_IMAGES[
+            Math.floor(
+              Math.random() * BACKGROUND_IMAGES.length,
+            )
+          ];
+
+        setBackgroundImage(randomBackground);
 
         const [matchResponse, teamsResponse] = await Promise.all([
           fetch(`/api/matches/${encodeURIComponent(resolved.id)}`, {
@@ -368,7 +385,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
       <div
         className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url("${BACKGROUND_IMAGE}")`,
+          backgroundImage: `url("${backgroundImage}")`,
           transform: "scale(1.02)",
         }}
       />
