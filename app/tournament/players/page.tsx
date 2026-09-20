@@ -568,7 +568,7 @@ export default function PlayerStatisticsPage() {
                     )
                   }
                   placeholder="PLAYER / TEAM"
-                  className="min-w-[180px] border border-white/10 bg-[#080c12] px-4 py-3 text-[10px] font-black uppercase outline-none placeholder:text-white/20 focus:border-cyan-400"
+                  className="min-w-[180px] rounded-xl border border-[#2b3d58] bg-[#060b14] px-4 py-3 text-[10px] font-black uppercase outline-none placeholder:text-white/20 focus:border-[#52e2ff]"
                 />
               </label>
             </div>
