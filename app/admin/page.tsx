@@ -116,6 +116,7 @@ export default function Home() {
                 Stage
               </label>
               <select className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] p-3 text-sm text-white outline-none transition focus:border-[#52e2ff] focus:ring-1 focus:ring-[#52e2ff]/15">
+                <option value="">Select Stage</option>
                 <option>Group Stage Match</option>
                 <option>Quarterfinal</option>
                 <option>Semifinal</option>
@@ -130,9 +131,10 @@ export default function Home() {
                     Team {index + 1}
                   </label>
                   <select
-                    defaultValue={team.id}
+                    defaultValue=""
                     className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] p-3 text-sm text-white outline-none transition focus:border-[#52e2ff] focus:ring-1 focus:ring-[#52e2ff]/15"
                   >
+                    <option value="">Select Team</option>
                     {teams.map((optionTeam) => (
                       <option key={optionTeam.id} value={optionTeam.id}>
                         {optionTeam.name}
@@ -146,7 +148,8 @@ export default function Home() {
             <div className="grid grid-cols-[1fr_42px_1fr] items-center gap-2">
               <input
                 type="number"
-                defaultValue={13}
+                defaultValue=""
+                placeholder="0"
                 className="w-full rounded-xl border border-[#00e5ff]/50 bg-[#06121b] p-3 text-center text-3xl font-black text-[#72e9ff] shadow-[0_0_20px_rgba(0,229,255,0.08)] outline-none"
               />
               <span className="text-center text-[10px] font-black text-[#8195b0]">
@@ -154,7 +157,8 @@ export default function Home() {
               </span>
               <input
                 type="number"
-                defaultValue={9}
+                defaultValue=""
+                placeholder="0"
                 className="w-full rounded-xl border border-[#ff3158]/50 bg-[#170a12] p-3 text-center text-3xl font-black text-[#ff6b8d] shadow-[0_0_20px_rgba(255,49,88,0.08)] outline-none"
               />
             </div>
@@ -185,7 +189,8 @@ export default function Home() {
                         </span>
                         <input
                           type="number"
-                          defaultValue={0}
+                          defaultValue=""
+                          placeholder="0"
                           className="w-12 rounded-lg border border-[#2b3d58] bg-[#07101a] p-1.5 text-center text-xs text-white outline-none focus:border-[#52e2ff]"
                         />
                       </div>
@@ -199,7 +204,11 @@ export default function Home() {
               <label className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#ff5d8a]">
                 ★ Match MVP
               </label>
-              <select className="w-full rounded-xl border border-[#8b2cff]/40 bg-[#0a0b18] p-3 text-sm text-white outline-none focus:border-[#ff5d8a]">
+              <select
+                defaultValue=""
+                className="w-full rounded-xl border border-[#8b2cff]/40 bg-[#0a0b18] p-3 text-sm text-white outline-none focus:border-[#ff5d8a]"
+              >
+                <option value="">Select MVP</option>
                 {team1.players.concat(team2.players).map((player) => (
                   <option key={player.id}>{player.name}</option>
                 ))}
@@ -212,7 +221,11 @@ export default function Home() {
                   <label className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#52e2ff]">
                     Team {index + 1} Top Fragger
                   </label>
-                  <select className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] p-3 text-sm text-white outline-none focus:border-[#52e2ff]">
+                  <select
+                    defaultValue=""
+                    className="w-full rounded-xl border border-[#2b3d58] bg-[#060b14] p-3 text-sm text-white outline-none focus:border-[#52e2ff]"
+                  >
+                    <option value="">Select Player</option>
                     {team.players.map((player) => (
                       <option key={player.id}>{player.name}</option>
                     ))}
