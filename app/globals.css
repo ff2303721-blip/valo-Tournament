@@ -131,3 +131,17 @@ button, select { cursor: pointer; }
 ::-webkit-scrollbar-track { background: var(--bg-base); }
 ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--violet); }
+/* Sitewide random Valorant background */
+.valorant-page {
+  position: relative;
+  isolation: isolate;
+  background-image:
+    linear-gradient(
+      rgba(3, 6, 13, 0.74),
+      rgba(3, 6, 13, 0.90)
+    ),
+    var(--valorant-background);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
