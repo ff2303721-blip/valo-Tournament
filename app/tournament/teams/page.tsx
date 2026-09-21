@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { TournamentNav } from "../components/tournament-nav";
-import { Team, teams as initialTeams } from "../../data/teams";
+import { Team } from "../../data/teams";
 
 function initials(name: string) {
   return (
@@ -22,7 +22,7 @@ function TeamStatBox({ label, value, accent }: { label: string; value: number; a
 }
 
 export default function PublicTeamsPage() {
-  const [teams, setTeams] = useState<Team[]>(initialTeams);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -33,7 +33,7 @@ export default function PublicTeamsPage() {
         const res = await fetch("/api/teams?lite=1", { cache: "no-store" });
         if (!res.ok) throw new Error("Unable to load registered teams.");
         const data = await res.json();
-        if (active && Array.isArray(data) && data.length > 0) setTeams(data);
+        if (active && Array.isArray(data)) setTeams(data);
       } catch (err) {
         if (active) setError(err instanceof Error ? err.message : "Unable to load teams");
       } finally {
