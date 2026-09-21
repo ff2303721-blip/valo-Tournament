@@ -71,7 +71,7 @@ export default function AdminHubPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#030308] text-[#f1f5f9]">
+    <div className="valorant-page min-h-screen bg-[#030308] text-[#f1f5f9]">
       {/* Ambient glows */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/7 blur-[180px]" />
