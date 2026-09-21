@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { TournamentNav } from "../../components/tournament-nav";
-import { teams as defaultTeams } from "@/app/data/teams";
 
 type Player = {
   id: string;
@@ -58,16 +57,13 @@ export default function PublicTeamDetailsPage() {
       }
 
       try {
-        const response = await fetch("/api/teams", { cache: "no-store" });
-        const data = response.ok ? await response.json() : null;
+        const response = await fetch(`/api/teams/${encodeURIComponent(teamId)}`, { cache: "no-store" });
+        const foundTeam = response.ok ? await response.json() : null;
 
         if (!mounted) {
           setLoading(false);
           return;
         }
-
-        const teamList: Team[] = Array.isArray(data) && data.length > 0 ? data : defaultTeams;
-        const foundTeam = teamList.find((item: Team) => item.id === teamId);
 
         if (!foundTeam) {
           setTeam(null);
@@ -86,14 +82,9 @@ export default function PublicTeamDetailsPage() {
           setLoading(false);
           return;
         }
-        const fallback = defaultTeams.find((item) => item.id === teamId);
-        if (fallback) {
-          setTeam(fallback);
-        } else {
-          setError(
-            loadError instanceof Error ? loadError.message : "Unable to load team.",
-          );
-        }
+        setError(
+          loadError instanceof Error ? loadError.message : "Unable to load team.",
+        );
       } finally {
         setLoading(false);
       }
