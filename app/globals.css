@@ -1,34 +1,133 @@
 @import "tailwindcss";
 
+/* ─── Neon Void Design Tokens ─────────────────────────────────────────────── */
 :root {
-  --background: #080c12;
-  --foreground: #ffffff;
+  /* Backgrounds */
+  --bg-base:     #030308;
+  --bg-surface:  #0c0c18;
+  --bg-elevated: #131326;
+
+  /* Borders */
+  --border:        #1e1e3a;
+  --border-bright: #2e2e5a;
+
+  /* Accents */
+  --crimson:  #ff2d55;
+  --crimson2: #ff4d6a;
+  --violet:   #7c3aed;
+  --violet2:  #9d63ff;
+  --gold:     #f59e0b;
+  --gold2:    #fbbf24;
+  --cyan:     #06b6d4;
+  --cyan2:    #22d3ee;
+  --green:    #10b981;
+  --green2:   #34d399;
+
+  /* Text */
+  --text-primary: #f1f5f9;
+  --text-muted:   #64748b;
+  --text-dim:     #334155;
+
+  /* Legacy compat */
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
 }
 
-* {
-  box-sizing: border-box;
-}
+/* ─── Reset ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
 
-html,
-body {
+html, body {
   margin: 0;
   padding: 0;
   min-height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(255, 45, 85, 0.16), transparent 28%),
+    radial-gradient(circle at top right, rgba(124, 58, 237, 0.18), transparent 30%),
+    linear-gradient(180deg, #040610 0%, #050816 100%);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans, Arial, Helvetica, sans-serif);
+  -webkit-font-smoothing: antialiased;
 }
 
-button,
-input,
-select {
-  font: inherit;
+button, input, select, textarea { font: inherit; }
+button, select { cursor: pointer; }
+
+/* ─── Glassmorphism Card ──────────────────────────────────────────────────── */
+.glass-card {
+  background: rgba(12, 12, 24, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.glass-card:hover {
+  border-color: var(--border-bright);
+  box-shadow: 0 0 24px rgba(124, 58, 237, 0.12);
 }
 
-button,
-select {
-  cursor: pointer;
+/* ─── Dashboard helpers ───────────────────────────────────────────────────── */
+.panel-shell {
+  background: linear-gradient(180deg, rgba(14, 17, 31, 0.96), rgba(9, 11, 21, 0.9));
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  box-shadow: 0 20px 60px rgba(2, 6, 23, 0.45);
 }
+
+.soft-divider {
+  border-color: rgba(148, 163, 184, 0.12);
+}
+
+.neo-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.neo-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 20%, rgba(255,255,255,0.2), transparent 80%);
+  transform: translateX(-120%);
+  transition: transform 0.7s ease;
+}
+
+.neo-button:hover::after {
+  transform: translateX(120%);
+}
+
+/* ─── Glow utilities ──────────────────────────────────────────────────────── */
+.glow-crimson { box-shadow: 0 0 20px rgba(255, 45, 85, 0.25); }
+.glow-violet  { box-shadow: 0 0 20px rgba(124, 58, 237, 0.25); }
+.glow-cyan    { box-shadow: 0 0 20px rgba(6, 182, 212, 0.20); }
+.glow-gold    { box-shadow: 0 0 20px rgba(245, 158, 11, 0.20); }
+
+/* ─── Live pulsing double-ring ────────────────────────────────────────────── */
+@keyframes ping-ring {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  70%  { transform: scale(1.9); opacity: 0; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+.live-dot {
+  position: relative;
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--crimson);
+}
+.live-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(255, 45, 85, 0.5);
+  animation: ping-ring 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--violet); }

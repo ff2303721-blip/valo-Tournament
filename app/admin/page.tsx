@@ -5,11 +5,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { Match, Team, TournamentSettings } from "@/lib/types";
 import { defaultSettings } from "@/lib/api";
+import { teams as defaultTeams } from "@/app/data/teams";
+import { matches as defaultMatches } from "@/app/data/matches";
+import { StatusBadge } from "@/app/tournament/components/ui/status-badge";
 
 export default function AdminHubPage() {
   const router = useRouter();
-  const [teams, setTeams] = useState<Team[]>([]);
-  const [matches, setMatches] = useState<Match[]>([]);
+  const [teams, setTeams] = useState<Team[]>(defaultTeams);
+  const [matches, setMatches] = useState<Match[]>(defaultMatches);
   const [settings, setSettings] = useState<TournamentSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
@@ -20,39 +23,32 @@ export default function AdminHubPage() {
     async function fetchDashboard() {
       try {
         const [teamsRes, matchesRes, settingsRes] = await Promise.all([
-          fetch("/api/teams", { cache: "no-store" }),
+          fetch("/api/teams?lite=1", { cache: "no-store" }),
           fetch("/api/matches", { cache: "no-store" }),
           fetch("/api/settings", { cache: "no-store" }),
         ]);
 
-        if (!active) return;
-
         if (teamsRes.ok) {
           const t = await teamsRes.json();
-          if (Array.isArray(t)) setTeams(t);
+          if (active && Array.isArray(t) && t.length > 0) setTeams(t);
         }
         if (matchesRes.ok) {
           const m = await matchesRes.json();
-          if (Array.isArray(m)) setMatches(m);
+          if (active && Array.isArray(m) && m.length > 0) setMatches(m);
         }
         if (settingsRes.ok) {
           const s = await settingsRes.json();
-          if (s && s.tournamentName) setSettings(s);
+          if (active && s?.tournamentName) setSettings(s);
         }
       } catch (err) {
         console.error("Error loading admin dashboard:", err);
       } finally {
-        if (active) {
-          setLoading(false);
-        }
+        if (active) setLoading(false);
       }
     }
 
     fetchDashboard();
-
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, []);
 
   async function handleLogout() {
@@ -67,266 +63,233 @@ export default function AdminHubPage() {
   }
 
   const completedMatches = matches.filter((m) => m.status === "Completed");
-  const liveMatches = matches.filter((m) => m.status === "Live");
+  const liveMatches      = matches.filter((m) => m.status === "Live");
   const scheduledMatches = matches.filter((m) => m.status === "Scheduled");
 
   const totalPlayers = teams.reduce(
-    (acc, team) => acc + (team.players?.length || 0),
-    0
+    (acc, team) => acc + (team.players?.length || 0), 0
   );
 
   return (
-    <div className="min-h-screen bg-[#080c12] text-white">
-      {/* Top Header */}
-      <header className="border-b border-[#202c3d] bg-[#0c121c]/95 px-6 py-4 backdrop-blur sm:px-10">
+    <div className="min-h-screen bg-[#030308] text-[#f1f5f9]">
+      {/* Ambient glows */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/7 blur-[180px]" />
+        <div className="absolute -right-40 top-10 h-[500px] w-[500px] rounded-full bg-[#ff2d55]/6 blur-[160px]" />
+        <div className="absolute bottom-0 left-1/2 h-[400px] w-[400px] rounded-full bg-[#06b6d4]/5 blur-[140px]" />
+      </div>
+
+      {/* ── Admin Header ───────────────────────────────────────────── */}
+      <header className="relative border-b border-[#1e1e3a] bg-[#030308]/95 px-6 py-4 backdrop-blur-xl sm:px-10">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
+          {/* Brand */}
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded border border-[#ff4655]/50 bg-[#ff4655]/15 text-[#ff4655] font-black shadow-[0_0_15px_rgba(255,70,85,0.3)]">
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55]/10 text-sm font-black text-[#ff2d55]"
+              style={{ boxShadow: "0 0 16px rgba(255,45,85,0.15)" }}
+            >
               V
             </div>
             <div>
-              <h1 className="text-xl font-extrabold tracking-wide">
-                TOURNAMENT MANAGEMENT{" "}
-                <span className="text-[#ff4655]">{"// ADMIN COMMAND HUB"}</span>
+              <h1 className="text-lg font-black tracking-tight">
+                TOURNAMENT{" "}
+                <span className="text-[#ff2d55]">// ADMIN HUB</span>
               </h1>
-              <p className="text-[11px] text-[#88a0bd]">
+              <p className="text-[10px] text-[#475569]">
                 Valorant Esports Control Center • Cloud Database Sync
               </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
+          {/* Nav actions */}
+          <div className="flex flex-wrap items-center gap-2">
             <Link
               href="/tournament"
               target="_blank"
-              className="rounded border border-[#38506d] bg-[#111b29] px-3.5 py-2 text-xs font-bold text-[#bcd0e8] transition hover:border-cyan-400/50 hover:text-cyan-300"
+              className="rounded-lg border border-[#1e1e3a] bg-[#0c0c18] px-3.5 py-2 text-[10px] font-black tracking-widest text-[#64748b] transition hover:border-[#06b6d4]/50 hover:text-[#22d3ee]"
             >
-              PUBLIC TOURNAMENT ↗
+              PUBLIC SITE ↗
             </Link>
-
             <Link
               href="/matches"
-              className="rounded border border-[#ff4655]/50 bg-[#ff4655]/15 px-3.5 py-2 text-xs font-bold text-[#ff707e] transition hover:bg-[#ff4655] hover:text-white"
+              className="rounded-lg border border-[#ff2d55]/40 bg-[#ff2d55]/10 px-3.5 py-2 text-[10px] font-black tracking-widest text-[#ff4d6a] transition hover:bg-[#ff2d55]/25"
             >
               MATCH MANAGER ↗
             </Link>
-
             <Link
               href="/teams"
-              className="rounded border border-[#38506d] bg-[#111b29] px-3.5 py-2 text-xs font-bold text-[#bcd0e8] transition hover:border-white/40 hover:text-white"
+              className="rounded-lg border border-[#1e1e3a] bg-[#0c0c18] px-3.5 py-2 text-[10px] font-black tracking-widest text-[#64748b] transition hover:border-[#2e2e5a] hover:text-[#f1f5f9]"
             >
               TEAMS & ROSTERS ↗
             </Link>
-
             <Link
               href="/admin/settings"
-              className="rounded border border-[#38506d] bg-[#111b29] px-3.5 py-2 text-xs font-bold text-[#bcd0e8] transition hover:border-white/40 hover:text-white"
+              className="rounded-lg border border-[#1e1e3a] bg-[#0c0c18] px-3.5 py-2 text-[10px] font-black tracking-widest text-[#64748b] transition hover:border-[#2e2e5a] hover:text-[#f1f5f9]"
             >
               SETTINGS ⚙
             </Link>
-
             <button
               onClick={handleLogout}
               disabled={loggingOut}
-              className="rounded border border-red-500/30 bg-red-500/10 px-3.5 py-2 text-xs font-bold text-red-400 transition hover:bg-red-500 hover:text-white"
+              className="rounded-lg border border-[#ff2d55]/30 bg-[#ff2d55]/8 px-3.5 py-2 text-[10px] font-black tracking-widest text-[#ff4d6a] transition hover:bg-[#ff2d55]/20 disabled:opacity-50"
             >
-              {loggingOut ? "LOGGING OUT..." : "LOGOUT"}
+              {loggingOut ? "LOGGING OUT…" : "LOGOUT"}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Main Command Dashboard */}
-      <main className="mx-auto max-w-7xl px-6 py-8 sm:px-10">
-        {/* Tournament KPI Cards */}
-        <section className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:gap-6">
-          <div className="rounded-xl border border-[#223145] bg-[#0e1522] p-5 shadow-lg">
-            <div className="text-[10px] font-black uppercase tracking-wider text-[#7994b5]">
-              REGISTERED TEAMS
-            </div>
-            <div className="mt-2 text-3xl font-black text-white sm:text-4xl">
-              {loading ? "..." : teams.length}
-            </div>
-            <div className="mt-1 text-xs text-[#526d8f]">
-              {totalPlayers} players in rosters
-            </div>
-          </div>
+      {/* ── Main Content ───────────────────────────────────────────── */}
+      <main className="relative mx-auto max-w-7xl px-6 py-8 sm:px-10 space-y-8">
 
-          <div className="rounded-xl border border-[#223145] bg-[#0e1522] p-5 shadow-lg">
-            <div className="text-[10px] font-black uppercase tracking-wider text-[#7994b5]">
-              COMPLETED MATCHES
+        {/* KPI Cards */}
+        <section className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {[
+            { label: "REGISTERED TEAMS",  value: loading ? "…" : teams.length,            sub: `${totalPlayers} players total`,              accent: "text-[#22d3ee]",  border: "border-[#06b6d4]/20" },
+            { label: "COMPLETED MATCHES", value: loading ? "…" : completedMatches.length, sub: `of ${matches.length} total fixtures`,         accent: "text-[#34d399]",  border: "border-[#10b981]/20" },
+            { label: "LIVE NOW",          value: loading ? "…" : liveMatches.length,      sub: `${scheduledMatches.length} upcoming`,         accent: "text-[#ff4d6a]",  border: "border-[#ff2d55]/25" },
+            { label: "PRIZE POOL",        value: settings.prizePool || "—",               sub: settings.tournamentName,                       accent: "text-[#fbbf24]",  border: "border-[#f59e0b]/20" },
+          ].map((card) => (
+            <div key={card.label} className={`rounded-xl border ${card.border} bg-[#0c0c18] p-5`}>
+              <div className="text-[9px] font-black uppercase tracking-[0.25em] text-[#334155]">
+                {card.label}
+              </div>
+              <div className={`mt-2 text-3xl font-black tracking-tight sm:text-4xl ${card.accent}`}>
+                {card.value}
+              </div>
+              <div className="mt-1 truncate text-[10px] text-[#334155]">{card.sub}</div>
             </div>
-            <div className="mt-2 text-3xl font-black text-[#53efb1] sm:text-4xl">
-              {loading ? "..." : completedMatches.length}
-            </div>
-            <div className="mt-1 text-xs text-[#526d8f]">
-              of {matches.length} total fixtures
-            </div>
-          </div>
+          ))}
+        </section>
 
-          <div className="rounded-xl border border-[#223145] bg-[#0e1522] p-5 shadow-lg">
-            <div className="text-[10px] font-black uppercase tracking-wider text-[#7994b5]">
-              ACTIVE STATUS
-            </div>
-            <div className="mt-2 flex items-center gap-2">
-              <span
-                className={`h-3 w-3 rounded-full ${
-                  settings.tournamentStatus === "Live"
-                    ? "animate-pulse bg-red-400 shadow-[0_0_10px_#f87171]"
-                    : "bg-cyan-400"
-                }`}
-              />
-              <span className="text-2xl font-black uppercase text-white sm:text-3xl">
+        {/* Status + Tournament Info row */}
+        <section className="grid gap-4 sm:grid-cols-3">
+          <div className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18] p-5">
+            <div className="text-[9px] font-black uppercase tracking-widest text-[#334155]">STATUS</div>
+            <div className="mt-3 flex items-center gap-3">
+              {settings.tournamentStatus === "Live" && (
+                <span className="live-dot h-2.5 w-2.5 flex-shrink-0" />
+              )}
+              <span className="text-xl font-black uppercase">
                 {settings.tournamentStatus}
               </span>
             </div>
-            <div className="mt-1 text-xs text-[#526d8f]">
-              {liveMatches.length} match currently live
-            </div>
           </div>
 
-          <div className="rounded-xl border border-[#223145] bg-[#0e1522] p-5 shadow-lg">
-            <div className="text-[10px] font-black uppercase tracking-wider text-[#7994b5]">
-              PRIZE POOL
-            </div>
-            <div className="mt-2 truncate text-2xl font-black text-[#ffd45c] sm:text-3xl">
-              {settings.prizePool || "₹50,000"}
-            </div>
-            <div className="mt-1 text-xs text-[#526d8f]">
-              {settings.tournamentName}
-            </div>
+          <div className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18] p-5 sm:col-span-2">
+            <div className="text-[9px] font-black uppercase tracking-widest text-[#334155]">CURRENT ANNOUNCEMENT</div>
+            <p className="mt-3 text-sm leading-relaxed text-[#94a3b8]">
+              {settings.announcement || "No active tournament announcement."}
+            </p>
+            <Link
+              href="/admin/settings"
+              className="mt-3 inline-block text-[10px] font-black tracking-widest text-[#7c3aed] transition hover:text-[#9d63ff]"
+            >
+              Update Announcement →
+            </Link>
           </div>
         </section>
 
-        {/* Quick Launchpad & Match Action Center */}
-        <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[440px_1fr]">
-          {/* Quick Admin Actions */}
-          <div className="space-y-6">
-            <div className="rounded-xl border border-[#26374d] bg-[#0e1522] p-6">
-              <h2 className="text-sm font-black uppercase tracking-wider text-white">
-                QUICK ACTIONS
-              </h2>
-              <p className="mt-1 text-xs text-[#7d97b8]">
-                Common tournament management operations.
-              </p>
+        {/* Main grid */}
+        <div className="grid gap-8 lg:grid-cols-[380px_1fr]">
+          {/* Quick Actions */}
+          <div className="space-y-4">
+            <div className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18] p-6">
+              <h2 className="text-[9px] font-black uppercase tracking-[0.3em] text-[#334155]">QUICK ACTIONS</h2>
+              <p className="mt-1 text-xs text-[#475569]">Common tournament management operations.</p>
 
               <div className="mt-5 flex flex-col gap-3">
-                <Link
-                  href="/matches"
-                  className="flex items-center justify-between rounded-lg border border-[#30445d] bg-[#121c2b] p-4 text-left transition hover:border-[#ff4655] hover:bg-[#182335]"
-                >
-                  <div>
-                    <div className="text-sm font-bold text-white">
-                      📸 Record Match via OCR Scoreboard
+                {[
+                  {
+                    href:    "/matches",
+                    emoji:   "📸",
+                    title:   "Record Match via OCR Scoreboard",
+                    desc:    "Upload screenshot to parse player stats & scores.",
+                    accent:  "hover:border-[#ff2d55]/60 hover:bg-[#ff2d55]/5",
+                    arrow:   "text-[#ff4d6a]",
+                  },
+                  {
+                    href:    "/teams",
+                    emoji:   "👥",
+                    title:   "Manage Teams & Players",
+                    desc:    "Add teams, configure 6-man rosters and captain roles.",
+                    accent:  "hover:border-[#06b6d4]/60 hover:bg-[#06b6d4]/5",
+                    arrow:   "text-[#22d3ee]",
+                  },
+                  {
+                    href:    "/admin/settings",
+                    emoji:   "⚙️",
+                    title:   "Tournament Branding & Dates",
+                    desc:    "Edit title, banner, prize pool, and announcements.",
+                    accent:  "hover:border-[#f59e0b]/60 hover:bg-[#f59e0b]/5",
+                    arrow:   "text-[#fbbf24]",
+                  },
+                ].map((action) => (
+                  <Link
+                    key={action.href}
+                    href={action.href}
+                    className={`flex items-center justify-between rounded-xl border border-[#1e1e3a] bg-[#030308] p-4 text-left transition ${action.accent}`}
+                  >
+                    <div>
+                      <div className="text-sm font-bold">
+                        {action.emoji} {action.title}
+                      </div>
+                      <div className="mt-0.5 text-[10px] text-[#475569]">{action.desc}</div>
                     </div>
-                    <div className="mt-0.5 text-xs text-[#718dae]">
-                      Upload screenshot to automatically parse player stats & scores.
-                    </div>
-                  </div>
-                  <span className="text-lg text-[#ff4655]">→</span>
-                </Link>
-
-                <Link
-                  href="/teams"
-                  className="flex items-center justify-between rounded-lg border border-[#30445d] bg-[#121c2b] p-4 text-left transition hover:border-cyan-400 hover:bg-[#182335]"
-                >
-                  <div>
-                    <div className="text-sm font-bold text-white">
-                      👥 Manage Teams & Players
-                    </div>
-                    <div className="mt-0.5 text-xs text-[#718dae]">
-                      Add new teams, configure 6-man rosters and captain roles.
-                    </div>
-                  </div>
-                  <span className="text-lg text-cyan-400">→</span>
-                </Link>
-
-                <Link
-                  href="/admin/settings"
-                  className="flex items-center justify-between rounded-lg border border-[#30445d] bg-[#121c2b] p-4 text-left transition hover:border-yellow-400 hover:bg-[#182335]"
-                >
-                  <div>
-                    <div className="text-sm font-bold text-white">
-                      ⚙️ Tournament Branding & Dates
-                    </div>
-                    <div className="mt-0.5 text-xs text-[#718dae]">
-                      Edit tournament title, banner, prize pool, and announcements.
-                    </div>
-                  </div>
-                  <span className="text-lg text-yellow-400">→</span>
-                </Link>
+                    <span className={`text-lg ${action.arrow}`}>→</span>
+                  </Link>
+                ))}
               </div>
-            </div>
-
-            {/* Live Announcement Info */}
-            <div className="rounded-xl border border-[#26374d] bg-[#0e1522] p-6">
-              <h2 className="text-sm font-black uppercase tracking-wider text-white">
-                CURRENT ANNOUNCEMENT
-              </h2>
-              <div className="mt-3 rounded-lg border border-[#2c3d52] bg-[#090e16] p-4 text-xs leading-relaxed text-[#a5bad2]">
-                {settings.announcement || "No active tournament announcement."}
-              </div>
-              <Link
-                href="/admin/settings"
-                className="mt-3 inline-block text-[11px] font-bold text-cyan-400 hover:underline"
-              >
-                Update Announcement Banner →
-              </Link>
             </div>
           </div>
 
-          {/* Pending & Recent Matches with Direct Actions */}
-          <div className="overflow-hidden rounded-xl border border-[#26374d] bg-[#0e1522]">
-            <div className="flex items-center justify-between border-b border-[#26374d] px-6 py-4">
+          {/* Fixtures overview */}
+          <div className="overflow-hidden rounded-xl border border-[#1e1e3a] bg-[#0c0c18]">
+            <div className="flex items-center justify-between border-b border-[#1e1e3a] px-6 py-4">
               <div>
-                <h2 className="text-sm font-black uppercase tracking-wider text-white">
-                  FIXTURES & SCORES
-                </h2>
-                <p className="text-xs text-[#7d97b8]">
-                  {scheduledMatches.length} pending • {completedMatches.length} completed
+                <h2 className="text-[9px] font-black uppercase tracking-[0.3em] text-[#334155]">FIXTURES & SCORES</h2>
+                <p className="text-[10px] text-[#475569]">
+                  {scheduledMatches.length} pending · {completedMatches.length} completed
                 </p>
               </div>
-
               <Link
                 href="/matches"
-                className="rounded border border-[#38506d] bg-[#111b29] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#182538]"
+                className="rounded-lg border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-[10px] font-black tracking-widest text-[#64748b] transition hover:border-[#2e2e5a] hover:text-[#f1f5f9]"
               >
                 Full Match Center →
               </Link>
             </div>
 
-            <div className="divide-y divide-[#1c293a] max-h-[620px] overflow-y-auto">
+            <div className="max-h-[600px] divide-y divide-[#1e1e3a] overflow-y-auto">
               {matches.length === 0 ? (
-                <div className="flex h-64 items-center justify-center text-sm text-[#7d97b8]">
-                  {loading ? "Loading fixtures..." : "No matches configured."}
+                <div className="flex h-64 items-center justify-center text-sm text-[#334155]">
+                  {loading ? "Loading fixtures…" : "No matches configured."}
                 </div>
               ) : (
-                matches.slice(0, 10).map((match) => {
+                matches.slice(0, 12).map((match) => {
                   const t1 = teams.find((t) => t.id === match.team1Id);
                   const t2 = teams.find((t) => t.id === match.team2Id);
 
                   return (
                     <div
                       key={match.id}
-                      className="flex flex-wrap items-center justify-between gap-4 p-4 transition hover:bg-white/[0.02]"
+                      className="flex flex-wrap items-center justify-between gap-4 px-6 py-4 transition hover:bg-[#030308]"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="flex h-7 w-7 items-center justify-center rounded bg-[#162130] text-[11px] font-black text-[#6a87aa]">
-                          M{match.matchNumber}
+                        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#1e1e3a] text-[10px] font-black text-[#475569]">
+                          {match.matchNumber}
                         </span>
-
                         <div>
-                          <div className="flex items-center gap-2 text-sm font-bold text-white">
+                          <div className="flex items-center gap-2 text-sm font-bold">
                             <span>{t1?.name || "TBD"}</span>
-                            <span className="text-xs text-[#587394]">vs</span>
+                            <span className="text-[#334155]">vs</span>
                             <span>{t2?.name || "TBD"}</span>
                           </div>
-
-                          <div className="mt-0.5 flex items-center gap-2 text-[10px] text-[#6d88a8]">
+                          <div className="mt-0.5 flex items-center gap-1.5 text-[9px] text-[#475569]">
                             <span>{match.stage}</span>
-                            <span>•</span>
-                            <span>Map: {match.map || "TBD"}</span>
-                            <span>•</span>
+                            <span>·</span>
+                            <span>{match.map || "TBD"}</span>
+                            <span>·</span>
                             <span>BO{match.bestOf}</span>
                           </div>
                         </div>
@@ -334,24 +297,18 @@ export default function AdminHubPage() {
 
                       <div className="flex items-center gap-3">
                         {match.status === "Completed" ? (
-                          <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-black text-emerald-400">
-                            {match.team1Score} - {match.team2Score}
-                          </span>
-                        ) : match.status === "Live" ? (
-                          <span className="rounded border border-red-500/40 bg-red-500/15 px-2.5 py-1 text-xs font-black text-red-400">
-                            LIVE
+                          <span className="text-sm font-black text-[#34d399]">
+                            {match.team1Score} – {match.team2Score}
                           </span>
                         ) : (
-                          <span className="rounded border border-zinc-600/30 bg-zinc-600/10 px-2.5 py-1 text-xs font-bold text-[#8fa7c4]">
-                            Scheduled
-                          </span>
+                          <StatusBadge status={match.status} />
                         )}
 
                         <Link
                           href={`/matches/${match.id}`}
-                          className="rounded border border-[#ff4655]/50 bg-[#ff4655]/10 px-3 py-1.5 text-xs font-bold text-[#ff707e] transition hover:bg-[#ff4655] hover:text-white"
+                          className="rounded-lg border border-[#ff2d55]/40 bg-[#ff2d55]/8 px-3 py-1.5 text-[10px] font-black tracking-widest text-[#ff4d6a] transition hover:bg-[#ff2d55]/20"
                         >
-                          {match.status === "Completed" ? "Edit Stats" : "Record Score / OCR"}
+                          {match.status === "Completed" ? "Edit Stats" : "Record Score"}
                         </Link>
                       </div>
                     </div>

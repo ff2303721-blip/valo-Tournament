@@ -3,61 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { TournamentNav } from "../components/tournament-nav";
-import { TournamentBrand } from "../components/tournament-brand";
+import { StatusBadge } from "../components/ui/status-badge";
 import { useEffect, useMemo, useState } from "react";
-
-type MatchStatus =
-  | "Scheduled"
-  | "Live"
-  | "Completed"
-  | "Cancelled";
-
-type PlayerStat = {
-  playerId: string;
-  playerName: string;
-  teamId: string;
-  kills: number;
-  deaths: number;
-  assists: number;
-  acs: number;
-  adr: number;
-  kast: number;
-};
-
-type Match = {
-  id: string;
-  matchNumber: number;
-  stage: string;
-  team1Id: string;
-  team2Id: string;
-  scheduledAt: string;
-  map: string;
-  bestOf: number;
-  team1Score: number;
-  team2Score: number;
-  status: MatchStatus;
-  winnerId?: string;
-  mvpPlayerId?: string;
-  topFraggerPlayerId?: string;
-  playerStats: PlayerStat[];
-  createdAt: string;
-};
-
-type Team = {
-  id: string;
-  name: string;
-  tag: string;
-  seed: number;
-  logo?: string;
-  wins: number;
-  losses: number;
-  captainRank?: string;
-  players: {
-    id: string;
-    name: string;
-    role?: string;
-  }[];
-};
+import { matches as defaultMatches } from "@/app/data/matches";
+import { teams as defaultTeams } from "@/app/data/teams";
+import type { Match, Team, MatchStatus } from "@/lib/types";
 
 type FixtureFilter =
   | "All"
@@ -164,52 +114,31 @@ function getStageColor(
 ) {
   if (match.matchNumber === 16) {
     return {
-      border:
-        "border-[#ffd45c]/40",
-      bg:
-        "bg-[#ffd45c]/10",
-      text:
-        "text-[#ffd45c]",
+      border: "border-[#f59e0b]/40",
+      bg: "bg-[#f59e0b]/10",
+      text: "text-[#fbbf24]",
     };
   }
 
   if (match.matchNumber >= 13) {
     return {
-      border:
-        "border-[#9d62ff]/40",
-      bg:
-        "bg-[#9d62ff]/10",
-      text:
-        "text-[#c29aff]",
+      border: "border-[#7c3aed]/40",
+      bg: "bg-[#7c3aed]/10",
+      text: "text-[#9d63ff]",
     };
   }
 
   return {
-    border:
-      "border-[#27d9ff]/30",
-    bg:
-      "bg-[#27d9ff]/10",
-    text:
-      "text-[#52e2ff]",
+    border: "border-[#06b6d4]/30",
+    bg: "bg-[#06b6d4]/10",
+    text: "text-[#22d3ee]",
   };
 }
 
-function getStatusClass(
-  status: MatchStatus,
-) {
-  if (status === "Live") {
-    return "border-[#ff3158]/60 bg-[#ff3158]/10 text-[#ff6b86]";
-  }
-
-  if (status === "Completed") {
-    return "border-[#32e6a1]/40 bg-[#32e6a1]/10 text-[#53efb1]";
-  }
-
-  if (status === "Cancelled") {
-    return "border-[#ff5b5b]/40 bg-[#ff5b5b]/10 text-[#ff7b7b]";
-  }
-
-  return "border-[#27d9ff]/30 bg-[#27d9ff]/10 text-[#52e2ff]";
+function getAccentBar(match: Match) {
+  if (match.matchNumber === 16) return "bg-[#f59e0b]";
+  if (match.matchNumber >= 13) return "bg-[#7c3aed]";
+  return "bg-[#06b6d4]";
 }
 
 function sortMatches(
@@ -256,17 +185,11 @@ export default function FixturesPage() {
     useState("");
 
   useEffect(() => {
-    let active = true;
+    let mounted = true;
 
     async function load() {
-      setLoading(true);
-      setError("");
-
       try {
-        const [
-          teamsResponse,
-          matchesResponse,
-        ] = await Promise.all([
+        const [teamsResponse, matchesResponse] = await Promise.all([
           fetch("/api/teams", {
             cache: "no-store",
           }),
@@ -275,66 +198,46 @@ export default function FixturesPage() {
           }),
         ]);
 
-        const teamsData =
-          await teamsResponse.json();
+        const teamsData = teamsResponse.ok ? await teamsResponse.json() : null;
+        const matchesData = matchesResponse.ok ? await matchesResponse.json() : null;
 
-        const matchesData =
-          await matchesResponse.json();
-
-        if (!teamsResponse.ok) {
-          throw new Error(
-            teamsData.error ||
-              "Failed to load teams.",
-          );
-        }
-
-        if (!matchesResponse.ok) {
-          throw new Error(
-            matchesData.error ||
-              "Failed to load fixtures.",
-          );
-        }
-
-        if (!active) {
+        if (!mounted) {
+          setLoading(false);
           return;
         }
 
-        setTeams(
-          Array.isArray(
-            teamsData,
-          )
-            ? teamsData
-            : [],
-        );
+        const teamList = Array.isArray(teamsData) && teamsData.length > 0
+          ? teamsData
+          : defaultTeams;
 
-        setMatches(
-          Array.isArray(
-            matchesData,
-          )
-            ? matchesData
-            : [],
-        );
+        const matchList = Array.isArray(matchesData) && matchesData.length > 0
+          ? matchesData
+          : defaultMatches;
+
+        setTeams(teamList);
+        setMatches(matchList);
       } catch (err) {
-        if (!active) {
+        if (!mounted) {
+          setLoading(false);
           return;
         }
 
+        setTeams(defaultTeams);
+        setMatches(defaultMatches);
         setError(
           err instanceof Error
             ? err.message
             : "Failed to load fixtures.",
         );
       } finally {
-        if (active) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     }
 
     load();
 
     return () => {
-      active = false;
+      mounted = false;
     };
   }, []);
 
@@ -426,510 +329,424 @@ export default function FixturesPage() {
     ).length;
 
   return (
-    <div className="min-h-screen overflow-hidden bg-[#05070d] text-white">
-      <TournamentNav />
-      <main className="text-white">
-      <div className="pointer-events-none fixed inset-0 opacity-40">
-        <div className="absolute left-[-10%] top-[-15%] h-[500px] w-[500px] rounded-full bg-[#ff174f]/15 blur-[140px]" />
-
-        <div className="absolute right-[-10%] top-[5%] h-[450px] w-[450px] rounded-full bg-[#7c3cff]/15 blur-[140px]" />
-
-        <div className="absolute bottom-[-15%] left-[30%] h-[450px] w-[450px] rounded-full bg-[#00d9ff]/10 blur-[140px]" />
+    <div className="min-h-screen overflow-hidden bg-[#030308] text-white">
+      {/* Ambient background glows */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <div className="absolute left-[-10%] top-[-15%] h-[520px] w-[520px] rounded-full bg-[#ff2d55]/10 blur-[150px]" />
+        <div className="absolute right-[-10%] top-[5%] h-[460px] w-[460px] rounded-full bg-[#7c3aed]/12 blur-[150px]" />
+        <div className="absolute bottom-[-15%] left-[30%] h-[460px] w-[460px] rounded-full bg-[#06b6d4]/8 blur-[150px]" />
       </div>
 
-      <header className="relative border-b border-[#263149] bg-[#080b13]/95 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 px-6 py-6">
-          <div>
-            <Link
-              href="/tournament"
-              className="text-[10px] font-black tracking-[0.3em] text-[#52e2ff] hover:text-white"
-            >
-              ← TOURNAMENT CENTRAL
-            </Link>
+      <TournamentNav />
 
-            <div className="mt-2">
-              <TournamentBrand compact />
+      <main className="relative z-10 text-white">
+        {/* Page header */}
+        <header className="border-b border-[#1e1e3a] bg-[#0c0c18]/95 backdrop-blur-xl">
+          <div className="mx-auto max-w-7xl px-6 py-8">
+            <div className="text-[10px] font-black tracking-[0.3em] text-[#ff2d55]">
+              TOURNAMENT SCHEDULE
             </div>
-
-            <h1 className="mt-3 text-2xl font-black uppercase text-white md:text-3xl">
+            <h1 className="mt-2 text-3xl font-black uppercase text-[#f1f5f9] md:text-4xl">
               FIXTURES
             </h1>
-
-            <p className="mt-1 text-sm text-[#8290aa]">
-              Official tournament schedule
+            <p className="mt-1 text-sm text-[#475569]">
+              Official tournament schedule &amp; match listings
             </p>
           </div>
+        </header>
 
-          <nav className="flex flex-wrap gap-2">
-            <Link
-              href="/tournament/matches"
-              className="rounded-lg border border-[#30405d] bg-[#101727] px-4 py-2.5 text-[10px] font-black tracking-wider text-[#b8c5da] hover:border-[#27d9ff]/60 hover:text-[#52e2ff]"
-            >
-              MATCHES
-            </Link>
-
-            <Link
-              href="/tournament/teams"
-              className="rounded-lg border border-[#30405d] bg-[#101727] px-4 py-2.5 text-[10px] font-black tracking-wider text-[#b8c5da] hover:border-[#27d9ff]/60 hover:text-[#52e2ff]"
-            >
-              TEAMS
-            </Link>
-
-            <Link
-              href="/tournament/fixtures"
-              className="rounded-lg border border-[#27d9ff]/60 bg-[#27d9ff]/10 px-4 py-2.5 text-[10px] font-black tracking-wider text-[#52e2ff]"
-            >
-              FIXTURES
-            </Link>
-
-            <Link
-              href="/tournament/bracket"
-              className="rounded-lg border border-[#30405d] bg-[#101727] px-4 py-2.5 text-[10px] font-black tracking-wider text-[#b8c5da] hover:border-[#9d62ff]/60 hover:text-[#c29aff]"
-            >
-              BRACKET
-            </Link>
-
-            <Link
-              href="/tournament/players"
-              className="rounded-lg border border-[#30405d] bg-[#101727] px-4 py-2.5 text-[10px] font-black tracking-wider text-[#b8c5da] hover:border-[#32e6a1]/60 hover:text-[#53efb1]"
-            >
-              PLAYERS
-            </Link>
-          </nav>
-        </div>
-      </header>
-
-      <div className="relative mx-auto max-w-7xl px-6 py-8">
-        {error && (
-          <div className="mb-6 rounded-xl border border-[#ff3158]/50 bg-[#ff3158]/10 p-5">
-            <div className="font-black text-[#ff6b86]">
-              Unable to load fixtures
+        <div className="relative mx-auto max-w-7xl px-6 py-8">
+          {error && (
+            <div className="mb-6 rounded-xl border border-[#ff2d55]/50 bg-[#ff2d55]/10 p-5">
+              <div className="font-black text-[#ff4d6a]">
+                Unable to load fixtures
+              </div>
+              <div className="mt-1 text-sm text-[#ff4d6a]/70">
+                {error}
+              </div>
             </div>
+          )}
 
-            <div className="mt-1 text-sm text-[#ff9aae]">
-              {error}
+          {loading ? (
+            <div className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18] p-16 text-center text-sm text-[#475569]">
+              Loading fixtures...
             </div>
-          </div>
-        )}
-
-        {loading ? (
-          <div className="rounded-xl border border-[#263149] bg-[#0b101b] p-16 text-center text-sm text-[#8290aa]">
-            Loading fixtures...
-          </div>
-        ) : (
-          <>
-            <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-xl border border-[#27d9ff]/30 bg-gradient-to-br from-[#0d1720] to-[#090e18] p-5">
-                <div className="text-[10px] font-black tracking-[0.2em] text-[#52e2ff]">
-                  TOTAL FIXTURES
+          ) : (
+            <>
+              {/* Stats cards */}
+              <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="rounded-xl border border-[#06b6d4]/30 bg-[#0c0c18] p-5">
+                  <div className="text-[10px] font-black tracking-[0.2em] text-[#22d3ee]">
+                    TOTAL FIXTURES
+                  </div>
+                  <div className="mt-2 text-4xl font-black text-[#f1f5f9]">
+                    {matches.length}
+                  </div>
                 </div>
 
-                <div className="mt-2 text-4xl font-black">
-                  {matches.length}
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-[#32e6a1]/30 bg-gradient-to-br from-[#0d1916] to-[#090e18] p-5">
-                <div className="text-[10px] font-black tracking-[0.2em] text-[#53efb1]">
-                  COMPLETED
-                </div>
-
-                <div className="mt-2 text-4xl font-black">
-                  {completedCount}
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-[#ff3158]/40 bg-gradient-to-br from-[#190d13] to-[#0d0b12] p-5">
-                <div className="text-[10px] font-black tracking-[0.2em] text-[#ff6b86]">
-                  LIVE
+                <div className="rounded-xl border border-[#10b981]/30 bg-[#0c0c18] p-5">
+                  <div className="text-[10px] font-black tracking-[0.2em] text-[#34d399]">
+                    COMPLETED
+                  </div>
+                  <div className="mt-2 text-4xl font-black text-[#f1f5f9]">
+                    {completedCount}
+                  </div>
                 </div>
 
-                <div className="mt-2 text-4xl font-black text-[#ff718a]">
-                  {liveCount}
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-[#9d62ff]/40 bg-gradient-to-br from-[#140e1d] to-[#0b0b13] p-5">
-                <div className="text-[10px] font-black tracking-[0.2em] text-[#b98cff]">
-                  SCHEDULED
-                </div>
-
-                <div className="mt-2 text-4xl font-black">
-                  {scheduledCount}
-                </div>
-              </div>
-            </section>
-
-            <section className="mt-6 overflow-hidden rounded-xl border border-[#263149] bg-[#0b101b]">
-              <div className="border-b border-[#263149] p-6">
-                <div className="text-[10px] font-black tracking-[0.2em] text-[#ff5275]">
-                  TOURNAMENT SCHEDULE
+                <div className="rounded-xl border border-[#ff2d55]/40 bg-[#0c0c18] p-5">
+                  <div className="text-[10px] font-black tracking-[0.2em] text-[#ff4d6a]">
+                    LIVE
+                  </div>
+                  <div className="mt-2 text-4xl font-black text-[#ff4d6a]">
+                    {liveCount}
+                  </div>
                 </div>
 
-                <div className="mt-1 flex flex-wrap items-center justify-between gap-4">
-                  <h2 className="text-2xl font-black">
-                    Fixtures
-                  </h2>
+                <div className="rounded-xl border border-[#7c3aed]/40 bg-[#0c0c18] p-5">
+                  <div className="text-[10px] font-black tracking-[0.2em] text-[#9d63ff]">
+                    SCHEDULED
+                  </div>
+                  <div className="mt-2 text-4xl font-black text-[#f1f5f9]">
+                    {scheduledCount}
+                  </div>
+                </div>
+              </section>
 
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      "All",
-                      "Group Stage",
-                      "Qualifiers",
-                      "Grand Final",
-                    ].map(
-                      (item) => {
-                        const active =
-                          filter ===
-                          item;
+              {/* Fixtures list */}
+              <section className="mt-6 overflow-hidden rounded-xl border border-[#1e1e3a] bg-[#0c0c18]">
+                <div className="border-b border-[#1e1e3a] p-6">
+                  <div className="text-[10px] font-black tracking-[0.2em] text-[#ff2d55]">
+                    TOURNAMENT SCHEDULE
+                  </div>
+
+                  <div className="mt-1 flex flex-wrap items-center justify-between gap-4">
+                    <h2 className="text-2xl font-black text-[#f1f5f9]">
+                      Fixtures
+                    </h2>
+
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        "All",
+                        "Group Stage",
+                        "Qualifiers",
+                        "Grand Final",
+                      ].map(
+                        (item) => {
+                          const active =
+                            filter ===
+                            item;
+
+                          return (
+                            <button
+                              key={item}
+                              type="button"
+                              onClick={() =>
+                                setFilter(
+                                  item as FixtureFilter,
+                                )
+                              }
+                              className={`rounded-lg border px-4 py-2 text-[9px] font-black tracking-wider transition ${
+                                active
+                                  ? "border-[#ff2d55]/60 bg-[#ff2d55]/10 text-[#ff4d6a]"
+                                  : "border-[#1e1e3a] bg-[#131326] text-[#64748b] hover:border-[#2e2e5a] hover:text-[#f1f5f9]"
+                              }`}
+                            >
+                              {item.toUpperCase()}
+                            </button>
+                          );
+                        },
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid gap-4 p-6">
+                  {filteredMatches.length ===
+                  0 ? (
+                    <div className="rounded-xl border border-[#1e1e3a] bg-[#131326] p-12 text-center">
+                      <div className="text-sm font-black text-[#f1f5f9]">
+                        No fixtures available
+                      </div>
+                      <div className="mt-2 text-xs text-[#475569]">
+                        Matches will appear here once they are created.
+                      </div>
+                    </div>
+                  ) : (
+                    filteredMatches.map(
+                      (match) => {
+                        const team1 =
+                          getTeam(
+                            teams,
+                            match.team1Id,
+                          );
+
+                        const team2 =
+                          getTeam(
+                            teams,
+                            match.team2Id,
+                          );
+
+                        const stageColor =
+                          getStageColor(
+                            match,
+                          );
+
+                        const team1Won =
+                          match.status ===
+                            "Completed" &&
+                          match.team1Score >
+                            match.team2Score;
+
+                        const team2Won =
+                          match.status ===
+                            "Completed" &&
+                          match.team2Score >
+                            match.team1Score;
 
                         return (
-                          <button
-                            key={
-                              item
-                            }
-                            type="button"
-                            onClick={() =>
-                              setFilter(
-                                item as FixtureFilter,
-                              )
-                            }
-                            className={`rounded-lg border px-4 py-2 text-[9px] font-black tracking-wider transition ${
-                              active
-                                ? item ===
-                                  "Grand Final"
-                                  ? "border-[#ffd45c] bg-[#ffd45c]/10 text-[#ffd45c]"
-                                  : item ===
-                                      "Qualifiers"
-                                    ? "border-[#9d62ff] bg-[#9d62ff]/10 text-[#c29aff]"
-                                    : "border-[#27d9ff] bg-[#27d9ff]/10 text-[#52e2ff]"
-                                : "border-[#30405d] bg-[#101727] text-[#8190aa] hover:border-[#27d9ff]/50 hover:text-[#52e2ff]"
-                            }`}
+                          <Link
+                            key={match.id}
+                            href={`/tournament/matches/${encodeURIComponent(
+                              match.id,
+                            )}`}
+                            className="group relative overflow-hidden rounded-xl border border-[#1e1e3a] bg-[#0c0c18] transition hover:border-[#2e2e5a] hover:shadow-[0_0_30px_rgba(124,58,237,0.08)]"
                           >
-                            {item.toUpperCase()}
-                          </button>
-                        );
-                      },
-                    )}
-                  </div>
-                </div>
-              </div>
+                            {/* Stage accent bar */}
+                            <div
+                              className={`absolute left-0 top-0 h-full w-1 ${getAccentBar(match)}`}
+                            />
 
-              <div className="grid gap-4 p-6">
-                {filteredMatches.length ===
-                0 ? (
-                  <div className="rounded-xl border border-[#263149] bg-[#080e18] p-12 text-center">
-                    <div className="text-sm font-black text-[#aab8cc]">
-                      No fixtures available
-                    </div>
+                            <div className="grid gap-5 p-5 md:grid-cols-[180px_1fr_auto] md:items-center">
+                              {/* Match meta */}
+                              <div>
+                                <div
+                                  className={`inline-flex rounded border px-2 py-1 text-[8px] font-black tracking-wider ${stageColor.border} ${stageColor.bg} ${stageColor.text}`}
+                                >
+                                  {getStageLabel(match)}
+                                </div>
 
-                    <div className="mt-2 text-xs text-[#687994]">
-                      Matches will appear here once they are created.
-                    </div>
-                  </div>
-                ) : (
-                  filteredMatches.map(
-                    (match) => {
-                      const team1 =
-                        getTeam(
-                          teams,
-                          match.team1Id,
-                        );
+                                <div className="mt-3 text-[10px] font-black tracking-[0.2em] text-[#475569]">
+                                  MATCH{" "}
+                                  {String(
+                                    match.matchNumber,
+                                  ).padStart(
+                                    2,
+                                    "0",
+                                  )}
+                                </div>
 
-                      const team2 =
-                        getTeam(
-                          teams,
-                          match.team2Id,
-                        );
+                                <div className="mt-1 text-xs font-bold text-[#64748b]">
+                                  {formatDate(
+                                    match.scheduledAt,
+                                  )}
+                                </div>
 
-                      const stageColor =
-                        getStageColor(
-                          match,
-                        );
-
-                      const team1Won =
-                        match.status ===
-                          "Completed" &&
-                        match.team1Score >
-                          match.team2Score;
-
-                      const team2Won =
-                        match.status ===
-                          "Completed" &&
-                        match.team2Score >
-                          match.team1Score;
-
-                      return (
-                        <Link
-                          key={
-                            match.id
-                          }
-                          href={`/tournament/matches/${encodeURIComponent(
-                            match.id,
-                          )}`}
-                          className="group relative overflow-hidden rounded-xl border border-[#263149] bg-gradient-to-r from-[#0b101b] to-[#0a0f18] transition hover:border-[#405675] hover:shadow-[0_0_30px_rgba(39,217,255,0.06)]"
-                        >
-                          <div
-                            className={`absolute left-0 top-0 h-full w-1 ${
-                              match.matchNumber ===
-                              16
-                                ? "bg-[#ffd45c]"
-                                : match.matchNumber >=
-                                    13
-                                  ? "bg-[#9d62ff]"
-                                  : "bg-[#27d9ff]"
-                            }`}
-                          />
-
-                          <div className="grid gap-5 p-5 md:grid-cols-[180px_1fr_auto] md:items-center">
-                            <div>
-                              <div
-                                className={`inline-flex rounded border px-2 py-1 text-[8px] font-black tracking-wider ${stageColor.border} ${stageColor.bg} ${stageColor.text}`}
-                              >
-                                {getStageLabel(
-                                  match,
-                                )}
+                                <div className="mt-1 text-[10px] text-[#334155]">
+                                  {formatTime(
+                                    match.scheduledAt,
+                                  )}
+                                </div>
                               </div>
 
-                              <div className="mt-3 text-[10px] font-black tracking-[0.2em] text-[#64748d]">
-                                MATCH{" "}
-                                {String(
-                                  match.matchNumber,
-                                ).padStart(
-                                  2,
-                                  "0",
-                                )}
-                              </div>
+                              {/* Teams + score */}
+                              <div>
+                                <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+                                  {/* Team 1 */}
+                                  <div className="flex items-center justify-end gap-3">
+                                    <div className="text-right">
+                                      <div
+                                        className={`text-sm font-black ${
+                                          team1Won
+                                            ? "text-[#34d399]"
+                                            : "text-[#f1f5f9]"
+                                        }`}
+                                      >
+                                        {getTeamName(
+                                          teams,
+                                          match.team1Id,
+                                        )}
+                                      </div>
 
-                              <div className="mt-1 text-xs font-bold text-[#8b99ad]">
-                                {formatDate(
-                                  match.scheduledAt,
-                                )}
-                              </div>
-
-                              <div className="mt-1 text-[10px] text-[#5e6d84]">
-                                {formatTime(
-                                  match.scheduledAt,
-                                )}
-                              </div>
-                            </div>
-
-                            <div>
-                              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-                                <div className="flex items-center justify-end gap-3">
-                                  <div className="text-right">
-                                    <div
-                                      className={`text-sm font-black ${
-                                        team1Won
-                                          ? "text-[#53efb1]"
-                                          : ""
-                                      }`}
-                                    >
-                                      {getTeamName(
-                                        teams,
-                                        match.team1Id,
-                                      )}
+                                      <div className="mt-1 text-[9px] font-bold text-[#475569]">
+                                        {getTeamTag(
+                                          teams,
+                                          match.team1Id,
+                                        )}
+                                      </div>
                                     </div>
 
-                                    <div className="mt-1 text-[9px] font-bold text-[#60718b]">
-                                      {getTeamTag(
-                                        teams,
-                                        match.team1Id,
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  {team1?.logo ? (
-                                    <Image
-                                      src={
-                                        getTeamLogo(
+                                    {team1?.logo ? (
+                                      <Image
+                                        src={getTeamLogo(
+                                          teams,
+                                          match.team1Id,
+                                        )}
+                                        alt=""
+                                        width={40}
+                                        height={40}
+                                        unoptimized
+                                        className="h-10 w-10 rounded-lg border border-[#1e1e3a] object-cover"
+                                      />
+                                    ) : (
+                                      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#0c0c18] text-xs font-black text-[#22d3ee]">
+                                        {getTeamTag(
                                           teams,
                                           match.team1Id,
                                         )
-                                      }
-                                      alt=""
-                                      width={40}
-                                      height={40}
-                                      unoptimized
-                                      className="h-10 w-10 rounded-lg border border-[#29384e] object-cover"
-                                    />
-                                  ) : (
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#29384e] bg-[#111a29] text-xs font-black text-[#27d9ff]">
-                                      {getTeamTag(
-                                        teams,
-                                        match.team1Id,
-                                      )
-                                        .slice(
-                                          0,
-                                          2,
-                                        )
-                                        .toUpperCase()}
-                                    </div>
-                                  )}
-                                </div>
-
-                                <div className="min-w-[90px] text-center">
-                                  {match.status ===
-                                  "Completed" ? (
-                                    <div className="text-xl font-black text-[#ffd45c]">
-                                      {
-                                        match.team1Score
-                                      }
-
-                                      <span className="mx-2 text-[#46536a]">
-                                        -
-                                      </span>
-
-                                      {
-                                        match.team2Score
-                                      }
-                                    </div>
-                                  ) : (
-                                    <div className="text-sm font-black text-[#27d9ff]">
-                                      VS
-                                    </div>
-                                  )}
-
-                                  <div className="mt-1 text-[8px] font-black uppercase tracking-wider text-[#56657c]">
-                                    BO
-                                    {match.bestOf}
+                                          .slice(0, 2)
+                                          .toUpperCase()}
+                                      </div>
+                                    )}
                                   </div>
-                                </div>
 
-                                <div className="flex items-center gap-3">
-                                  {team2?.logo ? (
-                                    <Image
-                                      src={
-                                        getTeamLogo(
+                                  {/* Score / VS */}
+                                  <div className="min-w-[90px] text-center">
+                                    {match.status ===
+                                    "Completed" ? (
+                                      <div className="text-xl font-black text-[#f59e0b]">
+                                        {match.team1Score}
+                                        <span className="mx-2 text-[#334155]">
+                                          -
+                                        </span>
+                                        {match.team2Score}
+                                      </div>
+                                    ) : (
+                                      <div className="text-sm font-black text-[#22d3ee]">
+                                        VS
+                                      </div>
+                                    )}
+
+                                    <div className="mt-1 text-[8px] font-black uppercase tracking-wider text-[#475569]">
+                                      BO
+                                      {match.bestOf}
+                                    </div>
+                                  </div>
+
+                                  {/* Team 2 */}
+                                  <div className="flex items-center gap-3">
+                                    {team2?.logo ? (
+                                      <Image
+                                        src={getTeamLogo(
+                                          teams,
+                                          match.team2Id,
+                                        )}
+                                        alt=""
+                                        width={40}
+                                        height={40}
+                                        unoptimized
+                                        className="h-10 w-10 rounded-lg border border-[#1e1e3a] object-cover"
+                                      />
+                                    ) : (
+                                      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#0c0c18] text-xs font-black text-[#9d63ff]">
+                                        {getTeamTag(
                                           teams,
                                           match.team2Id,
                                         )
-                                      }
-                                      alt=""
-                                      width={40}
-                                      height={40}
-                                      unoptimized
-                                      className="h-10 w-10 rounded-lg border border-[#29384e] object-cover"
-                                    />
-                                  ) : (
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#29384e] bg-[#111a29] text-xs font-black text-[#9d62ff]">
-                                      {getTeamTag(
-                                        teams,
-                                        match.team2Id,
-                                      )
-                                        .slice(
-                                          0,
-                                          2,
-                                        )
-                                        .toUpperCase()}
-                                    </div>
-                                  )}
+                                          .slice(0, 2)
+                                          .toUpperCase()}
+                                      </div>
+                                    )}
 
-                                  <div>
-                                    <div
-                                      className={`text-sm font-black ${
-                                        team2Won
-                                          ? "text-[#53efb1]"
-                                          : ""
-                                      }`}
-                                    >
-                                      {getTeamName(
-                                        teams,
-                                        match.team2Id,
-                                      )}
-                                    </div>
+                                    <div>
+                                      <div
+                                        className={`text-sm font-black ${
+                                          team2Won
+                                            ? "text-[#34d399]"
+                                            : "text-[#f1f5f9]"
+                                        }`}
+                                      >
+                                        {getTeamName(
+                                          teams,
+                                          match.team2Id,
+                                        )}
+                                      </div>
 
-                                    <div className="mt-1 text-[9px] font-bold text-[#60718b]">
-                                      {getTeamTag(
-                                        teams,
-                                        match.team2Id,
-                                      )}
+                                      <div className="mt-1 text-[9px] font-bold text-[#475569]">
+                                        {getTeamTag(
+                                          teams,
+                                          match.team2Id,
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
+
+                                {/* Map & BO info chips */}
+                                <div className="mt-4 flex flex-wrap justify-center gap-2 text-[9px] font-bold text-[#475569]">
+                                  <span className="rounded border border-[#1e1e3a] bg-[#131326] px-2 py-1">
+                                    MAP:{" "}
+                                    {match.map ||
+                                      "TBD"}
+                                  </span>
+
+                                  <span className="rounded border border-[#1e1e3a] bg-[#131326] px-2 py-1">
+                                    BO
+                                    {match.bestOf}
+                                  </span>
+                                </div>
                               </div>
 
-                              <div className="mt-4 flex flex-wrap justify-center gap-2 text-[9px] font-bold text-[#64738d]">
-                                <span className="rounded border border-[#202e42] bg-[#0a1019] px-2 py-1">
-                                  MAP:{" "}
-                                  {match.map ||
-                                    "TBD"}
-                                </span>
-
-                                <span className="rounded border border-[#202e42] bg-[#0a1019] px-2 py-1">
-                                  BO
-                                  {match.bestOf}
-                                </span>
+                              {/* Status badge */}
+                              <div className="flex items-center justify-end">
+                                <StatusBadge status={match.status} />
                               </div>
                             </div>
+                          </Link>
+                        );
+                      },
+                    )
+                  )}
+                </div>
+              </section>
 
-                            <div className="flex items-center justify-end">
-                              <span
-                                className={`rounded border px-3 py-2 text-[8px] font-black uppercase tracking-wider ${getStatusClass(
-                                  match.status,
-                                )}`}
-                              >
-                                {
-                                  match.status
-                                }
-                              </span>
-                            </div>
-                          </div>
-                        </Link>
-                      );
-                    },
-                  )
-                )}
-              </div>
-            </section>
+              {/* Stage breakdown summary */}
+              <section className="mt-6 grid gap-4 md:grid-cols-3">
+                <div className="rounded-xl border border-[#06b6d4]/25 bg-[#0c0c18] p-5">
+                  <div className="text-[9px] font-black tracking-[0.2em] text-[#22d3ee]">
+                    GROUP STAGE
+                  </div>
 
-            <section className="mt-6 grid gap-4 md:grid-cols-3">
-              <div className="rounded-xl border border-[#27d9ff]/25 bg-[#0b101b] p-5">
-                <div className="text-[9px] font-black tracking-[0.2em] text-[#52e2ff]">
-                  GROUP STAGE
+                  <div className="mt-2 text-2xl font-black text-[#f1f5f9]">
+                    {groupMatches.length}
+                  </div>
+
+                  <div className="mt-1 text-xs text-[#475569]">
+                    Round-robin fixtures
+                  </div>
                 </div>
 
-                <div className="mt-2 text-2xl font-black">
-                  {groupMatches.length}
+                <div className="rounded-xl border border-[#7c3aed]/30 bg-[#0c0c18] p-5">
+                  <div className="text-[9px] font-black tracking-[0.2em] text-[#9d63ff]">
+                    QUALIFIERS
+                  </div>
+
+                  <div className="mt-2 text-2xl font-black text-[#f1f5f9]">
+                    {qualifierMatches.length}
+                  </div>
+
+                  <div className="mt-1 text-xs text-[#475569]">
+                    Q1, Elimination and Q2
+                  </div>
                 </div>
 
-                <div className="mt-1 text-xs text-[#687994]">
-                  Round-robin fixtures
-                </div>
-              </div>
+                <div className="rounded-xl border border-[#f59e0b]/30 bg-[#0c0c18] p-5">
+                  <div className="text-[9px] font-black tracking-[0.2em] text-[#fbbf24]">
+                    GRAND FINAL
+                  </div>
 
-              <div className="rounded-xl border border-[#9d62ff]/30 bg-[#0d0b16] p-5">
-                <div className="text-[9px] font-black tracking-[0.2em] text-[#b98cff]">
-                  QUALIFIERS
-                </div>
+                  <div className="mt-2 text-2xl font-black text-[#f1f5f9]">
+                    {finalMatches.length}
+                  </div>
 
-                <div className="mt-2 text-2xl font-black">
-                  {qualifierMatches.length}
+                  <div className="mt-1 text-xs text-[#475569]">
+                    Championship match
+                  </div>
                 </div>
-
-                <div className="mt-1 text-xs text-[#746989]">
-                  Q1, Elimination and Q2
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-[#ffd45c]/30 bg-[#12100a] p-5">
-                <div className="text-[9px] font-black tracking-[0.2em] text-[#ffd45c]">
-                  GRAND FINAL
-                </div>
-
-                <div className="mt-2 text-2xl font-black">
-                  {finalMatches.length}
-                </div>
-
-                <div className="mt-1 text-xs text-[#81775d]">
-                  Championship match
-                </div>
-              </div>
-            </section>
-          </>
-        )}
-      </div>
-    </main>
-  </div>
-);
+              </section>
+            </>
+          )}
+        </div>
+      </main>
+    </div>
+  );
 }

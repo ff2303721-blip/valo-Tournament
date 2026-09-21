@@ -22,7 +22,7 @@ export async function fetchTournamentData(): Promise<{
 }> {
   try {
     const [teamsRes, matchesRes, settingsRes] = await Promise.all([
-      fetch("/api/teams", { cache: "no-store" }),
+      fetch("/api/teams?lite=1", { cache: "no-store" }),
       fetch("/api/matches", { cache: "no-store" }),
       fetch("/api/settings", { cache: "no-store" }),
     ]);
@@ -65,7 +65,7 @@ export async function fetchTournamentData(): Promise<{
 
 export async function fetchTeams(): Promise<Team[]> {
   try {
-    const res = await fetch("/api/teams", { cache: "no-store" });
+    const res = await fetch("/api/teams?lite=1", { cache: "no-store" });
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) return data;

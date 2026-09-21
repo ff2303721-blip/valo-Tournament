@@ -139,19 +139,15 @@ export default function MatchResultRecorderPage() {
   useEffect(() => {
     if (!matchId) return;
 
-    let cancelled = false;
+    let mounted = true;
 
     async function loadData() {
       try {
-        setLoading(true);
-        setError("");
-        setMessage("");
-
         const [matchResponse, teamsResponse] = await Promise.all([
           fetch(`/api/matches/${encodeURIComponent(matchId)}`, {
             cache: "no-store",
           }),
-          fetch("/api/teams", {
+          fetch("/api/teams?lite=1", {
             cache: "no-store",
           }),
         ]);
@@ -167,7 +163,10 @@ export default function MatchResultRecorderPage() {
         const matchData: Match = await matchResponse.json();
         const teamsData: Team[] = await teamsResponse.json();
 
-        if (cancelled) return;
+        if (!mounted) {
+          setLoading(false);
+          return;
+        }
 
         setMatch(matchData);
         setTeams(teamsData);
@@ -196,7 +195,10 @@ export default function MatchResultRecorderPage() {
         setSelectedMvp(matchData.mvpPlayerId ?? "");
         setSelectedTopFragger(matchData.topFraggerPlayerId ?? "");
       } catch (loadError) {
-        if (cancelled) return;
+        if (!mounted) {
+          setLoading(false);
+          return;
+        }
 
         setError(
           loadError instanceof Error
@@ -204,16 +206,14 @@ export default function MatchResultRecorderPage() {
             : "Unable to load match.",
         );
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     }
 
     loadData();
 
     return () => {
-      cancelled = true;
+      mounted = false;
     };
   }, [matchId]);
 

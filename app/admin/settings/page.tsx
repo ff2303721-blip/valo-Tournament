@@ -133,13 +133,10 @@ export default function TournamentSettingsPage() {
     useState<DateTimeParts>(EMPTY_DATE_TIME);
 
   useEffect(() => {
-    let cancelled = false;
+    let mounted = true;
 
     async function loadSettings() {
       try {
-        setLoading(true);
-        setError("");
-
         const response = await fetch("/api/settings", { cache: "no-store" });
         const data = await response.json();
 
@@ -147,7 +144,10 @@ export default function TournamentSettingsPage() {
           throw new Error(data?.error || "Unable to load settings.");
         }
 
-        if (cancelled) return;
+        if (!mounted) {
+          setLoading(false);
+          return;
+        }
 
         setSettings({
           tournamentName: data.tournamentName ?? "",
@@ -170,22 +170,25 @@ export default function TournamentSettingsPage() {
           toDateTimeParts(data.endDate),
         );
       } catch (loadError) {
-        if (!cancelled) {
-          setError(
-            loadError instanceof Error
-              ? loadError.message
-              : "Unable to load settings.",
-          );
+        if (!mounted) {
+          setLoading(false);
+          return;
         }
+
+        setError(
+          loadError instanceof Error
+            ? loadError.message
+            : "Unable to load settings.",
+        );
       } finally {
-        if (!cancelled) setLoading(false);
+        setLoading(false);
       }
     }
 
     loadSettings();
 
     return () => {
-      cancelled = true;
+      mounted = false;
     };
   }, []);
 

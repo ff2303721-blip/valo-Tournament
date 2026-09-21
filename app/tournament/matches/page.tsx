@@ -5,6 +5,8 @@ import Image from "next/image";
 import { TournamentNav } from "../components/tournament-nav";
 import { TournamentBrand } from "../components/tournament-brand";
 import { useEffect, useMemo, useState } from "react";
+import { matches as defaultMatches } from "@/app/data/matches";
+import { teams as defaultTeams } from "@/app/data/teams";
 
 type MatchStatus =
   | "Scheduled"
@@ -149,81 +151,59 @@ export default function PublicMatchesPage() {
     useState("All");
 
   useEffect(() => {
-    let active = true;
+    let mounted = true;
 
     async function load() {
-      setLoading(true);
-      setError("");
-
       try {
-        const [
-          matchesResponse,
-          teamsResponse,
-        ] = await Promise.all([
+        const [matchesResponse, teamsResponse] = await Promise.all([
           fetch("/api/matches", {
             cache: "no-store",
           }),
-          fetch("/api/teams", {
+          fetch("/api/teams?lite=1", {
             cache: "no-store",
           }),
         ]);
 
-        const matchesData =
-          await matchesResponse.json();
+        const matchesData = matchesResponse.ok ? await matchesResponse.json() : null;
+        const teamsData = teamsResponse.ok ? await teamsResponse.json() : null;
 
-        const teamsData =
-          await teamsResponse.json();
-
-        if (!matchesResponse.ok) {
-          throw new Error(
-            matchesData.error ||
-              "Failed to load matches.",
-          );
-        }
-
-        if (!teamsResponse.ok) {
-          throw new Error(
-            teamsData.error ||
-              "Failed to load teams.",
-          );
-        }
-
-        if (!active) {
+        if (!mounted) {
+          setLoading(false);
           return;
         }
 
-        setMatches(
-          Array.isArray(matchesData)
-            ? matchesData
-            : [],
-        );
+        const matchList = Array.isArray(matchesData) && matchesData.length > 0
+          ? matchesData
+          : defaultMatches;
 
-        setTeams(
-          Array.isArray(teamsData)
-            ? teamsData
-            : [],
-        );
+        const teamList = Array.isArray(teamsData) && teamsData.length > 0
+          ? teamsData
+          : defaultTeams;
+
+        setMatches(matchList);
+        setTeams(teamList);
       } catch (err) {
-        if (!active) {
+        if (!mounted) {
+          setLoading(false);
           return;
         }
 
+        setMatches(defaultMatches);
+        setTeams(defaultTeams);
         setError(
           err instanceof Error
             ? err.message
             : "Failed to load matches.",
         );
       } finally {
-        if (active) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     }
 
     load();
 
     return () => {
-      active = false;
+      mounted = false;
     };
   }, []);
 

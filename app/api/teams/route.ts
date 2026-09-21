@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import fs from "fs";
+import path from "path";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const publishableKey =
@@ -7,6 +9,24 @@ const publishableKey =
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const SESSION_COOKIE = "valorant_admin_session";
+
+function resolveTeamLogo(teamId: string, rawLogo?: string | null): string {
+  const pngPath = path.join(process.cwd(), "public", "logos", `${teamId}.png`);
+  if (fs.existsSync(pngPath)) {
+    return `/logos/${teamId}.png`;
+  }
+  const jpgPath = path.join(process.cwd(), "public", "logos", `${teamId}.jpg`);
+  if (fs.existsSync(jpgPath)) {
+    return `/logos/${teamId}.jpg`;
+  }
+  if (rawLogo && rawLogo.trim().length > 0) {
+    if (rawLogo.startsWith("http://") || rawLogo.startsWith("https://") || rawLogo.startsWith("/logos/")) {
+      return rawLogo;
+    }
+    return `/api/teams/${teamId}/logo`;
+  }
+  return "";
+}
 
 function getSupabaseAdmin() {
   if (!supabaseUrl) {
@@ -88,7 +108,7 @@ async function buildTeamResponse(
     name: team.name,
     tag: team.tag,
     seed: team.seed,
-    logo: team.logo ?? "",
+    logo: resolveTeamLogo(team.id, team.logo),
     wins: team.wins ?? 0,
     losses: team.losses ?? 0,
     captainRank: team.captain_rank ?? "",
@@ -102,16 +122,32 @@ async function buildTeamResponse(
   }));
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const client = getSupabasePublic();
+    const { searchParams } = new URL(request.url);
+    const isLite =
+      searchParams.get("lite") === "1" ||
+      searchParams.get("lite") === "true";
 
-    const { data: teams, error: teamsError } = await client
-      .from("teams")
-      .select("*")
-      .order("seed", {
-        ascending: true,
-      });
+    type SupabaseTeamRow = {
+      id: string;
+      name: string;
+      tag: string;
+      seed: number;
+      logo?: string | null;
+      wins?: number | null;
+      losses?: number | null;
+      captain_rank?: string | null;
+    };
+
+    const teamQuery = isLite
+      ? client.from("teams").select("id, name, tag, seed, wins, losses, captain_rank")
+      : client.from("teams").select("*");
+
+    const { data: teamsData, error: teamsError } = await teamQuery.order("seed", {
+      ascending: true,
+    });
 
     if (teamsError) {
       return NextResponse.json(
@@ -120,7 +156,8 @@ export async function GET() {
       );
     }
 
-    const teamIds = (teams ?? []).map((team) => team.id);
+    const rawTeams = (teamsData as unknown as SupabaseTeamRow[]) ?? [];
+    const teamIds = rawTeams.map((team) => team.id);
 
     let players: Array<{
       id: string;
@@ -148,12 +185,12 @@ export async function GET() {
       players = data ?? [];
     }
 
-    const response = (teams ?? []).map((team) => ({
+    const response = rawTeams.map((team) => ({
       id: team.id,
       name: team.name,
       tag: team.tag,
       seed: team.seed,
-      logo: team.logo ?? "",
+      logo: resolveTeamLogo(team.id, team.logo),
       wins: team.wins ?? 0,
       losses: team.losses ?? 0,
       captainRank: team.captain_rank ?? "",

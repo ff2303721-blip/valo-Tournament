@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { TournamentNav } from "../../components/tournament-nav";
+import { teams as defaultTeams } from "@/app/data/teams";
 
 type Player = {
   id: string;
@@ -48,30 +49,25 @@ export default function PublicTeamDetailsPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    let cancelled = false;
+    let mounted = true;
 
     async function loadTeam() {
       if (!teamId) {
-        if (!cancelled) setLoading(false);
+        setLoading(false);
         return;
       }
 
       try {
         const response = await fetch("/api/teams", { cache: "no-store" });
+        const data = response.ok ? await response.json() : null;
 
-        if (!response.ok) {
-          throw new Error("Unable to load tournament teams.");
+        if (!mounted) {
+          setLoading(false);
+          return;
         }
 
-        const data = await response.json();
-
-        if (!Array.isArray(data)) {
-          throw new Error("Invalid team data received.");
-        }
-
-        if (cancelled) return;
-
-        const foundTeam = data.find((item: Team) => item.id === teamId);
+        const teamList: Team[] = Array.isArray(data) && data.length > 0 ? data : defaultTeams;
+        const foundTeam = teamList.find((item: Team) => item.id === teamId);
 
         if (!foundTeam) {
           setTeam(null);
@@ -86,21 +82,27 @@ export default function PublicTeamDetailsPage() {
           players: Array.isArray(foundTeam.players) ? foundTeam.players : [],
         });
       } catch (loadError) {
-        if (cancelled) return;
-        setError(
-          loadError instanceof Error ? loadError.message : "Unable to load team."
-        );
-      } finally {
-        if (!cancelled) {
+        if (!mounted) {
           setLoading(false);
+          return;
         }
+        const fallback = defaultTeams.find((item) => item.id === teamId);
+        if (fallback) {
+          setTeam(fallback);
+        } else {
+          setError(
+            loadError instanceof Error ? loadError.message : "Unable to load team.",
+          );
+        }
+      } finally {
+        setLoading(false);
       }
     }
 
     loadTeam();
 
     return () => {
-      cancelled = true;
+      mounted = false;
     };
   }, [teamId]);
 

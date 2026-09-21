@@ -223,9 +223,9 @@ function TeamSlot({
   label: string;
 }) {
   return (
-    <div className="flex min-h-[76px] items-center justify-between border-b border-white/10 px-5 py-4 last:border-b-0">
+    <div className="flex min-h-[76px] items-center justify-between border-b border-[#1e1e3a] px-5 py-4 last:border-b-0">
       <div className="flex min-w-0 items-center gap-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-white/[0.03]">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#1e1e3a] bg-[#030308]">
           {team?.logo ? (
             <Image
               src={team.logo}
@@ -236,11 +236,11 @@ function TeamSlot({
               className="h-full w-full object-cover"
             />
           ) : team ? (
-            <span className="text-[10px] font-black text-white/60">
+            <span className="text-[10px] font-black text-[#7c3aed]">
               {team.tag.slice(0, 3).toUpperCase()}
             </span>
           ) : (
-            <span className="text-xs font-black text-white/25">
+            <span className="text-xs font-black text-[#334155]">
               ?
             </span>
           )}
@@ -249,13 +249,13 @@ function TeamSlot({
         <div className="min-w-0">
           <div
             className={`truncate text-sm font-black uppercase ${
-              team ? "text-white" : "text-white/35"
+              team ? "text-[#f1f5f9]" : "text-[#334155]"
             }`}
           >
             {team?.name ?? "TBD"}
           </div>
 
-          <div className="mt-1 text-[9px] font-black uppercase tracking-[0.18em] text-cyan-300/60">
+          <div className="mt-1 text-[9px] font-black uppercase tracking-[0.18em] text-[#22d3ee]/60">
             {team ? `Seed #${team.seed}` : label}
           </div>
         </div>
@@ -264,8 +264,8 @@ function TeamSlot({
       <div
         className={`text-xl font-black ${
           typeof score === "number"
-            ? "text-white"
-            : "text-white/15"
+            ? "text-[#f1f5f9]"
+            : "text-[#334155]"
         }`}
       >
         {typeof score === "number" ? score : "-"}
@@ -297,24 +297,24 @@ function PlayoffCard({
 }) {
   const accentClasses = {
     cyan: {
-      border: "border-cyan-400/25",
-      title: "text-cyan-300",
-      glow: "bg-cyan-400/[0.025]",
+      border: "border-[#06b6d4]/30",
+      title: "text-[#22d3ee]",
+      glow: "bg-[#06b6d4]/[0.03]",
     },
     red: {
-      border: "border-red-400/25",
-      title: "text-red-300",
-      glow: "bg-red-400/[0.025]",
+      border: "border-[#ff2d55]/30",
+      title: "text-[#ff4d6a]",
+      glow: "bg-[#ff2d55]/[0.03]",
     },
     yellow: {
-      border: "border-yellow-400/25",
-      title: "text-yellow-300",
-      glow: "bg-yellow-400/[0.025]",
+      border: "border-[#f59e0b]/30",
+      title: "text-[#fbbf24]",
+      glow: "bg-[#f59e0b]/[0.03]",
     },
     green: {
-      border: "border-emerald-400/25",
-      title: "text-emerald-300",
-      glow: "bg-emerald-400/[0.025]",
+      border: "border-[#10b981]/30",
+      title: "text-[#34d399]",
+      glow: "bg-[#10b981]/[0.03]",
     },
   };
 
@@ -322,9 +322,9 @@ function PlayoffCard({
 
   const content = (
     <div
-      className={`overflow-hidden rounded-2xl border ${styles.border} ${styles.glow}`}
+      className={`overflow-hidden rounded-xl border ${styles.border} ${styles.glow} bg-[#0c0c18]`}
     >
-      <div className="border-b border-white/10 px-5 py-4">
+      <div className="border-b border-[#1e1e3a] px-5 py-4">
         <div className="flex items-center justify-between gap-4">
           <div
             className={`text-xs font-black uppercase tracking-[0.16em] ${styles.title}`}
@@ -332,16 +332,16 @@ function PlayoffCard({
             {title}
           </div>
 
-          <div className="text-[9px] font-black uppercase tracking-[0.15em] text-white/25">
+          <div className="text-[9px] font-black uppercase tracking-[0.15em] text-[#334155]">
             {match?.status ?? "Waiting"}
           </div>
         </div>
 
-        <div className="mt-2 text-[9px] font-black uppercase tracking-[0.12em] text-white/30">
+        <div className="mt-2 text-[9px] font-black uppercase tracking-[0.12em] text-[#334155]">
           {subtitle}
         </div>
 
-        <p className="mt-3 text-[10px] leading-5 text-white/35">
+        <p className="mt-3 text-[10px] leading-5 text-[#64748b]">
           {description}
         </p>
       </div>
@@ -359,7 +359,7 @@ function PlayoffCard({
       />
 
       {match && (
-        <div className="border-t border-white/10 px-5 py-3 text-[9px] font-black uppercase tracking-[0.15em] text-white/25">
+        <div className="border-t border-[#1e1e3a] px-5 py-3 text-[9px] font-black uppercase tracking-[0.15em] text-[#334155]">
           BO{match.bestOf} • {match.map || "Map TBD"}
         </div>
       )}
@@ -610,394 +610,386 @@ export default function TournamentBracketPage() {
       : undefined;
 
   return (
-    <div className="min-h-screen bg-[#070b11] text-white">
+    <div className="min-h-screen bg-[#030308] text-[#f1f5f9]">
+      {/* Ambient glow blobs */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/[0.06] blur-[120px]" />
+        <div className="absolute top-1/3 -right-40 h-[500px] w-[500px] rounded-full bg-[#ff2d55]/[0.05] blur-[100px]" />
+        <div className="absolute bottom-0 left-1/3 h-[400px] w-[400px] rounded-full bg-[#06b6d4]/[0.04] blur-[100px]" />
+      </div>
+
       <TournamentNav />
-      <main className="text-white">
+
+      <main className="relative text-[#f1f5f9]">
         <div className="mx-auto max-w-[1500px] px-5 py-8 md:px-8 lg:px-10">
-        <header className="mb-8 border-b border-white/10 pb-7">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <div className="mb-3 flex items-center gap-3">
-                <span className="h-2 w-2 rounded-full bg-red-400 shadow-[0_0_14px_rgba(248,113,113,0.8)]" />
 
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-red-300">
-                  Phase 2
-                </span>
-              </div>
-
-              <h1 className="text-3xl font-black uppercase tracking-tight md:text-5xl">
-                Playoffs & Grand Final
-              </h1>
-
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-white/40">
-                IPL-style playoff system. Rankings are determined by
-                completed Group Stage results.
-              </p>
-            </div>
-
-            <nav className="flex flex-wrap gap-2">
-              <Link
-                href="/tournament"
-                className="rounded-lg border border-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-white/50 transition hover:border-white/20 hover:text-white"
-              >
-                Tournament Home
-              </Link>
-
-              <Link
-                href="/tournament/fixtures"
-                className="rounded-lg border border-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-white/50 transition hover:border-white/20 hover:text-white"
-              >
-                Fixtures
-              </Link>
-
-              <Link
-                href="/tournament/matches"
-                className="rounded-lg border border-cyan-400/20 bg-cyan-400/5 px-4 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-300"
-              >
-                View Matches
-              </Link>
-            </nav>
-          </div>
-        </header>
-
-        <section className="mb-8 rounded-2xl border border-white/10 bg-[#091019]">
-          <div className="flex flex-col border-b border-white/10 px-5 py-5 md:flex-row md:items-center md:justify-between md:px-7">
-            <div className="flex items-center gap-4">
-              <div className="bg-red-400 px-4 py-3 text-xs font-black uppercase tracking-wide text-white">
-                Phase 2
-              </div>
-
+          {/* HEADER */}
+          <header className="mb-8 border-b border-[#1e1e3a] pb-7">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <div className="text-lg font-black uppercase tracking-wide">
-                  Playoffs & Grand Final
+                <div className="mb-3 flex items-center gap-3">
+                  <span className="h-2 w-2 rounded-full bg-[#ff2d55] shadow-[0_0_14px_rgba(255,45,85,0.8)]" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ff4d6a]">
+                    Phase 2
+                  </span>
                 </div>
 
-                <div className="mt-1 text-[9px] font-black uppercase tracking-[0.18em] text-white/25">
-                  IPL System
+                <h1 className="text-3xl font-black uppercase tracking-tight md:text-5xl">
+                  Playoffs &amp; Grand Final
+                </h1>
+
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-[#64748b]">
+                  IPL-style playoff system. Rankings are determined by
+                  completed Group Stage results.
+                </p>
+              </div>
+            </div>
+          </header>
+
+          {/* OVERVIEW PANEL */}
+          <section className="mb-8 rounded-xl border border-[#1e1e3a] bg-[#0c0c18]">
+            <div className="flex flex-col border-b border-[#1e1e3a] px-5 py-5 md:flex-row md:items-center md:justify-between md:px-7">
+              <div className="flex items-center gap-4">
+                <div className="rounded-lg bg-[#ff2d55] px-4 py-3 text-xs font-black uppercase tracking-wide text-white">
+                  Phase 2
+                </div>
+
+                <div>
+                  <div className="text-lg font-black uppercase tracking-wide text-[#f1f5f9]">
+                    Playoffs &amp; Grand Final
+                  </div>
+
+                  <div className="mt-1 text-[9px] font-black uppercase tracking-[0.18em] text-[#334155]">
+                    IPL System
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 text-[9px] font-black uppercase tracking-[0.22em] text-[#334155] md:mt-0">
+                Rank → Qualify → Conquer
+              </div>
+            </div>
+
+            <div className="grid gap-4 p-5 md:grid-cols-2 md:p-8 lg:grid-cols-4">
+              <div className="rounded-xl border border-[#06b6d4]/30 bg-[#06b6d4]/[0.03] p-5">
+                <div className="text-sm font-black uppercase text-[#22d3ee]">
+                  Qualifier 1
+                </div>
+
+                <div className="mt-2 text-[9px] font-black uppercase tracking-[0.15em] text-[#334155]">
+                  Rank #1 vs Rank #2
+                </div>
+
+                <p className="mt-5 text-[10px] leading-5 text-[#64748b]">
+                  Winner advances directly to the Grand Final.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-[#ff2d55]/30 bg-[#ff2d55]/[0.03] p-5">
+                <div className="text-sm font-black uppercase text-[#ff4d6a]">
+                  Eliminator
+                </div>
+
+                <div className="mt-2 text-[9px] font-black uppercase tracking-[0.15em] text-[#334155]">
+                  Rank #3 vs Rank #4
+                </div>
+
+                <p className="mt-5 text-[10px] leading-5 text-[#64748b]">
+                  Loser is eliminated and finishes 4th.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-[#f59e0b]/30 bg-[#f59e0b]/[0.03] p-5">
+                <div className="text-sm font-black uppercase text-[#fbbf24]">
+                  Qualifier 2
+                </div>
+
+                <div className="mt-2 text-[9px] font-black uppercase tracking-[0.15em] text-[#334155]">
+                  Loser Q1 vs Winner Eliminator
+                </div>
+
+                <p className="mt-5 text-[10px] leading-5 text-[#64748b]">
+                  Winner advances to the Grand Final.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-[#10b981]/30 bg-[#10b981]/[0.03] p-5">
+                <div className="text-sm font-black uppercase text-[#34d399]">
+                  Grand Final
+                </div>
+
+                <div className="mt-2 text-[9px] font-black uppercase tracking-[0.15em] text-[#334155]">
+                  Winner Q1 vs Winner Q2
+                </div>
+
+                <p className="mt-5 text-[10px] leading-5 text-[#64748b]">
+                  Best of 3 decides the tournament champion.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-center pb-8">
+              <a
+                href="#playoff-bracket"
+                className="rounded-lg border border-[#06b6d4]/30 bg-[#06b6d4]/[0.05] px-7 py-3 text-[10px] font-black uppercase tracking-[0.16em] text-[#22d3ee] transition hover:bg-[#06b6d4]/[0.10]"
+              >
+                Open Playoff Bracket →
+              </a>
+            </div>
+          </section>
+
+          {/* BRACKET */}
+          <section
+            id="playoff-bracket"
+            className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18] p-5 md:p-8"
+          >
+            <div className="mb-8 flex flex-col gap-3 border-b border-[#1e1e3a] pb-6 md:flex-row md:items-center md:justify-between">
+              <div>
+                <div className="text-[10px] font-black uppercase tracking-[0.22em] text-[#334155]">
+                  Playoff Stage
+                </div>
+
+                <h2 className="mt-2 text-2xl font-black uppercase text-[#f1f5f9]">
+                  Road to the Final
+                </h2>
+              </div>
+
+              <div className="rounded-lg border border-[#1e1e3a] bg-[#030308] px-4 py-2 text-[10px] font-black uppercase tracking-[0.15em] text-[#64748b]">
+                4 Team Bracket
+              </div>
+            </div>
+
+            {!groupStageComplete && (
+              <div className="mb-6 rounded-xl border border-[#f59e0b]/20 bg-[#f59e0b]/5 px-5 py-4">
+                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#fbbf24]/70">
+                  Phase 2 Not Started
+                </div>
+
+                <div className="mt-2 text-xs font-black uppercase text-[#f1f5f9]/60">
+                  Complete the Group Stage to determine playoff rankings.
+                </div>
+
+                <div className="mt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[#64748b]">
+                  Group Stage: {completedGroupMatches.length} /{" "}
+                  {REQUIRED_GROUP_MATCHES} completed
+                </div>
+              </div>
+            )}
+
+            <div className="grid gap-6 lg:grid-cols-4">
+              <PlayoffCard
+                title="Qualifier 1"
+                subtitle="Rank #1 vs Rank #2"
+                description="Winner advances directly to the Grand Final."
+                accent="cyan"
+                match={qualifier1}
+                team1={qualifier1Team1}
+                team2={qualifier1Team2}
+                team1Label="Rank #1 not determined"
+                team2Label="Rank #2 not determined"
+              />
+
+              <PlayoffCard
+                title="Eliminator"
+                subtitle="Rank #3 vs Rank #4"
+                description="Loser is eliminated and finishes 4th."
+                accent="red"
+                match={eliminator}
+                team1={eliminatorTeam1}
+                team2={eliminatorTeam2}
+                team1Label="Rank #3 not determined"
+                team2Label="Rank #4 not determined"
+              />
+
+              <PlayoffCard
+                title="Qualifier 2"
+                subtitle="Loser Q1 vs Winner Eliminator"
+                description="Winner advances to the Grand Final."
+                accent="yellow"
+                match={qualifier2}
+                team1={qualifier2Team1}
+                team2={qualifier2Team2}
+                team1Label="Loser Qualifier 1"
+                team2Label="Winner Eliminator"
+              />
+
+              <PlayoffCard
+                title="Grand Final"
+                subtitle="Winner Q1 vs Winner Q2"
+                description="Winner becomes the tournament champion."
+                accent="green"
+                match={grandFinal}
+                team1={grandFinalTeam1}
+                team2={grandFinalTeam2}
+                team1Label="Winner Qualifier 1"
+                team2Label="Winner Qualifier 2"
+              />
+            </div>
+
+            {/* RESULT PILLS */}
+            <div className="mt-8 grid gap-4 md:grid-cols-4">
+              <div className="rounded-xl border border-[#06b6d4]/20 bg-[#06b6d4]/[0.03] px-4 py-4">
+                <div className="text-[9px] font-black uppercase tracking-[0.15em] text-[#22d3ee]/60">
+                  Qualifier 1 Winner
+                </div>
+
+                <div className="mt-2 text-sm font-black uppercase text-[#f1f5f9]">
+                  {q1Winner?.name ?? "TBD"}
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-[#ff2d55]/20 bg-[#ff2d55]/[0.03] px-4 py-4">
+                <div className="text-[9px] font-black uppercase tracking-[0.15em] text-[#ff4d6a]/60">
+                  Eliminator Loser
+                </div>
+
+                <div className="mt-2 text-sm font-black uppercase text-[#f1f5f9]">
+                  {eliminatorLoser?.name ?? "TBD"}
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-[#f59e0b]/20 bg-[#f59e0b]/[0.03] px-4 py-4">
+                <div className="text-[9px] font-black uppercase tracking-[0.15em] text-[#fbbf24]/60">
+                  Qualifier 2 Winner
+                </div>
+
+                <div className="mt-2 text-sm font-black uppercase text-[#f1f5f9]">
+                  {q2Winner?.name ?? "TBD"}
+                </div>
+              </div>
+
+              {/* Champion box: gold border + gold text */}
+              <div className="rounded-xl border border-[#f59e0b]/60 bg-[#f59e0b]/[0.06] px-4 py-4">
+                <div className="text-[9px] font-black uppercase tracking-[0.15em] text-[#fbbf24]/80">
+                  Champion
+                </div>
+
+                <div className="mt-2 text-sm font-black uppercase text-[#fbbf24]">
+                  {champion?.name ?? "TBD"}
                 </div>
               </div>
             </div>
+          </section>
 
-            <div className="mt-4 text-[9px] font-black uppercase tracking-[0.22em] text-white/20 md:mt-0">
-              Rank → Qualify → Conquer
-            </div>
-          </div>
-
-          <div className="grid gap-4 p-5 md:grid-cols-2 md:p-8 lg:grid-cols-4">
-            <div className="border border-cyan-400/20 bg-cyan-400/[0.025] p-5">
-              <div className="text-sm font-black uppercase text-cyan-300">
-                Qualifier 1
-              </div>
-
-              <div className="mt-2 text-[9px] font-black uppercase tracking-[0.15em] text-white/30">
-                Rank #1 vs Rank #2
-              </div>
-
-              <p className="mt-5 text-[10px] leading-5 text-white/35">
-                Winner advances directly to the Grand Final.
-              </p>
+          {/* QUALIFICATION FLOW */}
+          <section className="mt-8 rounded-xl border border-[#1e1e3a] bg-[#0c0c18] p-5 md:p-6">
+            <div className="text-[10px] font-black uppercase tracking-[0.22em] text-[#334155]">
+              Qualification Flow
             </div>
 
-            <div className="border border-red-400/20 bg-red-400/[0.025] p-5">
-              <div className="text-sm font-black uppercase text-red-300">
-                Eliminator
+            <div className="mt-5 grid gap-3 md:grid-cols-4">
+              <div className="rounded-xl border border-[#1e1e3a] bg-[#030308] p-4">
+                <div className="text-xs font-black uppercase text-[#22d3ee]">
+                  01
+                </div>
+
+                <div className="mt-2 text-xs font-black uppercase text-[#f1f5f9]">
+                  Qualifier 1
+                </div>
+
+                <p className="mt-2 text-[10px] leading-5 text-[#64748b]">
+                  #1 vs #2. Winner gets a direct Grand Final berth.
+                </p>
               </div>
 
-              <div className="mt-2 text-[9px] font-black uppercase tracking-[0.15em] text-white/30">
-                Rank #3 vs Rank #4
+              <div className="rounded-xl border border-[#1e1e3a] bg-[#030308] p-4">
+                <div className="text-xs font-black uppercase text-[#ff4d6a]">
+                  02
+                </div>
+
+                <div className="mt-2 text-xs font-black uppercase text-[#f1f5f9]">
+                  Eliminator
+                </div>
+
+                <p className="mt-2 text-[10px] leading-5 text-[#64748b]">
+                  #3 vs #4. Loser is eliminated from the tournament.
+                </p>
               </div>
 
-              <p className="mt-5 text-[10px] leading-5 text-white/35">
-                Loser is eliminated and finishes 4th.
-              </p>
+              <div className="rounded-xl border border-[#1e1e3a] bg-[#030308] p-4">
+                <div className="text-xs font-black uppercase text-[#fbbf24]">
+                  03
+                </div>
+
+                <div className="mt-2 text-xs font-black uppercase text-[#f1f5f9]">
+                  Qualifier 2
+                </div>
+
+                <p className="mt-2 text-[10px] leading-5 text-[#64748b]">
+                  Loser Q1 faces the Eliminator winner.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-[#1e1e3a] bg-[#030308] p-4">
+                <div className="text-xs font-black uppercase text-[#34d399]">
+                  04
+                </div>
+
+                <div className="mt-2 text-xs font-black uppercase text-[#f1f5f9]">
+                  Grand Final
+                </div>
+
+                <p className="mt-2 text-[10px] leading-5 text-[#64748b]">
+                  Winner Q1 faces Winner Q2 for the championship.
+                </p>
+              </div>
             </div>
+          </section>
 
-            <div className="border border-yellow-400/20 bg-yellow-400/[0.025] p-5">
-              <div className="text-sm font-black uppercase text-yellow-300">
-                Qualifier 2
+          {/* REGISTERED TEAMS */}
+          <section className="mt-8">
+            <div className="mb-4">
+              <div className="text-[10px] font-black uppercase tracking-[0.22em] text-[#334155]">
+                Registered Teams
               </div>
 
-              <div className="mt-2 text-[9px] font-black uppercase tracking-[0.15em] text-white/30">
-                Loser Q1 vs Winner Eliminator
-              </div>
-
-              <p className="mt-5 text-[10px] leading-5 text-white/35">
-                Winner advances to the Grand Final.
-              </p>
-            </div>
-
-            <div className="border border-emerald-400/20 bg-emerald-400/[0.025] p-5">
-              <div className="text-sm font-black uppercase text-emerald-300">
-                Grand Final
-              </div>
-
-              <div className="mt-2 text-[9px] font-black uppercase tracking-[0.15em] text-white/30">
-                Winner Q1 vs Winner Q2
-              </div>
-
-              <p className="mt-5 text-[10px] leading-5 text-white/35">
-                Best of 3 decides the tournament champion.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex justify-center pb-8">
-            <a
-              href="#playoff-bracket"
-              className="border border-cyan-400/20 bg-cyan-400/[0.025] px-7 py-3 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-300 transition hover:bg-cyan-400/[0.08]"
-            >
-              Open Playoff Bracket →
-            </a>
-          </div>
-        </section>
-
-        <section
-          id="playoff-bracket"
-          className="rounded-3xl border border-white/10 bg-[#080d14] p-5 md:p-8"
-        >
-          <div className="mb-8 flex flex-col gap-3 border-b border-white/10 pb-6 md:flex-row md:items-center md:justify-between">
-            <div>
-              <div className="text-[10px] font-black uppercase tracking-[0.22em] text-white/30">
-                Playoff Stage
-              </div>
-
-              <h2 className="mt-2 text-2xl font-black uppercase">
-                Road to the Final
+              <h2 className="mt-2 text-xl font-black uppercase text-[#f1f5f9]">
+                Tournament Teams
               </h2>
             </div>
 
-            <div className="rounded-lg border border-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.15em] text-white/30">
-              4 Team Bracket
-            </div>
-          </div>
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+              {teams
+                .slice()
+                .sort((a, b) => a.seed - b.seed)
+                .map((team) => (
+                  <Link
+                    key={team.id}
+                    href={`/tournament/teams/${team.id}`}
+                    className="group rounded-xl border border-[#1e1e3a] bg-[#0c0c18] p-4 transition hover:border-[#06b6d4]/30 hover:bg-[#131326]"
+                  >
+                    <div className="flex items-center gap-4">
+                      {team.logo ? (
+                        <Image
+                          src={team.logo}
+                          alt={`${team.name} logo`}
+                          width={48}
+                          height={48}
+                          unoptimized
+                          className="h-12 w-12 rounded-xl object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#1e1e3a] bg-[#030308] text-xs font-black text-[#7c3aed]">
+                          {team.tag.slice(0, 3).toUpperCase()}
+                        </div>
+                      )}
 
-          {!groupStageComplete && (
-            <div className="mb-6 rounded-xl border border-yellow-400/15 bg-yellow-400/[0.025] px-5 py-4">
-              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-yellow-300/70">
-                Phase 2 Not Started
-              </div>
+                      <div className="min-w-0">
+                        <div className="text-[9px] font-black uppercase tracking-[0.15em] text-[#334155]">
+                          Registered Team
+                        </div>
 
-              <div className="mt-2 text-xs font-black uppercase text-white/60">
-                Complete the Group Stage to determine playoff rankings.
-              </div>
-
-              <div className="mt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white/30">
-                Group Stage: {completedGroupMatches.length} /{" "}
-                {REQUIRED_GROUP_MATCHES} completed
-              </div>
-            </div>
-          )}
-
-          <div className="grid gap-6 lg:grid-cols-4">
-            <PlayoffCard
-              title="Qualifier 1"
-              subtitle="Rank #1 vs Rank #2"
-              description="Winner advances directly to the Grand Final."
-              accent="cyan"
-              match={qualifier1}
-              team1={qualifier1Team1}
-              team2={qualifier1Team2}
-              team1Label="Rank #1 not determined"
-              team2Label="Rank #2 not determined"
-            />
-
-            <PlayoffCard
-              title="Eliminator"
-              subtitle="Rank #3 vs Rank #4"
-              description="Loser is eliminated and finishes 4th."
-              accent="red"
-              match={eliminator}
-              team1={eliminatorTeam1}
-              team2={eliminatorTeam2}
-              team1Label="Rank #3 not determined"
-              team2Label="Rank #4 not determined"
-            />
-
-            <PlayoffCard
-              title="Qualifier 2"
-              subtitle="Loser Q1 vs Winner Eliminator"
-              description="Winner advances to the Grand Final."
-              accent="yellow"
-              match={qualifier2}
-              team1={qualifier2Team1}
-              team2={qualifier2Team2}
-              team1Label="Loser Qualifier 1"
-              team2Label="Winner Eliminator"
-            />
-
-            <PlayoffCard
-              title="Grand Final"
-              subtitle="Winner Q1 vs Winner Q2"
-              description="Winner becomes the tournament champion."
-              accent="green"
-              match={grandFinal}
-              team1={grandFinalTeam1}
-              team2={grandFinalTeam2}
-              team1Label="Winner Qualifier 1"
-              team2Label="Winner Qualifier 2"
-            />
-          </div>
-
-          <div className="mt-8 grid gap-4 md:grid-cols-4">
-            <div className="rounded-xl border border-cyan-400/10 bg-cyan-400/[0.02] px-4 py-4">
-              <div className="text-[9px] font-black uppercase tracking-[0.15em] text-cyan-300/60">
-                Qualifier 1 Winner
-              </div>
-
-              <div className="mt-2 text-sm font-black uppercase">
-                {q1Winner?.name ?? "TBD"}
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-red-400/10 bg-red-400/[0.02] px-4 py-4">
-              <div className="text-[9px] font-black uppercase tracking-[0.15em] text-red-300/60">
-                Eliminator Loser
-              </div>
-
-              <div className="mt-2 text-sm font-black uppercase">
-                {eliminatorLoser?.name ?? "TBD"}
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-yellow-400/10 bg-yellow-400/[0.02] px-4 py-4">
-              <div className="text-[9px] font-black uppercase tracking-[0.15em] text-yellow-300/60">
-                Qualifier 2 Winner
-              </div>
-
-              <div className="mt-2 text-sm font-black uppercase">
-                {q2Winner?.name ?? "TBD"}
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-emerald-400/10 bg-emerald-400/[0.02] px-4 py-4">
-              <div className="text-[9px] font-black uppercase tracking-[0.15em] text-emerald-300/60">
-                Champion
-              </div>
-
-              <div className="mt-2 text-sm font-black uppercase">
-                {champion?.name ?? "TBD"}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-8 rounded-2xl border border-white/10 bg-[#0a1018] p-5 md:p-6">
-          <div className="text-[10px] font-black uppercase tracking-[0.22em] text-white/30">
-            Qualification Flow
-          </div>
-
-          <div className="mt-5 grid gap-3 md:grid-cols-4">
-            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
-              <div className="text-xs font-black uppercase text-cyan-300">
-                01
-              </div>
-
-              <div className="mt-2 text-xs font-black uppercase">
-                Qualifier 1
-              </div>
-
-              <p className="mt-2 text-[10px] leading-5 text-white/35">
-                #1 vs #2. Winner gets a direct Grand Final berth.
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
-              <div className="text-xs font-black uppercase text-red-300">
-                02
-              </div>
-
-              <div className="mt-2 text-xs font-black uppercase">
-                Eliminator
-              </div>
-
-              <p className="mt-2 text-[10px] leading-5 text-white/35">
-                #3 vs #4. Loser is eliminated from the tournament.
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
-              <div className="text-xs font-black uppercase text-yellow-300">
-                03
-              </div>
-
-              <div className="mt-2 text-xs font-black uppercase">
-                Qualifier 2
-              </div>
-
-              <p className="mt-2 text-[10px] leading-5 text-white/35">
-                Loser Q1 faces the Eliminator winner.
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
-              <div className="text-xs font-black uppercase text-emerald-300">
-                04
-              </div>
-
-              <div className="mt-2 text-xs font-black uppercase">
-                Grand Final
-              </div>
-
-              <p className="mt-2 text-[10px] leading-5 text-white/35">
-                Winner Q1 faces Winner Q2 for the championship.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-8">
-          <div className="mb-4">
-            <div className="text-[10px] font-black uppercase tracking-[0.22em] text-white/30">
-              Registered Teams
-            </div>
-
-            <h2 className="mt-2 text-xl font-black uppercase">
-              Tournament Teams
-            </h2>
-          </div>
-
-          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-            {teams
-              .slice()
-              .sort((a, b) => a.seed - b.seed)
-              .map((team) => (
-                <Link
-                  key={team.id}
-                  href={`/tournament/teams/${team.id}`}
-                  className="group rounded-2xl border border-white/10 bg-[#0a1018] p-4 transition hover:border-cyan-400/20 hover:bg-white/[0.025]"
-                >
-                  <div className="flex items-center gap-4">
-                    {team.logo ? (
-                      <Image
-                        src={team.logo}
-                        alt={`${team.name} logo`}
-                        width={48}
-                        height={48}
-                        unoptimized
-                        className="h-12 w-12 rounded-xl object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-xs font-black text-white/45">
-                        {team.tag.slice(0, 3).toUpperCase()}
-                      </div>
-                    )}
-
-                    <div className="min-w-0">
-                      <div className="text-[9px] font-black uppercase tracking-[0.15em] text-white/25">
-                        Registered Team
-                      </div>
-
-                      <div className="mt-1 truncate text-sm font-black uppercase group-hover:text-cyan-300">
-                        {team.name}
+                        <div className="mt-1 truncate text-sm font-black uppercase text-[#f1f5f9] group-hover:text-[#22d3ee]">
+                          {team.name}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
-          </div>
-        </section>
-      </div>
-    </main>
-  </div>
-);
+                  </Link>
+                ))}
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  );
 }

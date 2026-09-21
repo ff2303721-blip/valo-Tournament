@@ -9,6 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { teams as defaultTeams } from "@/app/data/teams";
 
 type Player = {
   id: string;
@@ -178,34 +179,39 @@ export default function TeamsAdminPage() {
   }
 
   useEffect(() => {
-    let cancelled = false;
+    let mounted = true;
 
     async function initialFetch() {
       try {
         const response = await fetch("/api/teams", { cache: "no-store" });
-        const data = await response.json();
+        const data = response.ok ? await response.json() : null;
 
-        if (cancelled) return;
+        if (!mounted) {
+          setLoading(false);
+          return;
+        }
 
-        if (response.ok && Array.isArray(data)) {
+        if (Array.isArray(data) && data.length > 0) {
           setTeams(data.map(normalizeTeam));
-        } else if (!response.ok) {
-          setError(data.error || "Failed to load teams.");
+        } else {
+          setTeams(defaultTeams.map(normalizeTeam));
         }
       } catch (err) {
-        if (cancelled) return;
+        if (!mounted) {
+          setLoading(false);
+          return;
+        }
+        setTeams(defaultTeams.map(normalizeTeam));
         setError(err instanceof Error ? err.message : "Failed to load teams.");
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     }
 
     initialFetch();
 
     return () => {
-      cancelled = true;
+      mounted = false;
     };
   }, []);
 

@@ -5,6 +5,8 @@ import Image from "next/image";
 import { TournamentNav } from "../../components/tournament-nav";
 import { TournamentBrand } from "../../components/tournament-brand";
 import { useEffect, useMemo, useState } from "react";
+import { matches as defaultMatches } from "@/app/data/matches";
+import { teams as defaultTeams } from "@/app/data/teams";
 
 type MatchStatus =
   | "Scheduled"
@@ -155,94 +157,67 @@ export default function PublicMatchDetailPage({
     useState("");
 
   useEffect(() => {
-    let active = true;
+    let mounted = true;
 
     async function load() {
       try {
-        const resolved =
-          await params;
+        const resolved = await params;
 
-        if (!active) {
+        if (!mounted) {
+          setLoading(false);
           return;
         }
 
-        setMatchId(
-          resolved.id,
-        );
+        setMatchId(resolved.id);
 
-        const [
-          matchResponse,
-          teamsResponse,
-        ] = await Promise.all([
-          fetch(
-            `/api/matches/${encodeURIComponent(
-              resolved.id,
-            )}`,
-            {
-              cache: "no-store",
-            },
-          ),
+        const [matchResponse, teamsResponse] = await Promise.all([
+          fetch(`/api/matches/${encodeURIComponent(resolved.id)}`, {
+            cache: "no-store",
+          }),
           fetch("/api/teams", {
             cache: "no-store",
           }),
         ]);
 
-        const matchData =
-          await matchResponse.json();
+        const matchData = matchResponse.ok ? await matchResponse.json() : null;
+        const teamsData = teamsResponse.ok ? await teamsResponse.json() : null;
 
-        const teamsData =
-          await teamsResponse.json();
-
-        if (!matchResponse.ok) {
-          throw new Error(
-            matchData.error ||
-              "Failed to load match.",
-          );
-        }
-
-        if (!teamsResponse.ok) {
-          throw new Error(
-            teamsData.error ||
-              "Failed to load teams.",
-          );
-        }
-
-        if (!active) {
+        if (!mounted) {
+          setLoading(false);
           return;
         }
 
-        setMatch(
-          matchData,
-        );
+        const fallbackMatch = defaultMatches.find((m) => m.id === resolved.id) || null;
+        setMatch(matchData || fallbackMatch);
 
-        setTeams(
-          Array.isArray(
-            teamsData,
-          )
-            ? teamsData
-            : [],
-        );
+        const teamList = Array.isArray(teamsData) && teamsData.length > 0
+          ? teamsData
+          : defaultTeams;
+        setTeams(teamList);
       } catch (err) {
-        if (!active) {
+        if (!mounted) {
+          setLoading(false);
           return;
         }
 
+        const resolved = await params;
+        const fallbackMatch = defaultMatches.find((m) => m.id === resolved?.id) || null;
+        setMatch(fallbackMatch);
+        setTeams(defaultTeams);
         setError(
           err instanceof Error
             ? err.message
             : "Failed to load match.",
         );
       } finally {
-        if (active) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     }
 
     load();
 
     return () => {
-      active = false;
+      mounted = false;
     };
   }, [params]);
 

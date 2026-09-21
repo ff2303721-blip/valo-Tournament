@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import type { Match, MatchStatus } from "@/app/data/matches";
-import type { Team } from "@/app/data/teams";
+import { matches as defaultMatches, type Match, type MatchStatus } from "@/app/data/matches";
+import { teams as defaultTeams, type Team } from "@/app/data/teams";
 
 const GROUP_FIXTURES = [
   { matchNumber: 1, team1Seed: 1, team2Seed: 2, map: "Lotus" },
@@ -178,7 +178,7 @@ export default function MatchCenterPage() {
       setError("");
 
       const [teamsResponse, matchesResponse] = await Promise.all([
-        fetch("/api/teams", {
+        fetch("/api/teams?lite=1", {
           cache: "no-store",
         }),
         fetch("/api/matches", {
@@ -186,31 +186,26 @@ export default function MatchCenterPage() {
         }),
       ]);
 
-      const teamsData = await teamsResponse.json();
-      const matchesData = await matchesResponse.json();
-
-      if (!teamsResponse.ok) {
-        throw new Error(
-          teamsData.error || "Failed to load teams.",
-        );
-      }
-
-      if (!matchesResponse.ok) {
-        throw new Error(
-          matchesData.error || "Failed to load matches.",
-        );
-      }
+      const teamsData = teamsResponse.ok ? await teamsResponse.json() : null;
+      const matchesData = matchesResponse.ok ? await matchesResponse.json() : null;
 
       const teamList = Array.isArray(teamsData)
         ? teamsData
-        : (teamsData.teams ?? []);
+        : (teamsData?.teams ?? []);
       const matchList = Array.isArray(matchesData)
         ? matchesData
-        : (matchesData.matches ?? []);
+        : (matchesData?.matches ?? []);
 
-      setTeams(teamList);
-      setMatches(matchList.map(normalizeMatch));
+      setTeams(teamList.length > 0 ? teamList : defaultTeams);
+      setMatches(
+        matchList.length > 0
+          ? matchList.map(normalizeMatch)
+          : defaultMatches.map(normalizeMatch),
+      );
     } catch (err) {
+      console.warn("Failed to load live tournament data, using fallbacks:", err);
+      setTeams((prev) => (prev.length > 0 ? prev : defaultTeams));
+      setMatches((prev) => (prev.length > 0 ? prev : defaultMatches.map(normalizeMatch)));
       setError(
         err instanceof Error
           ? err.message
@@ -222,51 +217,58 @@ export default function MatchCenterPage() {
   };
 
   useEffect(() => {
-    let cancelled = false;
+    let mounted = true;
 
-    async function initialFetch() {
+    async function fetchData() {
       try {
         const [teamsResponse, matchesResponse] = await Promise.all([
-          fetch("/api/teams", { cache: "no-store" }),
+          fetch("/api/teams?lite=1", { cache: "no-store" }),
           fetch("/api/matches", { cache: "no-store" }),
         ]);
 
-        const teamsData = await teamsResponse.json();
-        const matchesData = await matchesResponse.json();
+        const teamsData = teamsResponse.ok ? await teamsResponse.json() : null;
+        const matchesData = matchesResponse.ok ? await matchesResponse.json() : null;
 
-        if (cancelled) return;
-
-        if (teamsResponse.ok) {
-          const teamList = Array.isArray(teamsData)
-            ? teamsData
-            : (teamsData.teams ?? []);
-          setTeams(teamList);
+        if (!mounted) {
+          setLoading(false);
+          return;
         }
 
-        if (matchesResponse.ok) {
-          const matchList = Array.isArray(matchesData)
-            ? matchesData
-            : (matchesData.matches ?? []);
-          setMatches(matchList.map(normalizeMatch));
-        }
+        const teamList = Array.isArray(teamsData)
+          ? teamsData
+          : (teamsData?.teams ?? []);
+        const matchList = Array.isArray(matchesData)
+          ? matchesData
+          : (matchesData?.matches ?? []);
+
+        setTeams(teamList.length > 0 ? teamList : defaultTeams);
+        setMatches(
+          matchList.length > 0
+            ? matchList.map(normalizeMatch)
+            : defaultMatches.map(normalizeMatch),
+        );
       } catch (err) {
-        if (cancelled) return;
+        if (!mounted) {
+          setLoading(false);
+          return;
+        }
+        console.warn("Failed to load live tournament data, using fallbacks:", err);
+        setTeams((prev) => (prev.length > 0 ? prev : defaultTeams));
+        setMatches((prev) => (prev.length > 0 ? prev : defaultMatches.map(normalizeMatch)));
         setError(
           err instanceof Error
             ? err.message
-            : "Failed to load tournament data."
+            : "Failed to load tournament data.",
         );
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     }
 
-    initialFetch();
+    fetchData();
 
     return () => {
-      cancelled = true;
+      mounted = false;
     };
   }, []);
 

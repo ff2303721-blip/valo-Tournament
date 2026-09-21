@@ -1,11 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import fs from "fs";
+import path from "path";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey =
   process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const SESSION_COOKIE = "valorant_admin_session";
+
+function resolveTeamLogo(teamId: string, rawLogo?: string | null): string {
+  const pngPath = path.join(process.cwd(), "public", "logos", `${teamId}.png`);
+  if (fs.existsSync(pngPath)) {
+    return `/logos/${teamId}.png`;
+  }
+  const jpgPath = path.join(process.cwd(), "public", "logos", `${teamId}.jpg`);
+  if (fs.existsSync(jpgPath)) {
+    return `/logos/${teamId}.jpg`;
+  }
+  if (rawLogo && rawLogo.trim().length > 0) {
+    if (rawLogo.startsWith("http://") || rawLogo.startsWith("https://") || rawLogo.startsWith("/logos/")) {
+      return rawLogo;
+    }
+    return `/api/teams/${teamId}/logo`;
+  }
+  return "";
+}
 
 function getSupabaseAdmin() {
   if (!supabaseUrl) {
@@ -74,7 +94,7 @@ async function getTeam(
     name: team.name,
     tag: team.tag,
     seed: team.seed,
-    logo: team.logo ?? "",
+    logo: resolveTeamLogo(team.id, team.logo),
     wins: team.wins ?? 0,
     losses: team.losses ?? 0,
     captainRank:
@@ -192,7 +212,7 @@ export async function PUT(
     const { data: existingTeam } =
       await client
         .from("teams")
-        .select("id")
+        .select("id, logo")
         .eq("id", id)
         .maybeSingle();
 
@@ -203,6 +223,32 @@ export async function PUT(
       );
     }
 
+    let logoToSave = existingTeam.logo ?? "";
+    if (typeof logo === "string") {
+      if (logo.startsWith("data:image/")) {
+        logoToSave = logo;
+        try {
+          const match = logo.match(/^data:([a-zA-Z0-9\/\+]+);base64,(.+)$/);
+          if (match) {
+            const ext = match[1].includes("jpeg") || match[1].includes("jpg") ? "jpg" : "png";
+            const targetPath = path.join(process.cwd(), "public", "logos", `${id}.${ext}`);
+            fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+            fs.writeFileSync(targetPath, Buffer.from(match[2], "base64"));
+          }
+        } catch (e) {
+          console.error("Failed to write updated logo file:", e);
+        }
+      } else if (logo === "") {
+        logoToSave = "";
+        try {
+          const pPng = path.join(process.cwd(), "public", "logos", `${id}.png`);
+          if (fs.existsSync(pPng)) fs.unlinkSync(pPng);
+        } catch {}
+      } else if (logo.startsWith("http://") || logo.startsWith("https://")) {
+        logoToSave = logo;
+      }
+    }
+
     const { error: teamError } =
       await client
         .from("teams")
@@ -210,10 +256,7 @@ export async function PUT(
           name: name.trim(),
           tag: tag.trim(),
           seed: Number(seed),
-          logo:
-            typeof logo === "string"
-              ? logo
-              : "",
+          logo: logoToSave,
           wins:
             Number.isInteger(Number(wins))
               ? Number(wins)
