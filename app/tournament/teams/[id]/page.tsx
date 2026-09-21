@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { TournamentBrand } from "../../components/tournament-brand";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { TournamentNav } from "../../components/tournament-nav";
 
 type Player = {
   id: string;
@@ -47,47 +48,30 @@ export default function PublicTeamDetailsPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!teamId) {
-      setLoading(false);
-      return;
-    }
-
     let cancelled = false;
 
     async function loadTeam() {
-      try {
-        setLoading(true);
-        setError("");
+      if (!teamId) {
+        if (!cancelled) setLoading(false);
+        return;
+      }
 
-        const response = await fetch(
-          "/api/teams",
-          {
-            cache: "no-store",
-          },
-        );
+      try {
+        const response = await fetch("/api/teams", { cache: "no-store" });
 
         if (!response.ok) {
-          throw new Error(
-            "Unable to load tournament teams.",
-          );
+          throw new Error("Unable to load tournament teams.");
         }
 
         const data = await response.json();
 
         if (!Array.isArray(data)) {
-          throw new Error(
-            "Invalid team data received.",
-          );
+          throw new Error("Invalid team data received.");
         }
 
-        if (cancelled) {
-          return;
-        }
+        if (cancelled) return;
 
-        const foundTeam = data.find(
-          (item: Team) =>
-            item.id === teamId,
-        );
+        const foundTeam = data.find((item: Team) => item.id === teamId);
 
         if (!foundTeam) {
           setTeam(null);
@@ -96,30 +80,15 @@ export default function PublicTeamDetailsPage() {
 
         setTeam({
           ...foundTeam,
-          wins: Number(
-            foundTeam.wins ?? 0,
-          ),
-          losses: Number(
-            foundTeam.losses ?? 0,
-          ),
-          seed: Number(
-            foundTeam.seed ?? 0,
-          ),
-          players: Array.isArray(
-            foundTeam.players,
-          )
-            ? foundTeam.players
-            : [],
+          wins: Number(foundTeam.wins ?? 0),
+          losses: Number(foundTeam.losses ?? 0),
+          seed: Number(foundTeam.seed ?? 0),
+          players: Array.isArray(foundTeam.players) ? foundTeam.players : [],
         });
       } catch (loadError) {
-        if (cancelled) {
-          return;
-        }
-
+        if (cancelled) return;
         setError(
-          loadError instanceof Error
-            ? loadError.message
-            : "Unable to load team.",
+          loadError instanceof Error ? loadError.message : "Unable to load team."
         );
       } finally {
         if (!cancelled) {
@@ -219,41 +188,46 @@ export default function PublicTeamDetailsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#060a12] text-white">
-      <div className="mx-auto max-w-[1200px] px-5 py-8 sm:px-8">
-        <header className="mb-8 flex flex-col gap-5 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
-          <Link
-            href="/tournament/teams"
-            className="text-xs font-bold uppercase tracking-[0.2em] text-white/40 transition hover:text-cyan-300"
-          >
-            ← All Teams
-          </Link>
+    <div className="min-h-screen bg-[#060a12] text-white">
+      <TournamentNav />
+      <main className="text-white">
+        <div className="mx-auto max-w-[1200px] px-5 py-8 sm:px-8">
+          <header className="mb-8 flex flex-col gap-5 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
+            <Link
+              href="/tournament/teams"
+              className="text-xs font-bold uppercase tracking-[0.2em] text-white/40 transition hover:text-cyan-300"
+            >
+              ← All Teams
+            </Link>
 
-          <Link
-            href="/tournament"
-            className="text-xs font-bold uppercase tracking-[0.2em] text-white/30 transition hover:text-white"
-          >
-            Tournament Central
-          </Link>
-        </header>
+            <Link
+              href="/tournament"
+              className="text-xs font-bold uppercase tracking-[0.2em] text-white/30 transition hover:text-white"
+            >
+              Tournament Central
+            </Link>
+          </header>
 
-        <section className="overflow-hidden rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-400/[0.08] via-white/[0.03] to-purple-500/[0.08] shadow-[0_0_70px_rgba(34,211,238,0.06)]">
-          <div className="flex flex-col gap-7 border-b border-white/10 p-6 sm:flex-row sm:items-center sm:p-8">
-            <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-cyan-400/20 bg-black/30 shadow-[0_0_35px_rgba(34,211,238,0.08)]">
-              {team.logo ? (
-                <img
-                  src={team.logo}
-                  alt={`${team.name} logo`}
-                  className="h-full w-full object-contain"
-                />
-              ) : (
-                <span className="text-3xl font-black text-cyan-300/60">
-                  {initials(team.name)}
-                </span>
-              )}
-            </div>
+          <section className="overflow-hidden rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-400/[0.08] via-white/[0.03] to-purple-500/[0.08] shadow-[0_0_70px_rgba(34,211,238,0.06)]">
+            <div className="flex flex-col gap-7 border-b border-white/10 p-6 sm:flex-row sm:items-center sm:p-8">
+              <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-cyan-400/20 bg-black/30 shadow-[0_0_35px_rgba(34,211,238,0.08)]">
+                {team.logo ? (
+                  <Image
+                    src={team.logo}
+                    alt={`${team.name} logo`}
+                    width={112}
+                    height={112}
+                    unoptimized
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <span className="text-3xl font-black text-cyan-300/60">
+                    {initials(team.name)}
+                  </span>
+                )}
+              </div>
 
-            <div className="flex-1">
+              <div className="flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300">
                   Seed {team.seed}
@@ -388,7 +362,8 @@ export default function PublicTeamDetailsPage() {
         </div>
       </div>
     </main>
-  );
+  </div>
+);
 }
 
 function Stat({

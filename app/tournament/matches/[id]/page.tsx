@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import { TournamentNav } from "../../components/tournament-nav";
 import { TournamentBrand } from "../../components/tournament-brand";
 import { useEffect, useMemo, useState } from "react";
 
@@ -341,7 +343,9 @@ export default function PublicMatchDetailPage({
   }
 
   return (
-    <main className="min-h-screen bg-[#080c12] text-white">
+    <div className="min-h-screen bg-[#080c12] text-white">
+      <TournamentNav />
+      <main className="text-white">
       <header className="border-b border-[#1c2938] bg-[#0b1119]">
         <div className="mx-auto max-w-7xl px-6 py-5">
           <Link
@@ -399,11 +403,14 @@ export default function PublicMatchDetailPage({
           <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-6">
             <div className="text-center">
               {team1?.logo ? (
-                <img
+                <Image
                   src={
                     team1.logo
                   }
                   alt=""
+                  width={112}
+                  height={112}
+                  unoptimized
                   className="mx-auto mb-4 h-28 w-28 rounded-xl border border-[#2d4056] bg-[#080e16] object-contain p-3"
                 />
               ) : (
@@ -456,11 +463,14 @@ export default function PublicMatchDetailPage({
 
             <div className="text-center">
               {team2?.logo ? (
-                <img
+                <Image
                   src={
                     team2.logo
                   }
                   alt=""
+                  width={112}
+                  height={112}
+                  unoptimized
                   className="mx-auto mb-4 h-28 w-28 rounded-xl border border-[#2d4056] bg-[#080e16] object-contain p-3"
                 />
               ) : (
@@ -813,5 +823,6 @@ export default function PublicMatchDetailPage({
         </div>
       </div>
     </main>
-  );
+  </div>
+);
 }

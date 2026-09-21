@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import { TournamentNav } from "../components/tournament-nav";
 import { TournamentBrand } from "../components/tournament-brand";
 import { useEffect, useMemo, useState } from "react";
 
@@ -314,7 +316,9 @@ export default function PublicMatchesPage() {
     ]);
 
   return (
-    <main className="min-h-screen bg-[#080c12] text-white">
+    <div className="min-h-screen bg-[#080c12] text-white">
+      <TournamentNav />
+      <main className="text-white">
       <header className="border-b border-[#1c2938] bg-[#0b1119]">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-5">
           <div>
@@ -531,11 +535,14 @@ export default function PublicMatchesPage() {
                             </div>
 
                             {team1?.logo ? (
-                              <img
+                              <Image
                                 src={
                                   team1.logo
                                 }
                                 alt=""
+                                width={48}
+                                height={48}
+                                unoptimized
                                 className="h-12 w-12 rounded border border-[#2d4056] bg-[#080e16] object-contain p-1"
                               />
                             ) : (
@@ -576,11 +583,14 @@ export default function PublicMatchesPage() {
                         <div className="text-left">
                           <div className="flex items-center gap-3">
                             {team2?.logo ? (
-                              <img
+                              <Image
                                 src={
                                   team2.logo
                                 }
                                 alt=""
+                                width={48}
+                                height={48}
+                                unoptimized
                                 className="h-12 w-12 rounded border border-[#2d4056] bg-[#080e16] object-contain p-1"
                               />
                             ) : (
@@ -633,5 +643,6 @@ export default function PublicMatchesPage() {
           )}
       </div>
     </main>
-  );
+  </div>
+);
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { TournamentBrand } from "./components/tournament-brand";
 import { useEffect, useMemo, useState } from "react";
 
@@ -451,18 +452,6 @@ export default function TournamentDashboard() {
         "Scheduled",
     );
 
-  const groupMatches =
-    matches
-      .filter(
-        (match) =>
-          match.stage ===
-          "Group Stage",
-      )
-      .sort(
-        (a, b) =>
-          a.matchNumber -
-          b.matchNumber,
-      );
 
   const qualifierMatches =
     phaseMatches(matches).filter(
@@ -1288,9 +1277,12 @@ export default function TournamentDashboard() {
                   </div>
 
                   <div className="mt-5 overflow-hidden rounded-xl border border-white/10 bg-black">
-                    <img
+                    <Image
                       src="/sponsors-banner.png"
                       alt="Official tournament sponsors: Sheikh Kunjappu, OSDF Clan, Deuz X Gaming, and Agon Desantos"
+                      width={1200}
+                      height={400}
+                      unoptimized
                       className="block h-auto w-full object-cover"
                     />
                   </div>

@@ -67,9 +67,41 @@ function isAdmin(
   );
 }
 
+interface DbMatch {
+  id: string;
+  match_number: number;
+  stage: string;
+  team1_id: string | null;
+  team2_id: string | null;
+  scheduled_at: string | null;
+  map: string | null;
+  best_of: number | null;
+  team1_score: number | null;
+  team2_score: number | null;
+  status: "Scheduled" | "Live" | "Completed" | "Cancelled" | null;
+  winner_id: string | null;
+  mvp_player_id: string | null;
+  top_fragger_player_id: string | null;
+  created_at: string;
+}
+
+interface DbPlayerStat {
+  id?: number;
+  match_id?: string;
+  player_id: string | null;
+  player_name: string;
+  team_id: string | null;
+  kills: number | null;
+  deaths: number | null;
+  assists: number | null;
+  acs: number | null;
+  adr: number | string | null;
+  kast: number | string | null;
+}
+
 function normalizeMatch(
-  match: any,
-  stats: any[],
+  match: DbMatch,
+  stats: DbPlayerStat[],
 ) {
   return {
     id: match.id,

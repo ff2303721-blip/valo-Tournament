@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import { TournamentNav } from "../components/tournament-nav";
 import { TournamentBrand } from "../components/tournament-brand";
 import { useEffect, useMemo, useState } from "react";
 
@@ -132,7 +134,7 @@ function getTeamLogo(
   teams: Team[],
   id?: string,
 ) {
-  return getTeam(teams, id)?.logo;
+  return getTeam(teams, id)?.logo || "";
 }
 
 function getStageLabel(
@@ -424,7 +426,9 @@ export default function FixturesPage() {
     ).length;
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#05070d] text-white">
+    <div className="min-h-screen overflow-hidden bg-[#05070d] text-white">
+      <TournamentNav />
+      <main className="text-white">
       <div className="pointer-events-none fixed inset-0 opacity-40">
         <div className="absolute left-[-10%] top-[-15%] h-[500px] w-[500px] rounded-full bg-[#ff174f]/15 blur-[140px]" />
 
@@ -736,7 +740,7 @@ export default function FixturesPage() {
                                   </div>
 
                                   {team1?.logo ? (
-                                    <img
+                                    <Image
                                       src={
                                         getTeamLogo(
                                           teams,
@@ -744,6 +748,9 @@ export default function FixturesPage() {
                                         )
                                       }
                                       alt=""
+                                      width={40}
+                                      height={40}
+                                      unoptimized
                                       className="h-10 w-10 rounded-lg border border-[#29384e] object-cover"
                                     />
                                   ) : (
@@ -791,7 +798,7 @@ export default function FixturesPage() {
 
                                 <div className="flex items-center gap-3">
                                   {team2?.logo ? (
-                                    <img
+                                    <Image
                                       src={
                                         getTeamLogo(
                                           teams,
@@ -799,6 +806,9 @@ export default function FixturesPage() {
                                         )
                                       }
                                       alt=""
+                                      width={40}
+                                      height={40}
+                                      unoptimized
                                       className="h-10 w-10 rounded-lg border border-[#29384e] object-cover"
                                     />
                                   ) : (
@@ -920,5 +930,6 @@ export default function FixturesPage() {
         )}
       </div>
     </main>
-  );
+  </div>
+);
 }

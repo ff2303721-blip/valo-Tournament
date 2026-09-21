@@ -170,9 +170,11 @@ export default function MatchCenterPage() {
     "group" | "phase2"
   >("group");
 
-  async function loadData() {
+  const loadData = async (isRefresh = false) => {
     try {
-      setLoading(true);
+      if (isRefresh) {
+        setLoading(true);
+      }
       setError("");
 
       const [teamsResponse, matchesResponse] = await Promise.all([
@@ -199,10 +201,15 @@ export default function MatchCenterPage() {
         );
       }
 
-      setTeams(teamsData.teams ?? []);
-      setMatches(
-        (matchesData.matches ?? []).map(normalizeMatch),
-      );
+      const teamList = Array.isArray(teamsData)
+        ? teamsData
+        : (teamsData.teams ?? []);
+      const matchList = Array.isArray(matchesData)
+        ? matchesData
+        : (matchesData.matches ?? []);
+
+      setTeams(teamList);
+      setMatches(matchList.map(normalizeMatch));
     } catch (err) {
       setError(
         err instanceof Error
@@ -212,10 +219,55 @@ export default function MatchCenterPage() {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    loadData();
+    let cancelled = false;
+
+    async function initialFetch() {
+      try {
+        const [teamsResponse, matchesResponse] = await Promise.all([
+          fetch("/api/teams", { cache: "no-store" }),
+          fetch("/api/matches", { cache: "no-store" }),
+        ]);
+
+        const teamsData = await teamsResponse.json();
+        const matchesData = await matchesResponse.json();
+
+        if (cancelled) return;
+
+        if (teamsResponse.ok) {
+          const teamList = Array.isArray(teamsData)
+            ? teamsData
+            : (teamsData.teams ?? []);
+          setTeams(teamList);
+        }
+
+        if (matchesResponse.ok) {
+          const matchList = Array.isArray(matchesData)
+            ? matchesData
+            : (matchesData.matches ?? []);
+          setMatches(matchList.map(normalizeMatch));
+        }
+      } catch (err) {
+        if (cancelled) return;
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to load tournament data."
+        );
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    initialFetch();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const sortedTeams = useMemo(

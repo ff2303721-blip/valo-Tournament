@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { TournamentBrand } from "../components/tournament-brand";
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
+import { TournamentNav } from "../components/tournament-nav";
+import { fetchTeams, fetchMatches } from "@/lib/api";
 import { matches as defaultMatches, Match } from "../../data/matches";
 import { teams as defaultTeams, Team } from "../../data/teams";
 
@@ -225,9 +227,12 @@ function TeamSlot({
       <div className="flex min-w-0 items-center gap-4">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-white/[0.03]">
           {team?.logo ? (
-            <img
+            <Image
               src={team.logo}
               alt={`${team.name} logo`}
+              width={40}
+              height={40}
+              unoptimized
               className="h-full w-full object-cover"
             />
           ) : team ? (
@@ -381,22 +386,42 @@ export default function TournamentBracketPage() {
     useState<Match[]>(defaultMatches);
 
   useEffect(() => {
-    const refresh = () => {
-      setTeams(getStoredTeams());
-      setMatchList(getStoredMatches());
+    let active = true;
+
+    async function initialFetch() {
+      try {
+        const [fetchedTeams, fetchedMatches] = await Promise.all([
+          fetchTeams(),
+          fetchMatches(),
+        ]);
+        if (!active) return;
+        setTeams(fetchedTeams);
+        setMatchList(fetchedMatches);
+      } catch {
+        if (!active) return;
+        setTeams(getStoredTeams());
+        setMatchList(getStoredMatches());
+      }
+    }
+
+    initialFetch();
+
+    const onUpdate = () => {
+      fetchTeams().then((t) => {
+        if (active) setTeams(t);
+      });
+      fetchMatches().then((m) => {
+        if (active) setMatchList(m);
+      });
     };
 
-    refresh();
-
-    window.addEventListener("storage", refresh);
-    window.addEventListener("focus", refresh);
-
-    const interval = window.setInterval(refresh, 1000);
+    window.addEventListener("tournament-matches-updated", onUpdate);
+    window.addEventListener("focus", onUpdate);
 
     return () => {
-      window.removeEventListener("storage", refresh);
-      window.removeEventListener("focus", refresh);
-      window.clearInterval(interval);
+      active = false;
+      window.removeEventListener("tournament-matches-updated", onUpdate);
+      window.removeEventListener("focus", onUpdate);
     };
   }, []);
 
@@ -585,8 +610,10 @@ export default function TournamentBracketPage() {
       : undefined;
 
   return (
-    <main className="min-h-screen bg-[#070b11] text-white">
-      <div className="mx-auto max-w-[1500px] px-5 py-8 md:px-8 lg:px-10">
+    <div className="min-h-screen bg-[#070b11] text-white">
+      <TournamentNav />
+      <main className="text-white">
+        <div className="mx-auto max-w-[1500px] px-5 py-8 md:px-8 lg:px-10">
         <header className="mb-8 border-b border-white/10 pb-7">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -941,9 +968,12 @@ export default function TournamentBracketPage() {
                 >
                   <div className="flex items-center gap-4">
                     {team.logo ? (
-                      <img
+                      <Image
                         src={team.logo}
                         alt={`${team.name} logo`}
+                        width={48}
+                        height={48}
+                        unoptimized
                         className="h-12 w-12 rounded-xl object-cover"
                       />
                     ) : (
@@ -968,5 +998,6 @@ export default function TournamentBracketPage() {
         </section>
       </div>
     </main>
-  );
+  </div>
+);
 }

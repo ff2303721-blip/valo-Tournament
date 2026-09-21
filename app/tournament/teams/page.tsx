@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { TournamentBrand } from "../components/tournament-brand";
+import Image from "next/image";
 import { useEffect, useState } from "react";
+import { TournamentNav } from "../components/tournament-nav";
 
 import {
   Team,
@@ -23,60 +24,39 @@ function initials(name: string) {
 }
 
 export default function PublicTeamsPage() {
-  const [teams, setTeams] = useState<Team[]>(
-    [],
-  );
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [error, setError] =
-    useState("");
-
-  async function loadTeams() {
-    try {
-      setLoading(true);
-      setError("");
-
-      const response = await fetch(
-        "/api/teams",
-        {
-          cache: "no-store",
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          "Unable to load registered teams.",
-        );
-      }
-
-      const data = await response.json();
-
-      if (!Array.isArray(data)) {
-        throw new Error(
-          "Invalid team data received.",
-        );
-      }
-
-      setTeams(data);
-    } catch (error) {
-      console.error(error);
-
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Unable to load registered teams.",
-      );
-
-      setTeams(initialTeams);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const [teams, setTeams] = useState<Team[]>(initialTeams);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    loadTeams();
+    let active = true;
+
+    async function fetchTeams() {
+      try {
+        const response = await fetch("/api/teams", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("Unable to load registered teams.");
+        }
+        const data = await response.json();
+        if (active && Array.isArray(data) && data.length > 0) {
+          setTeams(data);
+        }
+      } catch (err) {
+        if (active) {
+          setError(err instanceof Error ? err.message : "Unable to load teams");
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchTeams();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const sortedTeams = [...teams].sort(
@@ -84,7 +64,9 @@ export default function PublicTeamsPage() {
   );
 
   return (
-    <main className="min-h-screen bg-[#080c12] text-white">
+    <div className="min-h-screen bg-[#080c12] text-white">
+      <TournamentNav />
+      <main className="text-white">
       <div className="mx-auto max-w-[1300px] px-5 py-8 sm:px-8">
         <header className="mb-8 border-b border-white/10 pb-6">
           <Link
@@ -94,9 +76,6 @@ export default function PublicTeamsPage() {
             ← Tournament Central
           </Link>
 
-          <div className="mt-6">
-            <TournamentBrand />
-          </div>
 
           <p className="mt-5 text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400">
             Registered Rosters
@@ -143,9 +122,12 @@ export default function PublicTeamsPage() {
                 <div className="flex items-center gap-4 border-b border-white/10 p-5">
                   <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden border border-white/10 bg-black/20">
                     {team.logo ? (
-                      <img
+                      <Image
                         src={team.logo}
-                        alt=""
+                        alt={team.name}
+                        width={64}
+                        height={64}
+                        unoptimized
                         className="h-full w-full object-contain"
                       />
                     ) : (
@@ -241,7 +223,8 @@ export default function PublicTeamsPage() {
         )}
       </div>
     </main>
-  );
+  </div>
+);
 }
 
 function TeamStat({

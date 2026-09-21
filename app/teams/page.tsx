@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   ChangeEvent,
   FormEvent,
@@ -135,8 +136,10 @@ export default function TeamsAdminPage() {
       );
     }, [teams, search]);
 
-  async function loadTeams() {
-    setLoading(true);
+  async function loadTeams(isRefresh = false) {
+    if (isRefresh) {
+      setLoading(true);
+    }
     setError("");
 
     try {
@@ -175,7 +178,35 @@ export default function TeamsAdminPage() {
   }
 
   useEffect(() => {
-    loadTeams();
+    let cancelled = false;
+
+    async function initialFetch() {
+      try {
+        const response = await fetch("/api/teams", { cache: "no-store" });
+        const data = await response.json();
+
+        if (cancelled) return;
+
+        if (response.ok && Array.isArray(data)) {
+          setTeams(data.map(normalizeTeam));
+        } else if (!response.ok) {
+          setError(data.error || "Failed to load teams.");
+        }
+      } catch (err) {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : "Failed to load teams.");
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    initialFetch();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   function startCreate() {
@@ -1150,11 +1181,14 @@ export default function TeamsAdminPage() {
 
               <div className="flex flex-wrap items-center gap-4">
                 {form.logo ? (
-                  <img
+                  <Image
                     src={
                       form.logo
                     }
                     alt=""
+                    width={80}
+                    height={80}
+                    unoptimized
                     className="h-20 w-20 rounded border border-[#30435a] bg-[#080e16] object-contain p-2"
                   />
                 ) : (
@@ -1372,9 +1406,7 @@ export default function TeamsAdminPage() {
 
               <button
                 type="button"
-                onClick={
-                  loadTeams
-                }
+                onClick={() => loadTeams(true)}
                 className="rounded border border-[#38506d] bg-[#111b29] px-4 py-2 text-xs font-bold text-[#c1d1e5]"
               >
                 REFRESH
@@ -1410,11 +1442,14 @@ export default function TeamsAdminPage() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex min-w-0 items-center gap-4">
                         {team.logo ? (
-                          <img
+                          <Image
                             src={
                               team.logo
                             }
                             alt=""
+                            width={64}
+                            height={64}
+                            unoptimized
                             className="h-16 w-16 shrink-0 rounded border border-[#2d4056] bg-[#080e16] object-contain p-2"
                           />
                         ) : (

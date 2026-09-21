@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { TournamentBrand } from "../components/tournament-brand";
 import { useEffect, useMemo, useState } from "react";
+import { TournamentNav } from "../components/tournament-nav";
+import { fetchTeams, fetchMatches } from "@/lib/api";
 
 import type {
   Match,
@@ -13,9 +14,6 @@ import type {
   Team,
   Player,
 } from "@/app/data/teams";
-
-const MATCHES_KEY = "tournament-matches";
-const TEAMS_KEY = "tournament-teams";
 
 const STAGES = [
   "All Matches",
@@ -53,7 +51,6 @@ type PlayerRow = {
 export default function PlayerStatisticsPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
-
   const [stageFilter, setStageFilter] =
     useState("All Matches");
 
@@ -64,10 +61,31 @@ export default function PlayerStatisticsPage() {
     useState("");
 
   useEffect(() => {
-    loadData();
+    let active = true;
+
+    async function initialFetch() {
+      try {
+        const [teamsData, matchesData] = await Promise.all([
+          fetchTeams(),
+          fetchMatches(),
+        ]);
+        if (!active) return;
+        setTeams(teamsData);
+        setMatches(matchesData);
+      } catch {
+        // Fallback
+      }
+    }
+
+    initialFetch();
 
     const refresh = () => {
-      loadData();
+      fetchTeams().then((t) => {
+        if (active) setTeams(t);
+      });
+      fetchMatches().then((m) => {
+        if (active) setMatches(m);
+      });
     };
 
     window.addEventListener(
@@ -75,62 +93,14 @@ export default function PlayerStatisticsPage() {
       refresh
     );
 
-    window.addEventListener(
-      "storage",
-      refresh
-    );
-
-    const interval =
-      window.setInterval(
-        refresh,
-        1000
-      );
-
     return () => {
+      active = false;
       window.removeEventListener(
         "tournament-matches-updated",
         refresh
       );
-
-      window.removeEventListener(
-        "storage",
-        refresh
-      );
-
-      window.clearInterval(
-        interval
-      );
     };
   }, []);
-
-  function loadData() {
-    try {
-      const storedTeams =
-        localStorage.getItem(
-          TEAMS_KEY
-        );
-
-      const storedMatches =
-        localStorage.getItem(
-          MATCHES_KEY
-        );
-
-      setTeams(
-        storedTeams
-          ? JSON.parse(storedTeams)
-          : []
-      );
-
-      setMatches(
-        storedMatches
-          ? JSON.parse(storedMatches)
-          : []
-      );
-    } catch {
-      setTeams([]);
-      setMatches([]);
-    }
-  }
 
   /*
    * Only published/completed matches
@@ -423,33 +393,35 @@ export default function PlayerStatisticsPage() {
     );
 
   return (
-    <main className="min-h-screen bg-[#050a10] px-4 py-7 text-white md:px-8">
-      <div className="mx-auto max-w-[1280px]">
+    <div className="min-h-screen bg-[#050a10] text-white">
+      <TournamentNav />
+      <main className="px-4 py-7 md:px-8">
+        <div className="mx-auto max-w-[1280px]">
 
-        {/* HEADER */}
-        <header className="flex flex-col justify-between gap-6 border-b border-white/10 pb-7 md:flex-row md:items-end">
-          <div>
-            <div className="text-[9px] font-black tracking-[0.32em] text-cyan-400 uppercase">
-              Valorant Tournament
+          {/* HEADER */}
+          <header className="flex flex-col justify-between gap-6 border-b border-white/10 pb-7 md:flex-row md:items-end">
+            <div>
+              <div className="text-[9px] font-black tracking-[0.32em] text-cyan-400 uppercase">
+                Tournament Leaderboard
+              </div>
+
+              <h1 className="mt-2 text-4xl font-black tracking-tight uppercase md:text-5xl">
+                Player Statistics
+              </h1>
+
+              <p className="mt-2 text-[10px] text-white/35">
+                Player-by-player tournament statistics
+                calculated from published match results.
+              </p>
             </div>
 
-            <h1 className="mt-2 text-4xl font-black tracking-tight uppercase md:text-5xl">
-              Player Statistics
-            </h1>
-
-            <p className="mt-2 text-[10px] text-white/35">
-              Player-by-player tournament statistics
-              calculated from published match results.
-            </p>
-          </div>
-
-          <Link
-            href="/tournament"
-            className="border border-white/10 px-5 py-3 text-[9px] font-black tracking-[0.14em] uppercase hover:border-cyan-400/40 hover:text-cyan-400"
-          >
-            ← Tournament Central
-          </Link>
-        </header>
+            <Link
+              href="/tournament"
+              className="rounded border border-[#273549] bg-[#0c121b] px-5 py-3 text-[10px] font-black tracking-widest uppercase hover:border-cyan-400/40 hover:text-cyan-400 transition"
+            >
+              ← Dashboard
+            </Link>
+          </header>
 
         {/* SUMMARY */}
         <section className="mt-7 grid gap-3 md:grid-cols-4">
@@ -716,7 +688,8 @@ export default function PlayerStatisticsPage() {
         </footer>
       </div>
     </main>
-  );
+  </div>
+);
 }
 
 /*
