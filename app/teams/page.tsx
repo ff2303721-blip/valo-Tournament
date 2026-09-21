@@ -876,7 +876,7 @@ export default function TeamsAdminPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#080c12] text-white">
+    <main className="valorant-page min-h-screen bg-[#080c12] text-white">
       <header className="border-b border-[#1c2938] bg-[#0b1119]">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5">
           <div>
