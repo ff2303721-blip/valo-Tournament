@@ -47,7 +47,7 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#080c12] text-white">
+    <main className="valorant-page min-h-screen bg-[#080c12] text-white">
       <div className="flex min-h-screen items-center justify-center px-5">
         <div className="w-full max-w-md">
           <div className="mb-8 text-center">
