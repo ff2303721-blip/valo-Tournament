@@ -5,11 +5,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { TournamentNav } from "../components/tournament-nav";
 import { fetchTeams, fetchMatches } from "@/lib/api";
-import { matches as defaultMatches, Match } from "../../data/matches";
-import { teams as defaultTeams, Team } from "../../data/teams";
-
-const MATCHES_STORAGE_KEY = "tournament-matches";
-const TEAMS_STORAGE_KEY = "tournament-teams";
+import type { Match, Team } from "../../data/matches";
 
 /*
  * Your Group Stage currently uses 12 fixture slots.
@@ -17,46 +13,6 @@ const TEAMS_STORAGE_KEY = "tournament-teams";
  * have actually been completed.
  */
 const REQUIRED_GROUP_MATCHES = 12;
-
-function getStoredMatches(): Match[] {
-  if (typeof window === "undefined") {
-    return defaultMatches;
-  }
-
-  try {
-    const stored = localStorage.getItem(MATCHES_STORAGE_KEY);
-
-    if (!stored) {
-      return defaultMatches;
-    }
-
-    const parsed = JSON.parse(stored);
-
-    return Array.isArray(parsed) ? parsed : defaultMatches;
-  } catch {
-    return defaultMatches;
-  }
-}
-
-function getStoredTeams(): Team[] {
-  if (typeof window === "undefined") {
-    return defaultTeams;
-  }
-
-  try {
-    const stored = localStorage.getItem(TEAMS_STORAGE_KEY);
-
-    if (!stored) {
-      return defaultTeams;
-    }
-
-    const parsed = JSON.parse(stored);
-
-    return Array.isArray(parsed) ? parsed : defaultTeams;
-  } catch {
-    return defaultTeams;
-  }
-}
 
 function normalizeStage(stage: string) {
   return stage
@@ -381,9 +337,9 @@ function PlayoffCard({
 }
 
 export default function TournamentBracketPage() {
-  const [teams, setTeams] = useState<Team[]>(defaultTeams);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [matchList, setMatchList] =
-    useState<Match[]>(defaultMatches);
+    useState<Match[]>([]);
 
   useEffect(() => {
     let active = true;
@@ -399,8 +355,8 @@ export default function TournamentBracketPage() {
         setMatchList(fetchedMatches);
       } catch {
         if (!active) return;
-        setTeams(getStoredTeams());
-        setMatchList(getStoredMatches());
+        setTeams([]);
+        setMatchList([]);
       }
     }
 
