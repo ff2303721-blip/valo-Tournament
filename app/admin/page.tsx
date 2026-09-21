@@ -5,14 +5,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { Match, Team, TournamentSettings } from "@/lib/types";
 import { defaultSettings } from "@/lib/api";
-import { teams as defaultTeams } from "@/app/data/teams";
-import { matches as defaultMatches } from "@/app/data/matches";
 import { StatusBadge } from "@/app/tournament/components/ui/status-badge";
 
 export default function AdminHubPage() {
   const router = useRouter();
-  const [teams, setTeams] = useState<Team[]>(defaultTeams);
-  const [matches, setMatches] = useState<Match[]>(defaultMatches);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [matches, setMatches] = useState<Match[]>([]);
   const [settings, setSettings] = useState<TournamentSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
@@ -30,11 +28,11 @@ export default function AdminHubPage() {
 
         if (teamsRes.ok) {
           const t = await teamsRes.json();
-          if (active && Array.isArray(t) && t.length > 0) setTeams(t);
+          if (active && Array.isArray(t)) setTeams(t);
         }
         if (matchesRes.ok) {
           const m = await matchesRes.json();
-          if (active && Array.isArray(m) && m.length > 0) setMatches(m);
+          if (active && Array.isArray(m)) setMatches(m);
         }
         if (settingsRes.ok) {
           const s = await settingsRes.json();
