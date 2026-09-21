@@ -420,7 +420,7 @@ export default function MatchResultRecorderPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#070a12] px-6 py-10 text-white">
+      <main className="valorant-page min-h-screen bg-[#070a12] px-6 py-10 text-white">
         <div className="mx-auto max-w-7xl">
           <div className="rounded-2xl border border-cyan-400/20 bg-[#0d1320] p-8 shadow-[0_0_50px_rgba(34,211,238,0.08)]">
             <p className="text-sm font-bold uppercase tracking-[0.25em] text-cyan-300">
