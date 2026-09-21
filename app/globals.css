@@ -145,3 +145,18 @@ button, select { cursor: pointer; }
   background-position: center;
   background-attachment: fixed;
 }
+
+
+/* Random Valorant artwork behind every page */
+body > * {
+  background-image:
+    linear-gradient(
+      rgba(3, 6, 13, 0.70),
+      rgba(3, 6, 13, 0.90)
+    ),
+    var(--valorant-background) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+}
