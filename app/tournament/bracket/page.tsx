@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { TournamentNav } from "../components/tournament-nav";
 import { fetchTeams, fetchMatches } from "@/lib/api";
-import type { Match, Team } from "../../data/matches";
+import type { Match, Team } from "@/lib/types";
 
 /*
  * Your Group Stage currently uses 12 fixture slots.

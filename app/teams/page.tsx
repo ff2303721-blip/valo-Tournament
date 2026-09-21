@@ -200,7 +200,7 @@ export default function TeamsAdminPage() {
           setLoading(false);
           return;
         }
-        setTeams(defaultTeams.map(normalizeTeam));
+        setTeams([]);
         setError(err instanceof Error ? err.message : "Failed to load teams.");
       } finally {
         setLoading(false);

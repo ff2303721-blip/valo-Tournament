@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { type Match, type MatchStatus } from "@/app/data/matches";
-import { type Team } from "@/app/data/teams";
+import type { Match, MatchStatus, Team } from "@/lib/types";
 
 const GROUP_FIXTURES = [
   { matchNumber: 1, team1Seed: 1, team2Seed: 2, map: "Lotus" },
@@ -154,6 +153,7 @@ export default function MatchCenterPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [editor, setEditor] = useState<EditorState>(emptyEditor);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -245,8 +245,8 @@ export default function MatchCenterPage() {
           return;
         }
         console.warn("Failed to load live tournament data:", err);
-        setTeams((prev) => (prev.length > 0 ? prev : defaultTeams));
-        setMatches((prev) => (prev.length > 0 ? prev : defaultMatches.map(normalizeMatch)));
+        setTeams((prev) => (prev.length > 0 ? prev : []));
+        setMatches((prev) => (prev.length > 0 ? prev : []));
         setError(
           err instanceof Error
             ? err.message
@@ -365,6 +365,11 @@ export default function MatchCenterPage() {
     setError("");
   }
 
+  function closeEditor() {
+    resetEditor();
+    setIsEditorOpen(false);
+  }
+
   function startNewGroupMatch() {
     const nextFixture = GROUP_FIXTURES.find(
       (fixture) =>
@@ -407,6 +412,7 @@ export default function MatchCenterPage() {
     });
 
     setActiveSection("group");
+    setIsEditorOpen(true);
     setMessage("");
     setError("");
   }
@@ -436,6 +442,7 @@ export default function MatchCenterPage() {
     });
 
     setActiveSection("group");
+    setIsEditorOpen(true);
     setMessage("");
     setError("");
   }
@@ -573,6 +580,7 @@ export default function MatchCenterPage() {
       );
 
       resetEditor();
+      setIsEditorOpen(false);
 
       await loadData();
 
@@ -932,6 +940,7 @@ export default function MatchCenterPage() {
 
       if (editor.id === match.id) {
         resetEditor();
+        setIsEditorOpen(false);
       }
 
       await loadData();
@@ -1641,10 +1650,17 @@ export default function MatchCenterPage() {
           </aside>
         </div>
 
-        <section className="mt-6 rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-5">
+        {isEditorOpen && (
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="group-match-editor-title"
+            className="fixed inset-0 z-50 overflow-y-auto bg-black/70 p-4 backdrop-blur-sm sm:p-8"
+          >
+            <section className="mx-auto w-full max-w-6xl rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-5 shadow-2xl">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg font-black">
+              <h2 id="group-match-editor-title" className="text-lg font-black">
                 GROUP MATCH EDITOR
               </h2>
               <p className="mt-1 text-xs text-[#667991]">
@@ -1652,15 +1668,13 @@ export default function MatchCenterPage() {
               </p>
             </div>
 
-            {editor.id && (
-              <button
-                type="button"
-                onClick={resetEditor}
-                className="rounded border border-[#304159] bg-[#111a27] px-3 py-2 text-[10px] font-black text-[#b9c9dc]"
-              >
-                CLEAR EDITOR
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={closeEditor}
+              className="rounded border border-[#304159] bg-[#111a27] px-3 py-2 text-[10px] font-black text-[#b9c9dc] hover:bg-[#182435]"
+            >
+              CLOSE EDITOR
+            </button>
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -1977,13 +1991,15 @@ export default function MatchCenterPage() {
 
             <button
               type="button"
-              onClick={resetEditor}
+              onClick={closeEditor}
               className="rounded border border-[#304159] bg-[#111a27] px-5 py-3 text-xs font-black text-[#b9c9dc] hover:bg-[#182435]"
             >
-              RESET
+              CANCEL
             </button>
           </div>
-        </section>
+            </section>
+          </div>
+        )}
 
         <footer className="mt-8 border-t border-[#172231] pt-5 text-center text-[10px] font-bold tracking-wider text-[#4e6078]">
           GROUP STAGE: M01–M12 MANUAL · M13–M16 AUTOMATIC

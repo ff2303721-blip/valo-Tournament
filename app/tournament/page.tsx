@@ -21,10 +21,6 @@ function formatDate(value?: string | null) {
   return d.toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
 }
 
-function getTeam(teams: Team[], id?: string) {
-  return teams.find((t) => t.id === id);
-}
-
 function buildStandings(teams: Team[], matches: Match[]): Standing[] {
   const map = new Map<string, Standing>();
   for (const team of teams) {

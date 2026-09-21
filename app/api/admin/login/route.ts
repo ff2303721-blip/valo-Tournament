@@ -2,6 +2,18 @@ import { NextResponse } from "next/server";
 
 const SESSION_COOKIE = "valorant_admin_session";
 
+function shouldUseSecureCookie(request: Request) {
+  const forwardedProtocol = request.headers
+    .get("x-forwarded-proto")
+    ?.split(",")[0]
+    ?.trim();
+
+  return (
+    forwardedProtocol === "https" ||
+    new URL(request.url).protocol === "https:"
+  );
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -41,7 +53,7 @@ export async function POST(request: Request) {
       name: SESSION_COOKIE,
       value: "authenticated",
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: shouldUseSecureCookie(request),
       sameSite: "lax",
       path: "/",
       maxAge: 60 * 60 * 8,

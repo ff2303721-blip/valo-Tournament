@@ -91,7 +91,7 @@ export default function AdminHubPage() {
             <div>
               <h1 className="text-lg font-black tracking-tight">
                 TOURNAMENT{" "}
-                <span className="text-[#ff2d55]">// ADMIN HUB</span>
+                <span className="text-[#ff2d55]">{"// ADMIN HUB"}</span>
               </h1>
               <p className="text-[10px] text-[#475569]">
                 Valorant Esports Control Center • Cloud Database Sync

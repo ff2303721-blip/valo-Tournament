@@ -1,5 +1,18 @@
 import { Match, Team, TournamentSettings } from "./types";
 
+export const defaultSettings: TournamentSettings = {
+  tournamentName: "",
+  tagline: "",
+  organizerName: "",
+  prizePool: "",
+  startDate: null,
+  endDate: null,
+  tournamentStatus: "Upcoming",
+  announcement: "",
+  logoUrl: "",
+  bannerUrl: "",
+};
+
 export async function fetchTournamentData(): Promise<{
   teams: Team[];
   matches: Match[];
@@ -88,16 +101,5 @@ export async function fetchSettings(): Promise<TournamentSettings> {
   } catch (err) {
     console.warn("Failed to fetch settings:", err);
   }
-  return {
-    tournamentName: "",
-    tagline: "",
-    organizerName: "",
-    prizePool: "",
-    startDate: null,
-    endDate: null,
-    tournamentStatus: "Upcoming",
-    announcement: "",
-    logoUrl: "",
-    bannerUrl: "",
-  };
+  return defaultSettings;
 }

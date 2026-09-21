@@ -7,7 +7,7 @@ import { StatusBadge } from "../components/ui/status-badge";
 import { useEffect, useMemo, useState } from "react";
 import { matches as defaultMatches } from "@/app/data/matches";
 import { teams as defaultTeams } from "@/app/data/teams";
-import type { Match, Team, MatchStatus } from "@/lib/types";
+import type { Match, Team } from "@/lib/types";
 
 type FixtureFilter =
   | "All"
