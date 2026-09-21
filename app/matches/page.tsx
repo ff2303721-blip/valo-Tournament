@@ -977,7 +977,7 @@ export default function MatchCenterPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#070a10] text-white">
+    <main className="valorant-page min-h-screen bg-[#070a10] text-white">
       <div className="mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8">
         <header className="mb-8">
           <div className="flex flex-col gap-4 border-b border-[#1c2635] pb-6 lg:flex-row lg:items-end lg:justify-between">
