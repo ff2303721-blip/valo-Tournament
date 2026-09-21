@@ -396,6 +396,15 @@ export default function PlayerStatisticsPage() {
 
   return (
     <div className="min-h-screen bg-[#030308] text-[#f1f5f9]">
+      {/* Valorant background */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `linear-gradient(rgba(3,3,8,0.72), rgba(3,3,8,0.90)), url("https://images5.alphacoders.com/120/thumb-1920-1202339.png")`,
+          backgroundAttachment: "fixed",
+        }}
+      />
+
       {/* Ambient glow blobs */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/[0.06] blur-[120px]" />
@@ -403,9 +412,11 @@ export default function PlayerStatisticsPage() {
         <div className="absolute bottom-0 left-1/3 h-[400px] w-[400px] rounded-full bg-[#ff2d55]/[0.04] blur-[100px]" />
       </div>
 
-      <TournamentNav />
+      <div className="relative z-10">
+        <TournamentNav />
+      </div>
 
-      <main className="relative px-4 py-7 md:px-8">
+      <main className="relative z-10 px-4 py-7 md:px-8">
         <div className="mx-auto max-w-[1280px]">
 
           {/* HEADER */}
