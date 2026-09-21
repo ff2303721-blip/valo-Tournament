@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { matches as defaultMatches, type Match, type MatchStatus } from "@/app/data/matches";
-import { teams as defaultTeams, type Team } from "@/app/data/teams";
+import { type Match, type MatchStatus } from "@/app/data/matches";
+import { type Team } from "@/app/data/teams";
 
 const GROUP_FIXTURES = [
   { matchNumber: 1, team1Seed: 1, team2Seed: 2, map: "Lotus" },
@@ -196,16 +196,12 @@ export default function MatchCenterPage() {
         ? matchesData
         : (matchesData?.matches ?? []);
 
-      setTeams(teamList.length > 0 ? teamList : defaultTeams);
-      setMatches(
-        matchList.length > 0
-          ? matchList.map(normalizeMatch)
-          : defaultMatches.map(normalizeMatch),
-      );
+      setTeams(teamList);
+      setMatches(matchList.map(normalizeMatch));
     } catch (err) {
-      console.warn("Failed to load live tournament data, using fallbacks:", err);
-      setTeams((prev) => (prev.length > 0 ? prev : defaultTeams));
-      setMatches((prev) => (prev.length > 0 ? prev : defaultMatches.map(normalizeMatch)));
+      console.warn("Failed to load live tournament data:", err);
+      setTeams([]);
+      setMatches([]);
       setError(
         err instanceof Error
           ? err.message
@@ -241,18 +237,14 @@ export default function MatchCenterPage() {
           ? matchesData
           : (matchesData?.matches ?? []);
 
-        setTeams(teamList.length > 0 ? teamList : defaultTeams);
-        setMatches(
-          matchList.length > 0
-            ? matchList.map(normalizeMatch)
-            : defaultMatches.map(normalizeMatch),
-        );
+        setTeams(teamList);
+        setMatches(matchList.map(normalizeMatch));
       } catch (err) {
         if (!mounted) {
           setLoading(false);
           return;
         }
-        console.warn("Failed to load live tournament data, using fallbacks:", err);
+        console.warn("Failed to load live tournament data:", err);
         setTeams((prev) => (prev.length > 0 ? prev : defaultTeams));
         setMatches((prev) => (prev.length > 0 ? prev : defaultMatches.map(normalizeMatch)));
         setError(
