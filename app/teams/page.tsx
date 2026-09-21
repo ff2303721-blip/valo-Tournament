@@ -9,7 +9,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import { teams as defaultTeams } from "@/app/data/teams";
 
 type Player = {
   id: string;
@@ -194,7 +193,7 @@ export default function TeamsAdminPage() {
         if (Array.isArray(data) && data.length > 0) {
           setTeams(data.map(normalizeTeam));
         } else {
-          setTeams(defaultTeams.map(normalizeTeam));
+          setTeams([]);
         }
       } catch (err) {
         if (!mounted) {
