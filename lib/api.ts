@@ -1,19 +1,4 @@
 import { Match, Team, TournamentSettings } from "./types";
-import { teams as defaultTeams } from "@/app/data/teams";
-import { matches as defaultMatches } from "@/app/data/matches";
-
-export const defaultSettings: TournamentSettings = {
-  tournamentName: "VALORANT SHOWDOWN",
-  tagline: "CHAMPIONSHIP SERIES 2025",
-  organizerName: "SRB TOURNAMENT ORG",
-  prizePool: "₹50,000 INR",
-  startDate: new Date().toISOString(),
-  endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-  tournamentStatus: "Live",
-  announcement: "Welcome to the Valorant Tournament! Group Stage matches are currently ongoing.",
-  logoUrl: "",
-  bannerUrl: "",
-};
 
 export async function fetchTournamentData(): Promise<{
   teams: Team[];
@@ -27,9 +12,9 @@ export async function fetchTournamentData(): Promise<{
       fetch("/api/settings", { cache: "no-store" }),
     ]);
 
-    let teams: Team[] = defaultTeams;
-    let matches: Match[] = defaultMatches;
-    let settings: TournamentSettings = defaultSettings;
+    let teams: Team[] = [];
+    let matches: Match[] = [];
+    let settings: TournamentSettings | null = null;
 
     if (teamsRes.ok) {
       const data = await teamsRes.json();
@@ -52,13 +37,17 @@ export async function fetchTournamentData(): Promise<{
       }
     }
 
+    if (!teamsRes.ok || !matchesRes.ok || !settingsRes.ok || !settings) {
+      throw new Error("Failed to load tournament data from Supabase.");
+    }
+
     return { teams, matches, settings };
   } catch (err) {
-    console.warn("Using fallback tournament data due to fetch error:", err);
+    console.error("Failed to load tournament data:", err);
     return {
-      teams: defaultTeams,
-      matches: defaultMatches,
-      settings: defaultSettings,
+      teams: [],
+      matches: [],
+      settings: null as unknown as TournamentSettings,
     };
   }
 }
@@ -73,7 +62,7 @@ export async function fetchTeams(): Promise<Team[]> {
   } catch (err) {
     console.warn("Failed to fetch teams:", err);
   }
-  return defaultTeams;
+  return [];
 }
 
 export async function fetchMatches(): Promise<Match[]> {
@@ -86,7 +75,7 @@ export async function fetchMatches(): Promise<Match[]> {
   } catch (err) {
     console.warn("Failed to fetch matches:", err);
   }
-  return defaultMatches;
+  return [];
 }
 
 export async function fetchSettings(): Promise<TournamentSettings> {
@@ -99,5 +88,16 @@ export async function fetchSettings(): Promise<TournamentSettings> {
   } catch (err) {
     console.warn("Failed to fetch settings:", err);
   }
-  return defaultSettings;
+  return {
+    tournamentName: "",
+    tagline: "",
+    organizerName: "",
+    prizePool: "",
+    startDate: null,
+    endDate: null,
+    tournamentStatus: "Upcoming",
+    announcement: "",
+    logoUrl: "",
+    bannerUrl: "",
+  };
 }
