@@ -20,9 +20,9 @@ export async function fetchTournamentData(): Promise<{
 }> {
   try {
     const [teamsRes, matchesRes, settingsRes] = await Promise.all([
-      fetch("/api/teams?lite=1", { cache: "no-store" }),
-      fetch("/api/matches", { cache: "no-store" }),
-      fetch("/api/settings", { cache: "no-store" }),
+      fetch("/api/teams?lite=1"),
+      fetch("/api/matches"),
+      fetch("/api/settings"),
     ]);
 
     let teams: Team[] = [];
@@ -67,7 +67,7 @@ export async function fetchTournamentData(): Promise<{
 
 export async function fetchTeams(): Promise<Team[]> {
   try {
-    const res = await fetch("/api/teams?lite=1", { cache: "no-store" });
+    const res = await fetch("/api/teams?lite=1");
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) return data;
@@ -80,7 +80,7 @@ export async function fetchTeams(): Promise<Team[]> {
 
 export async function fetchMatches(): Promise<Match[]> {
   try {
-    const res = await fetch("/api/matches", { cache: "no-store" });
+    const res = await fetch("/api/matches");
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) return data;
@@ -93,7 +93,7 @@ export async function fetchMatches(): Promise<Match[]> {
 
 export async function fetchSettings(): Promise<TournamentSettings> {
   try {
-    const res = await fetch("/api/settings", { cache: "no-store" });
+    const res = await fetch("/api/settings");
     if (res.ok) {
       const data = await res.json();
       if (data && data.tournamentName) return data;

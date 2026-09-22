@@ -14,20 +14,27 @@ const NAV_LINKS = [
   { href: "/tournament/players",  label: "LEADERBOARD" },
 ];
 
+let cachedNavSettings: { status?: string; gameId?: string; logoUrl?: string } | null = null;
+
 export function TournamentNav() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [status, setStatus] = useState<string>("LIVE");
-  const [gameId, setGameId] = useState<string>("valorant");
-  const [logoUrl, setLogoUrl] = useState<string>("");
+  const [status, setStatus] = useState<string>(cachedNavSettings?.status || "LIVE");
+  const [gameId, setGameId] = useState<string>(cachedNavSettings?.gameId || "valorant");
+  const [logoUrl, setLogoUrl] = useState<string>(cachedNavSettings?.logoUrl || "");
 
   useEffect(() => {
+    if (cachedNavSettings) return;
     fetch("/api/settings")
       .then((r) => r.json())
       .then((d) => {
-        if (d?.tournamentStatus) setStatus(d.tournamentStatus.toUpperCase());
-        if (d?.gameId) setGameId(d.gameId);
-        if (d?.logoUrl) setLogoUrl(d.logoUrl);
+        const nextStatus = d?.tournamentStatus ? d.tournamentStatus.toUpperCase() : "LIVE";
+        const nextGameId = d?.gameId || "valorant";
+        const nextLogoUrl = d?.logoUrl || "";
+        cachedNavSettings = { status: nextStatus, gameId: nextGameId, logoUrl: nextLogoUrl };
+        setStatus(nextStatus);
+        setGameId(nextGameId);
+        setLogoUrl(nextLogoUrl);
       })
       .catch(() => {});
   }, []);

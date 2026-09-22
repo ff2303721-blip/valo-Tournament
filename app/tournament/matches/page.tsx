@@ -193,9 +193,9 @@ export default function PublicMatchesPage() {
     async function load() {
       try {
         const [matchRes, teamRes, settingsRes] = await Promise.all([
-          fetch("/api/matches", { cache: "no-store" }),
-          fetch("/api/teams?lite=1", { cache: "no-store" }),
-          fetch("/api/settings", { cache: "no-store" }).catch(() => null),
+          fetch("/api/matches"),
+          fetch("/api/teams?lite=1"),
+          fetch("/api/settings").catch(() => null),
         ]);
 
         const matchData = matchRes.ok ? await matchRes.json() : null;

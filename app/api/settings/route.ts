@@ -99,23 +99,30 @@ export async function GET() {
 
     const gameConfig = readGameSettings();
 
-    return NextResponse.json({
-      id: data.id,
-      tournamentName: data.tournament_name,
-      tagline: data.tagline,
-      organizerName: data.organizer_name ?? "",
-      prizePool: data.prize_pool ?? "",
-      startDate: data.start_date,
-      endDate: data.end_date,
-      tournamentStatus: data.tournament_status ?? "Upcoming",
-      announcement: data.announcement ?? "",
-      logoUrl: data.logo_url ?? "",
-      bannerUrl: data.banner_url ?? "",
-      gameId: gameConfig.gameId || "valorant",
-      gameCustomName: gameConfig.gameCustomName || "",
-      gameCustomMaps: gameConfig.gameCustomMaps || [],
-      updatedAt: data.updated_at,
-    });
+    return NextResponse.json(
+      {
+        id: data.id,
+        tournamentName: data.tournament_name,
+        tagline: data.tagline,
+        organizerName: data.organizer_name ?? "",
+        prizePool: data.prize_pool ?? "",
+        startDate: data.start_date,
+        endDate: data.end_date,
+        tournamentStatus: data.tournament_status ?? "Upcoming",
+        announcement: data.announcement ?? "",
+        logoUrl: data.logo_url ?? "",
+        bannerUrl: data.banner_url ?? "",
+        gameId: gameConfig.gameId || "valorant",
+        gameCustomName: gameConfig.gameCustomName || "",
+        gameCustomMaps: gameConfig.gameCustomMaps || [],
+        updatedAt: data.updated_at,
+      },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=10, stale-while-revalidate=59",
+        },
+      },
+    );
   } catch (error) {
     console.error("GET /api/settings exception:", error);
     return NextResponse.json(

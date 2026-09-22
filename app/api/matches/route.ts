@@ -227,30 +227,22 @@ async function getAllMatches(
 
 export async function GET() {
   try {
+    // Non-blocking background sync so GET response returns immediately
     try {
       const adminClient = getAdminClient();
-      await syncPlayoffsWithDatabase(adminClient);
+      syncPlayoffsWithDatabase(adminClient).catch(() => {});
     } catch {
       // Ignore background sync errors
     }
 
-    const client =
-      getPublicClient();
+    const client = getPublicClient();
+    const matches = await getAllMatches(client);
 
-    const matches =
-      await getAllMatches(
-        client,
-      );
-
-    return NextResponse.json(
-      matches,
-      {
-        headers: {
-          "Cache-Control":
-            "no-store",
-        },
+    return NextResponse.json(matches, {
+      headers: {
+        "Cache-Control": "public, s-maxage=5, stale-while-revalidate=25",
       },
-    );
+    });
   } catch (error) {
     return NextResponse.json(
       {

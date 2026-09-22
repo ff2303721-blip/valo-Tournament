@@ -74,10 +74,10 @@ function buildStandings(teams: Team[], matches: Match[]): Standing[] {
 }
 
 export default function TournamentDashboard() {
-  const [teams, setTeams] = useState<Team[]>([]);
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [settings, setSettings] = useState<TournamentSettings | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [teams, setTeams] = useState<Team[]>(defaultTeams);
+  const [matches, setMatches] = useState<Match[]>(defaultMatches);
+  const [settings, setSettings] = useState<TournamentSettings>(defaultSettings);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [standingsView, setStandingsView] = useState<StandingsView>("overall");
 
@@ -85,28 +85,44 @@ export default function TournamentDashboard() {
 
   useEffect(() => {
     let mounted = true;
+
+    // Fast-path: try to read any previously cached session data
+    try {
+      const s = sessionStorage.getItem("xmd_tournament_settings");
+      if (s) setSettings(JSON.parse(s));
+      const t = sessionStorage.getItem("xmd_tournament_teams");
+      if (t) setTeams(JSON.parse(t));
+      const m = sessionStorage.getItem("xmd_tournament_matches");
+      if (m) setMatches(JSON.parse(m));
+    } catch {}
+
     async function load() {
       try {
         const [tr, mr, sr] = await Promise.all([
-          fetch("/api/teams?lite=1", { cache: "no-store" }),
-          fetch("/api/matches", { cache: "no-store" }),
-          fetch("/api/settings", { cache: "no-store" }),
+          fetch("/api/teams?lite=1"),
+          fetch("/api/matches"),
+          fetch("/api/settings"),
         ]);
         const td = tr.ok ? await tr.json() : null;
         const md = mr.ok ? await mr.json() : null;
         const sd = sr.ok ? await sr.json() : null;
         if (!mounted) return;
-        setTeams(Array.isArray(td) && td.length > 0 ? td : defaultTeams);
-        setMatches(Array.isArray(md) && md.length > 0 ? md : defaultMatches);
-        setSettings(sd?.tournamentName ? sd : defaultSettings);
+
+        if (Array.isArray(td) && td.length > 0) {
+          setTeams(td);
+          try { sessionStorage.setItem("xmd_tournament_teams", JSON.stringify(td)); } catch {}
+        }
+        if (Array.isArray(md) && md.length > 0) {
+          setMatches(md);
+          try { sessionStorage.setItem("xmd_tournament_matches", JSON.stringify(md)); } catch {}
+        }
+        if (sd?.tournamentName) {
+          setSettings(sd);
+          try { sessionStorage.setItem("xmd_tournament_settings", JSON.stringify(sd)); } catch {}
+        }
       } catch (err) {
         if (!mounted) return;
-        setTeams(defaultTeams);
-        setMatches(defaultMatches);
-        setSettings(defaultSettings);
-        setError(
-          err instanceof Error ? err.message : "Failed to load tournament data.",
-        );
+        console.warn("Using offline fallback data:", err);
       } finally {
         if (mounted) setLoading(false);
       }

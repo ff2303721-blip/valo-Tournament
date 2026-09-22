@@ -207,7 +207,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(response, {
       headers: {
-        "Cache-Control": "no-store",
+        "Cache-Control": "public, s-maxage=10, stale-while-revalidate=59",
       },
     });
   } catch (error) {
