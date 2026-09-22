@@ -64,6 +64,9 @@ export type TournamentSettings = {
   announcement: string;
   logoUrl: string;
   bannerUrl: string;
+  gameId?: string;
+  gameCustomName?: string;
+  gameCustomMaps?: string[];
 };
 
 export type Standing = {

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { StatusBadge } from "./status-badge";
 
@@ -7,6 +8,7 @@ type Team = {
   id: string;
   name: string;
   tag: string;
+  logo?: string;
 };
 
 type Match = {
@@ -52,6 +54,31 @@ function phaseLabel(matchNumber: number) {
   return `M${String(matchNumber).padStart(2, "0")}`;
 }
 
+function TeamAvatar({ team, size = 32 }: { team?: Team; size?: number }) {
+  if (!team) return null;
+  return (
+    <div
+      className="flex shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#1e1e3a] bg-[#030308]"
+      style={{ width: size, height: size }}
+    >
+      {team.logo ? (
+        <Image
+          src={team.logo}
+          alt={team.name}
+          width={size}
+          height={size}
+          unoptimized
+          className="h-full w-full object-contain"
+        />
+      ) : (
+        <span className="text-[9px] font-black text-[#7c3aed]">
+          {team.tag.slice(0, 3).toUpperCase()}
+        </span>
+      )}
+    </div>
+  );
+}
+
 function MatchCardInner({
   match,
   teams,
@@ -66,8 +93,10 @@ function MatchCardInner({
 
   const isGrandFinal = match.matchNumber === 16;
   const borderClass = isGrandFinal
-    ? "border-[#f59e0b]/40 hover:border-[#f59e0b]/70 hover:glow-gold"
-    : "border-[#1e1e3a] hover:border-[#2e2e5a] hover:glow-violet";
+    ? "border-[#f59e0b]/40 hover:border-[#f59e0b]/70"
+    : "border-[#1e1e3a] hover:border-[#2e2e5a]";
+
+  const avatarSize = compact ? 28 : 36;
 
   return (
     <div
@@ -86,18 +115,21 @@ function MatchCardInner({
 
       {/* Teams vs Score */}
       <div className={`mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-3 ${compact ? "" : "mt-4"}`}>
-        {/* Team 1 */}
-        <div className="text-right">
-          <div
-            className={`font-black tracking-tight ${compact ? "text-sm" : "text-base"} ${
-              t1Wins ? "text-[#f1f5f9]" : t2Wins ? "text-[#334155]" : "text-[#f1f5f9]"
-            }`}
-          >
-            {t1?.tag ?? "TBD"}
+        {/* Team 1 — right-aligned with logo on the right */}
+        <div className="flex items-center justify-end gap-2">
+          <div className="text-right">
+            <div
+              className={`font-black tracking-tight ${compact ? "text-sm" : "text-base"} ${
+                t1Wins ? "text-[#f1f5f9]" : t2Wins ? "text-[#334155]" : "text-[#f1f5f9]"
+              }`}
+            >
+              {t1?.tag ?? "TBD"}
+            </div>
+            {!compact && (
+              <div className="mt-0.5 text-[9px] text-[#475569]">{t1?.name ?? ""}</div>
+            )}
           </div>
-          {!compact && (
-            <div className="mt-0.5 text-[9px] text-[#475569]">{t1?.name ?? ""}</div>
-          )}
+          <TeamAvatar team={t1} size={avatarSize} />
         </div>
 
         {/* Score / VS */}
@@ -127,18 +159,21 @@ function MatchCardInner({
           )}
         </div>
 
-        {/* Team 2 */}
-        <div className="text-left">
-          <div
-            className={`font-black tracking-tight ${compact ? "text-sm" : "text-base"} ${
-              t2Wins ? "text-[#f1f5f9]" : t1Wins ? "text-[#334155]" : "text-[#f1f5f9]"
-            }`}
-          >
-            {t2?.tag ?? "TBD"}
+        {/* Team 2 — left-aligned with logo on the left */}
+        <div className="flex items-center gap-2">
+          <TeamAvatar team={t2} size={avatarSize} />
+          <div>
+            <div
+              className={`font-black tracking-tight ${compact ? "text-sm" : "text-base"} ${
+                t2Wins ? "text-[#f1f5f9]" : t1Wins ? "text-[#334155]" : "text-[#f1f5f9]"
+              }`}
+            >
+              {t2?.tag ?? "TBD"}
+            </div>
+            {!compact && (
+              <div className="mt-0.5 text-[9px] text-[#475569]">{t2?.name ?? ""}</div>
+            )}
           </div>
-          {!compact && (
-            <div className="mt-0.5 text-[9px] text-[#475569]">{t2?.name ?? ""}</div>
-          )}
         </div>
       </div>
 

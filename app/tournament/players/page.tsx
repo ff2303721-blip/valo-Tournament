@@ -1,21 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { TournamentNav } from "../components/tournament-nav";
 import { fetchTeams, fetchMatches } from "@/lib/api";
-
-import {
-  Match,
-  PlayerStat,
-  matches as defaultMatches,
-} from "@/app/data/matches";
-
-import {
-  Team,
-  Player,
-  teams as defaultTeams,
-} from "@/app/data/teams";
+import type { Match, Team, Player, PlayerStat } from "@/lib/types";
+import { matches as defaultMatches } from "@/app/data/matches";
+import { teams as defaultTeams } from "@/app/data/teams";
+import { getGameDefinition } from "@/lib/games/registry";
 
 const STAGES = [
   "All Matches",
@@ -26,1071 +19,73 @@ const STAGES = [
   "Grand Final",
 ];
 
+type SortField = "acs" | "kills" | "kd" | "mvp" | "wins" | "matches";
+
 type PlayerRow = {
   player: Player;
   team: Team;
-
   matches: number;
   wins: number;
   losses: number;
-
   kills: number;
   deaths: number;
   assists: number;
-
   acsTotal: number;
   adrTotal: number;
   kastTotal: number;
-
   acsMatches: number;
   adrMatches: number;
   kastMatches: number;
-
   mvp: number;
   topFragger: number;
 };
 
-export default function PlayerStatisticsPage() {
-  const [teams, setTeams] = useState<Team[]>(defaultTeams);
-  const [matches, setMatches] = useState<Match[]>(defaultMatches);
-  const [stageFilter, setStageFilter] =
-    useState("All Matches");
-
-  const [teamFilter, setTeamFilter] =
-    useState("ALL");
-
-  const [search, setSearch] =
-    useState("");
-
-  useEffect(() => {
-    let active = true;
-
-    async function initialFetch() {
-      try {
-        const [teamsData, matchesData] = await Promise.all([
-          fetchTeams(),
-          fetchMatches(),
-        ]);
-        if (!active) return;
-        setTeams(teamsData);
-        setMatches(matchesData);
-      } catch {
-        // Fallback
-      }
-    }
-
-    initialFetch();
-
-    const refresh = () => {
-      fetchTeams().then((t) => {
-        if (active) setTeams(t);
-      });
-      fetchMatches().then((m) => {
-        if (active) setMatches(m);
-      });
-    };
-
-    window.addEventListener(
-      "tournament-matches-updated",
-      refresh
-    );
-
-    return () => {
-      active = false;
-      window.removeEventListener(
-        "tournament-matches-updated",
-        refresh
-      );
-    };
-  }, []);
-
-  /*
-   * Only published/completed matches
-   * contribute to player statistics.
-   */
-  const completedMatches =
-    useMemo(() => {
-      return matches.filter(
-        (match) =>
-          match.status ===
-          "Completed"
-      );
-    }, [matches]);
-
-  /*
-   * Apply tournament stage filter.
-   */
-  const filteredMatches =
-    useMemo(() => {
-      if (
-        stageFilter ===
-        "All Matches"
-      ) {
-        return completedMatches;
-      }
-
-      return completedMatches.filter(
-        (match) =>
-          match.stage ===
-          stageFilter
-      );
-    }, [
-      completedMatches,
-      stageFilter,
-    ]);
-
-  /*
-   * Build statistics from scratch
-   * every time the filter changes.
-   */
-  const playerRows =
-    useMemo(() => {
-      const rows =
-        new Map<
-          string,
-          PlayerRow
-        >();
-
-      /*
-       * Register every player first.
-       *
-       * This means players with zero
-       * matches still appear.
-       */
-      for (
-        const team of teams
-      ) {
-        for (
-          const player of
-            team.players
-        ) {
-          rows.set(
-            player.id,
-            {
-              player,
-              team,
-
-              matches: 0,
-              wins: 0,
-              losses: 0,
-
-              kills: 0,
-              deaths: 0,
-              assists: 0,
-
-              acsTotal: 0,
-              adrTotal: 0,
-              kastTotal: 0,
-
-              acsMatches: 0,
-              adrMatches: 0,
-              kastMatches: 0,
-
-              mvp: 0,
-              topFragger: 0,
-            }
-          );
-        }
-      }
-
-      /*
-       * Aggregate every selected
-       * completed match.
-       */
-      for (
-        const match of filteredMatches
-      ) {
-        const winnerId =
-          match.winnerId;
-
-        for (
-          const stat of
-            match.playerStats ||
-            []
-        ) {
-          const row =
-            findPlayerRow(
-              rows,
-              stat
-            );
-
-          if (!row) {
-            continue;
-          }
-
-          row.matches += 1;
-
-          if (
-            winnerId &&
-            stat.teamId ===
-              winnerId
-          ) {
-            row.wins += 1;
-          } else {
-            row.losses += 1;
-          }
-
-          row.kills +=
-            Number(
-              stat.kills
-            ) || 0;
-
-          row.deaths +=
-            Number(
-              stat.deaths
-            ) || 0;
-
-          row.assists +=
-            Number(
-              stat.assists
-            ) || 0;
-
-          if (
-            Number.isFinite(
-              Number(stat.acs)
-            )
-          ) {
-            row.acsTotal +=
-              Number(stat.acs);
-
-            row.acsMatches += 1;
-          }
-
-          if (
-            Number.isFinite(
-              Number(stat.adr)
-            ) &&
-            Number(stat.adr) >
-              0
-          ) {
-            row.adrTotal +=
-              Number(stat.adr);
-
-            row.adrMatches += 1;
-          }
-
-          if (
-            Number.isFinite(
-              Number(stat.kast)
-            ) &&
-            Number(stat.kast) >
-              0
-          ) {
-            row.kastTotal +=
-              Number(stat.kast);
-
-            row.kastMatches += 1;
-          }
-
-          if (
-            match.mvpPlayerId ===
-            stat.playerId
-          ) {
-            row.mvp += 1;
-          }
-
-          if (
-            match.topFraggerPlayerId ===
-            stat.playerId
-          ) {
-            row.topFragger += 1;
-          }
-        }
-      }
-
-      return Array.from(
-        rows.values()
-      );
-    }, [
-      teams,
-      filteredMatches,
-    ]);
-
-  /*
-   * Team filter + search.
-   */
-  const visibleRows =
-    useMemo(() => {
-      const query =
-        search
-          .trim()
-          .toLowerCase();
-
-      return playerRows
-        .filter((row) => {
-          if (
-            teamFilter !==
-              "ALL" &&
-            row.team.id !==
-              teamFilter
-          ) {
-            return false;
-          }
-
-          if (!query) {
-            return true;
-          }
-
-          return (
-            row.player.name
-              .toLowerCase()
-              .includes(query) ||
-            row.team.name
-              .toLowerCase()
-              .includes(query) ||
-            row.team.tag
-              .toLowerCase()
-              .includes(query)
-          );
-        })
-        .sort((a, b) => {
-          /*
-           * MVP first,
-           * then top fragger,
-           * then kills.
-           */
-          if (
-            b.mvp !== a.mvp
-          ) {
-            return (
-              b.mvp -
-              a.mvp
-            );
-          }
-
-          if (
-            b.topFragger !==
-            a.topFragger
-          ) {
-            return (
-              b.topFragger -
-              a.topFragger
-            );
-          }
-
-          return (
-            b.kills -
-            a.kills
-          );
-        });
-    }, [
-      playerRows,
-      teamFilter,
-      search,
-    ]);
-
-  const totalPlayers =
-    teams.reduce(
-      (total, team) =>
-        total +
-        team.players.length,
-      0
-    );
-
-  const totalMvpAwards =
-    playerRows.reduce(
-      (total, row) =>
-        total + row.mvp,
-      0
-    );
-
-  return (
-    <div className="min-h-screen bg-[#030308] text-[#f1f5f9]">
-      {/* Valorant background */}
-      <div
-        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `linear-gradient(rgba(3,3,8,0.72), rgba(3,3,8,0.90)), url("https://images5.alphacoders.com/120/thumb-1920-1202339.png")`,
-          backgroundAttachment: "fixed",
-        }}
-      />
-
-      {/* Ambient glow blobs */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/[0.06] blur-[120px]" />
-        <div className="absolute top-1/3 -right-40 h-[500px] w-[500px] rounded-full bg-[#06b6d4]/[0.05] blur-[100px]" />
-        <div className="absolute bottom-0 left-1/3 h-[400px] w-[400px] rounded-full bg-[#ff2d55]/[0.04] blur-[100px]" />
-      </div>
-
-      <div className="relative z-10">
-        <TournamentNav />
-      </div>
-
-      <main className="relative z-10 px-4 py-7 md:px-8">
-        <div className="mx-auto max-w-[1280px]">
-
-          {/* HEADER */}
-          <header className="flex flex-col justify-between gap-6 border-b border-[#1e1e3a] pb-7 md:flex-row md:items-end">
-            <div>
-              <div className="text-sm font-black tracking-[0.32em] text-[#22d3ee] uppercase">
-                Tournament Leaderboard
-              </div>
-
-              <h1 className="mt-2 text-5xl font-black tracking-tight uppercase md:text-6xl text-[#f1f5f9]">
-                Player Statistics
-              </h1>
-
-              <p className="mt-2 text-base text-[#64748b]">
-                Player-by-player tournament statistics
-                calculated from published match results.
-              </p>
-            </div>
-
-            <Link
-              href="/tournament"
-              className="rounded-lg border border-[#1e1e3a] bg-[#0c0c18] px-5 py-3 text-sm font-black tracking-widest uppercase text-[#64748b] hover:border-[#7c3aed]/40 hover:text-[#9d63ff] transition"
-            >
-              ← Dashboard
-            </Link>
-          </header>
-
-          {/* SUMMARY */}
-          <section className="mt-7 grid gap-3 md:grid-cols-4">
-            <SummaryCard
-              label="Registered Players"
-              value={totalPlayers}
-            />
-
-            <SummaryCard
-              label="Completed Matches"
-              value={
-                completedMatches.length
-              }
-              accent="cyan"
-            />
-
-            <SummaryCard
-              label="MVP Awards"
-              value={totalMvpAwards}
-              accent="yellow"
-            />
-
-            <SummaryCard
-              label="Teams"
-              value={teams.length}
-            />
-          </section>
-
-          {/* FILTER BAR */}
-          <section className="mt-7 rounded-xl border border-[#1e1e3a] bg-[#0c0c18]">
-            <div className="flex flex-col gap-5 p-5 lg:flex-row lg:items-end lg:justify-between">
-
-              <div>
-                <div className="text-sm font-black tracking-[0.25em] text-[#22d3ee] uppercase">
-                  Player Database
-                </div>
-
-                <div className="mt-1 text-lg font-black uppercase text-[#f1f5f9]">
-                  {visibleRows.length} Players
-                </div>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-3">
-
-                {/* MATCH / STAGE FILTER */}
-                <label>
-                  <span className="mb-2 block text-sm font-black tracking-[0.16em] text-[#334155] uppercase">
-                    Matches
-                  </span>
-
-                  <select
-                    value={stageFilter}
-                    onChange={(event) =>
-                      setStageFilter(
-                        event.target.value
-                      )
-                    }
-                    className="min-w-[190px] rounded-lg border border-[#1e1e3a] bg-[#030308] px-4 py-3 text-base font-black uppercase text-[#f1f5f9] outline-none focus:border-[#7c3aed]"
-                  >
-                    {STAGES.map(
-                      (stage) => (
-                        <option
-                          key={stage}
-                          value={stage}
-                        >
-                          {stage}
-                        </option>
-                      )
-                    )}
-                  </select>
-                </label>
-
-                {/* TEAM FILTER */}
-                <label>
-                  <span className="mb-2 block text-sm font-black tracking-[0.16em] text-[#334155] uppercase">
-                    Team
-                  </span>
-
-                  <select
-                    value={teamFilter}
-                    onChange={(event) =>
-                      setTeamFilter(
-                        event.target.value
-                      )
-                    }
-                    className="min-w-[180px] rounded-lg border border-[#1e1e3a] bg-[#030308] px-4 py-3 text-base font-black uppercase text-[#f1f5f9] outline-none focus:border-[#7c3aed]"
-                  >
-                    <option value="ALL">
-                      ALL TEAMS
-                    </option>
-
-                    {teams.map(
-                      (team) => (
-                        <option
-                          key={team.id}
-                          value={team.id}
-                        >
-                          {team.name}
-                        </option>
-                      )
-                    )}
-                  </select>
-                </label>
-
-                {/* SEARCH */}
-                <label>
-                  <span className="mb-2 block text-sm font-black tracking-[0.16em] text-[#334155] uppercase">
-                    Search
-                  </span>
-
-                  <input
-                    value={search}
-                    onChange={(event) =>
-                      setSearch(
-                        event.target.value
-                      )
-                    }
-                    placeholder="PLAYER / TEAM"
-                    className="min-w-[180px] rounded-lg border border-[#1e1e3a] bg-[#030308] px-4 py-3 text-base font-black uppercase text-[#f1f5f9] outline-none placeholder:text-[#334155] focus:border-[#7c3aed]"
-                  />
-                </label>
-              </div>
-            </div>
-          </section>
-
-          {/* ACTIVE FILTERS */}
-          <div className="mt-4 flex flex-wrap gap-2">
-            <FilterBadge>
-              MATCHES: {stageFilter}
-            </FilterBadge>
-
-            <FilterBadge>
-              TEAM:{" "}
-              {teamFilter ===
-              "ALL"
-                ? "ALL TEAMS"
-                : teams.find(
-                    (team) =>
-                      team.id ===
-                      teamFilter
-                  )?.name ||
-                "UNKNOWN"}
-            </FilterBadge>
-
-            <FilterBadge>
-              COMPLETED:{" "}
-              {filteredMatches.length}
-            </FilterBadge>
-          </div>
-
-          {/* TABLE */}
-          <section className="mt-5 overflow-hidden rounded-xl border border-[#1e1e3a] bg-[#0c0c18]">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[1150px] border-collapse">
-                <thead>
-                  <tr className="border-b border-[#1e1e3a] bg-[#030308]">
-                    <Th>#</Th>
-
-                    <Th align="left">
-                      Player
-                    </Th>
-
-                    <Th align="left">
-                      Team
-                    </Th>
-
-                    <Th>MP</Th>
-                    <Th>W</Th>
-                    <Th>L</Th>
-
-                    <Th>K</Th>
-                    <Th>D</Th>
-                    <Th>A</Th>
-
-                    <Th cyan>
-                      ACS
-                    </Th>
-
-                    <Th>
-                      ADR
-                    </Th>
-
-                    <Th>
-                      KAST
-                    </Th>
-
-                    <Th yellow>
-                      MVP
-                    </Th>
-
-                    <Th cyan>
-                      TF
-                    </Th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {visibleRows.map(
-                    (
-                      row,
-                      index
-                    ) => (
-                      <PlayerTableRow
-                        key={
-                          row.player.id
-                        }
-                        row={row}
-                        index={
-                          index + 1
-                        }
-                      />
-                    )
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            {visibleRows.length ===
-              0 && (
-              <div className="flex min-h-[260px] items-center justify-center border-t border-[#1e1e3a] text-center">
-                <div>
-                  <div className="text-base font-black uppercase text-[#f1f5f9]">
-                    No Players Found
-                  </div>
-
-                  <div className="mt-2 text-xs text-[#334155]">
-                    Try a different match stage,
-                    team or search value.
-                  </div>
-                </div>
-              </div>
-            )}
-          </section>
-
-          {/* LEGEND */}
-          <section className="mt-5 grid gap-3 md:grid-cols-3">
-            <InfoCard
-              title="MP"
-              text="Completed matches played."
-            />
-
-            <InfoCard
-              title="MVP"
-              text="Number of published match MVP awards."
-            />
-
-            <InfoCard
-              title="TF"
-              text="Number of automatic Top Fragger awards."
-            />
-          </section>
-
-          {/* FOOTER */}
-          <footer className="mt-10 flex flex-col justify-between gap-3 border-t border-[#1e1e3a] py-6 text-xs font-black tracking-[0.22em] text-[#334155] uppercase md:flex-row">
-            <span>
-              Valorant Tournament //
-              Player Database
-            </span>
-
-            <span>
-              Match Results // Statistics //
-              Awards
-            </span>
-          </footer>
-        </div>
-      </main>
-    </div>
-  );
+function parseRiotName(fullName: string) {
+  if (!fullName) return { ign: "Unknown", tag: "" };
+  if (fullName.includes("#")) {
+    const [ign, tag] = fullName.split("#");
+    return { ign: ign.trim(), tag: tag.trim() };
+  }
+  return { ign: fullName.trim(), tag: "" };
 }
 
-/*
- * ============================================================
- * PLAYER TABLE
- * ============================================================
- */
-
-function PlayerTableRow({
-  row,
-  index,
-}: {
-  row: PlayerRow;
-  index: number;
-}) {
-  const acs =
-    row.acsMatches > 0
-      ? row.acsTotal /
-        row.acsMatches
-      : 0;
-
-  const adr =
-    row.adrMatches > 0
-      ? row.adrTotal /
-        row.adrMatches
-      : 0;
-
-  const kast =
-    row.kastMatches > 0
-      ? row.kastTotal /
-        row.kastMatches
-      : 0;
-
-  const initials =
-    getInitials(
-      row.player.name
-    );
-
-  const rankBorder =
-    index === 1
-      ? "border-l-2 border-l-[#f59e0b]/60"
-      : index === 2
-        ? "border-l-2 border-l-[#94a3b8]/40"
-        : index === 3
-          ? "border-l-2 border-l-[#d97706]/40"
-          : "";
-
-  return (
-    <tr className={`border-t border-[#1e1e3a] hover:bg-[#0c0c18] ${rankBorder}`}>
-
-      {/* NUMBER */}
-      <td className="px-4 py-6 text-center">
-        <span className="text-base font-black text-[#334155]">
-          {String(index).padStart(
-            2,
-            "0"
-          )}
-        </span>
-      </td>
-
-      {/* PLAYER */}
-      <td className="px-4 py-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#030308] text-sm font-black text-[#7c3aed]">
-            {initials}
-          </div>
-
-          <div>
-            <div className="text-base font-black uppercase text-[#f1f5f9]">
-              {row.player.name}
-            </div>
-
-            {row.mvp > 0 && (
-              <div className="mt-1 text-xs font-black tracking-wider text-[#f59e0b] uppercase">
-                MVP × {row.mvp}
-              </div>
-            )}
-          </div>
-        </div>
-      </td>
-
-      {/* TEAM */}
-      <td className="px-4 py-6">
-        <div className="text-base font-black uppercase text-[#f1f5f9]">
-          {row.team.name}
-        </div>
-
-        <div className="mt-1 text-sm font-bold text-[#334155] uppercase">
-          {row.team.tag}
-        </div>
-      </td>
-
-      {/* MP */}
-      <StatCell
-        value={row.matches}
-      />
-
-      {/* W */}
-      <StatCell
-        value={row.wins}
-        positive
-      />
-
-      {/* L */}
-      <StatCell
-        value={row.losses}
-        negative
-      />
-
-      {/* K */}
-      <StatCell
-        value={row.kills}
-      />
-
-      {/* D */}
-      <StatCell
-        value={row.deaths}
-      />
-
-      {/* A */}
-      <StatCell
-        value={row.assists}
-      />
-
-      {/* ACS */}
-      <StatCell
-        value={
-          acs > 0
-            ? acs.toFixed(0)
-            : "0"
-        }
-        cyan
-      />
-
-      {/* ADR */}
-      <StatCell
-        value={
-          adr > 0
-            ? adr.toFixed(1)
-            : "—"
-        }
-      />
-
-      {/* KAST */}
-      <StatCell
-        value={
-          kast > 0
-            ? `${kast.toFixed(
-                1
-              )}%`
-            : "—"
-        }
-      />
-
-      {/* MVP */}
-      <td className="px-4 py-6 text-center">
-        <span
-          className={
-            row.mvp > 0
-              ? "text-base font-black text-[#f59e0b]"
-              : "text-base font-black text-[#334155]"
-          }
-        >
-          {row.mvp}
-        </span>
-      </td>
-
-      {/* TOP FRAGGER */}
-      <td className="px-4 py-6 text-center">
-        <span
-          className={
-            row.topFragger > 0
-              ? "text-base font-black text-[#22d3ee]"
-              : "text-base font-black text-[#334155]"
-          }
-        >
-          {row.topFragger}
-        </span>
-      </td>
-    </tr>
-  );
+function normalize(value: string) {
+  return (value || "")
+    .split("#")[0]
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
 }
 
-/*
- * ============================================================
- * COMPONENTS
- * ============================================================
- */
+function matchesPlayerName(name1: string, name2: string) {
+  if (!name1 || !name2) return false;
+  const n1 = normalize(name1);
+  const n2 = normalize(name2);
+  if (n1 === n2) return true;
 
-function SummaryCard({
-  label,
-  value,
-  accent = "white",
-}: {
-  label: string;
-  value: number;
-  accent?: "white" | "cyan" | "yellow";
-}) {
-  const accentClass =
-    accent === "cyan"
-      ? "text-[#22d3ee]"
-      : accent === "yellow"
-        ? "text-[#fbbf24]"
-        : "text-[#f1f5f9]";
+  const full1 = name1.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const full2 = name2.toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (full1 === full2) return true;
 
-  return (
-    <div className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18] p-5">
-      <div className="text-sm font-black tracking-[0.2em] text-[#334155] uppercase">
-        {label}
-      </div>
-
-      <div
-        className={`mt-3 text-5xl font-black ${accentClass}`}
-      >
-        {value}
-      </div>
-    </div>
-  );
+  if (n1.length >= 3 && n2.length >= 3 && (n1.includes(n2) || n2.includes(n1))) {
+    return true;
+  }
+  return false;
 }
 
-function FilterBadge({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-lg border border-[#1e1e3a] bg-[#0c0c18] px-3 py-2 text-xs font-black tracking-wider text-[#64748b] uppercase">
-      {children}
-    </div>
-  );
-}
-
-function InfoCard({
-  title,
-  text,
-}: {
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18] p-4">
-      <div className="text-base font-black text-[#22d3ee]">
-        {title}
-      </div>
-
-      <div className="mt-3 text-sm leading-6 text-[#64748b]">
-        {text}
-      </div>
-    </div>
-  );
-}
-
-function Th({
-  children,
-  align = "center",
-  cyan = false,
-  yellow = false,
-}: {
-  children: React.ReactNode;
-  align?: "left" | "center";
-  cyan?: boolean;
-  yellow?: boolean;
-}) {
-  let color =
-    "text-[#334155]";
-
-  if (cyan) {
-    color =
-      "text-[#22d3ee]";
+function findPlayerRow(rows: Map<string, PlayerRow>, stat: PlayerStat) {
+  if (stat.playerId) {
+    const direct = rows.get(stat.playerId);
+    if (direct) return direct;
   }
 
-  if (yellow) {
-    color =
-      "text-[#fbbf24]";
-  }
-
-  return (
-    <th
-      className={`px-4 py-5 text-${align} text-sm font-black tracking-widest uppercase ${color}`}
-    >
-      {children}
-    </th>
-  );
-}
-
-function StatCell({
-  value,
-  positive = false,
-  negative = false,
-  cyan = false,
-}: {
-  value: number | string;
-  positive?: boolean;
-  negative?: boolean;
-  cyan?: boolean;
-}) {
-  let className =
-    "text-lg font-black text-[#f1f5f9]";
-
-  if (positive) {
-    className =
-      "text-lg font-black text-[#34d399]";
-  }
-
-  if (negative) {
-    className =
-      "text-lg font-black text-[#ff4d6a]";
-  }
-
-  if (cyan) {
-    className =
-      "text-base font-black text-[#22d3ee]";
-  }
-
-  return (
-    <td className="px-4 py-6 text-center">
-      <span className={className}>
-        {value}
-      </span>
-    </td>
-  );
-}
-
-/*
- * ============================================================
- * DATA HELPERS
- * ============================================================
- */
-
-function findPlayerRow(
-  rows: Map<string, PlayerRow>,
-  stat: PlayerStat
-) {
-  /*
-   * First use player ID.
-   */
-  const direct =
-    rows.get(
-      stat.playerId
-    );
-
-  if (direct) {
-    return direct;
-  }
-
-  /*
-   * Fallback to team + name.
-   */
-  for (
-    const row of rows.values()
-  ) {
-    if (
-      row.team.id ===
-        stat.teamId &&
-      normalize(
-        row.player.name
-      ) ===
-        normalize(
-          stat.playerName
-        )
-    ) {
+  for (const row of rows.values()) {
+    if (stat.teamId && row.team.id === stat.teamId && matchesPlayerName(row.player.name, stat.playerName)) {
       return row;
     }
   }
 
-  /*
-   * Last fallback:
-   * name only.
-   */
-  for (
-    const row of rows.values()
-  ) {
-    if (
-      normalize(
-        row.player.name
-      ) ===
-      normalize(
-        stat.playerName
-      )
-    ) {
+  for (const row of rows.values()) {
+    if (matchesPlayerName(row.player.name, stat.playerName)) {
       return row;
     }
   }
@@ -1098,38 +93,900 @@ function findPlayerRow(
   return undefined;
 }
 
-function normalize(
-  value: string
-) {
-  return value
-    .toLowerCase()
-    .replace(
-      /[^a-z0-9]/g,
-      ""
-    );
+function getInitials(name: string) {
+  const clean = name.split("#")[0].trim();
+  const parts = clean.split(/\s+/);
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-function getInitials(
-  name: string
-) {
-  const parts =
-    name
-      .trim()
-      .split(/\s+/);
+export default function PlayerStatisticsPage() {
+  const [teams, setTeams] = useState<Team[]>(defaultTeams);
+  const [matches, setMatches] = useState<Match[]>(defaultMatches);
+  const [stageFilter, setStageFilter] = useState("All Matches");
+  const [teamFilter, setTeamFilter] = useState("ALL");
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState<SortField>("acs");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [gameId, setGameId] = useState<string>("valorant");
 
-  if (
-    parts.length ===
-    1
-  ) {
-    return parts[0]
-      .slice(0, 2)
-      .toUpperCase();
+  const game = useMemo(() => getGameDefinition(gameId), [gameId]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function initialFetch() {
+      try {
+        const [teamsData, matchesData, settingsRes] = await Promise.all([
+          fetchTeams(),
+          fetchMatches(),
+          fetch("/api/settings", { cache: "no-store" }).catch(() => null),
+        ]);
+        if (!active) return;
+        if (teamsData && teamsData.length > 0) setTeams(teamsData);
+        if (matchesData && matchesData.length > 0) setMatches(matchesData);
+        if (settingsRes && settingsRes.ok) {
+          const sData = await settingsRes.json();
+          if (sData?.gameId) setGameId(sData.gameId);
+        }
+      } catch {
+        // Fallback to default
+      }
+    }
+
+    initialFetch();
+
+    const refresh = () => {
+      fetchTeams().then((t) => {
+        if (active && t && t.length > 0) setTeams(t);
+      });
+      fetchMatches().then((m) => {
+        if (active && m && m.length > 0) setMatches(m);
+      });
+    };
+
+    window.addEventListener("tournament-matches-updated", refresh);
+    return () => {
+      active = false;
+      window.removeEventListener("tournament-matches-updated", refresh);
+    };
+  }, []);
+
+  const completedMatches = useMemo(() => {
+    return matches.filter((m) => m.status === "Completed");
+  }, [matches]);
+
+  const filteredMatches = useMemo(() => {
+    if (stageFilter === "All Matches") return completedMatches;
+    return completedMatches.filter((m) => m.stage === stageFilter);
+  }, [completedMatches, stageFilter]);
+
+  const playerRows = useMemo(() => {
+    const rows = new Map<string, PlayerRow>();
+
+    for (const team of teams) {
+      for (const player of team.players) {
+        rows.set(player.id, {
+          player,
+          team,
+          matches: 0,
+          wins: 0,
+          losses: 0,
+          kills: 0,
+          deaths: 0,
+          assists: 0,
+          acsTotal: 0,
+          adrTotal: 0,
+          kastTotal: 0,
+          acsMatches: 0,
+          adrMatches: 0,
+          kastMatches: 0,
+          mvp: 0,
+          topFragger: 0,
+        });
+      }
+    }
+
+    for (const match of filteredMatches) {
+      const winnerId = match.winnerId;
+
+      for (const stat of match.playerStats || []) {
+        const row = findPlayerRow(rows, stat);
+        if (!row) continue;
+
+        row.matches += 1;
+
+        if (winnerId && stat.teamId === winnerId) {
+          row.wins += 1;
+        } else {
+          row.losses += 1;
+        }
+
+        row.kills += Number(stat.kills) || 0;
+        row.deaths += Number(stat.deaths) || 0;
+        row.assists += Number(stat.assists) || 0;
+
+        if (Number.isFinite(Number(stat.acs))) {
+          row.acsTotal += Number(stat.acs);
+          row.acsMatches += 1;
+        }
+
+        if (Number.isFinite(Number(stat.adr)) && Number(stat.adr) > 0) {
+          row.adrTotal += Number(stat.adr);
+          row.adrMatches += 1;
+        }
+
+        if (Number.isFinite(Number(stat.kast)) && Number(stat.kast) > 0) {
+          row.kastTotal += Number(stat.kast);
+          row.kastMatches += 1;
+        }
+
+        if (match.mvpPlayerId && (match.mvpPlayerId === stat.playerId || match.mvpPlayerId === row.player.id)) {
+          row.mvp += 1;
+        }
+
+        if (match.topFraggerPlayerId && (match.topFraggerPlayerId === stat.playerId || match.topFraggerPlayerId === row.player.id)) {
+          row.topFragger += 1;
+        }
+      }
+    }
+
+    return Array.from(rows.values());
+  }, [teams, filteredMatches]);
+
+  const visibleRows = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    const filtered = playerRows.filter((row) => {
+      if (teamFilter !== "ALL" && row.team.id !== teamFilter) {
+        return false;
+      }
+      if (!query) return true;
+      return (
+        row.player.name.toLowerCase().includes(query) ||
+        row.team.name.toLowerCase().includes(query) ||
+        row.team.tag.toLowerCase().includes(query)
+      );
+    });
+
+    return filtered.sort((a, b) => {
+      const getVal = (r: PlayerRow) => {
+        const acs = r.acsMatches > 0 ? r.acsTotal / r.acsMatches : 0;
+        const kd = r.deaths > 0 ? r.kills / r.deaths : r.kills;
+        switch (sortBy) {
+          case "acs":
+            return acs;
+          case "kills":
+            return r.kills;
+          case "kd":
+            return kd;
+          case "mvp":
+            return r.mvp;
+          case "wins":
+            return r.wins;
+          case "matches":
+            return r.matches;
+          default:
+            return acs;
+        }
+      };
+
+      const valA = getVal(a);
+      const valB = getVal(b);
+
+      if (valA !== valB) {
+        return sortDir === "desc" ? valB - valA : valA - valB;
+      }
+
+      // Tiebreaker 1: Kills
+      if (b.kills !== a.kills) return b.kills - a.kills;
+      // Tiebreaker 2: Name
+      return a.player.name.localeCompare(b.player.name);
+    });
+  }, [playerRows, teamFilter, search, sortBy, sortDir]);
+
+  const totalPlayers = teams.reduce((t, team) => t + team.players.length, 0);
+  const totalMvpAwards = playerRows.reduce((t, r) => t + r.mvp, 0);
+
+  function toggleSort(field: SortField) {
+    if (sortBy === field) {
+      setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy(field);
+      setSortDir("desc");
+    }
   }
 
+  // Find standout leaders if any completed matches exist
+  const acsLeader = useMemo(() => {
+    const active = playerRows.filter((r) => r.matches > 0);
+    if (active.length === 0) return null;
+    return [...active].sort((a, b) => {
+      const aAcs = a.acsMatches > 0 ? a.acsTotal / a.acsMatches : 0;
+      const bAcs = b.acsMatches > 0 ? b.acsTotal / b.acsMatches : 0;
+      return bAcs - aAcs;
+    })[0];
+  }, [playerRows]);
+
+  const killLeader = useMemo(() => {
+    const active = playerRows.filter((r) => r.matches > 0);
+    if (active.length === 0) return null;
+    return [...active].sort((a, b) => b.kills - a.kills)[0];
+  }, [playerRows]);
+
+  const mvpLeader = useMemo(() => {
+    const active = playerRows.filter((r) => r.mvp > 0);
+    if (active.length === 0) return null;
+    return [...active].sort((a, b) => b.mvp - a.mvp)[0];
+  }, [playerRows]);
+
   return (
-    parts[0][0] +
-    parts[
-      parts.length - 1
-    ][0]
-  ).toUpperCase();
+    <div className="relative min-h-screen text-[#f1f5f9] pb-24">
+      {/* ── Ambient Neon Glow Orbs ────────────────────────────────────────── */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/12 blur-[180px]" />
+        <div className="absolute top-1/3 -right-40 h-[500px] w-[500px] rounded-full bg-[#ff2d55]/10 blur-[160px]" />
+        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#06b6d4]/8 blur-[160px]" />
+      </div>
+
+      <TournamentNav />
+
+      <main className="relative z-10 mx-auto max-w-7xl px-4 pt-8 sm:px-8">
+        {/* ── Page Header ──────────────────────────────────────────────────── */}
+        <header className="border-b border-[#1e1e3a] pb-8">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#06b6d4]/30 bg-[#06b6d4]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.25em] text-[#22d3ee]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#06b6d4] animate-pulse" />
+              {game.shortName} TOURNAMENT // OFFICIAL TELEMETRY
+            </div>
+
+            <h1 className="mt-3 text-4xl font-black uppercase tracking-tight sm:text-6xl">
+              PLAYER{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff2d55] via-[#a855f7] to-[#06b6d4]">
+                STATISTICS
+              </span>
+            </h1>
+
+            <p className="mt-2 text-sm text-[#94a3b8] max-w-2xl">
+              Player-by-player tournament telemetry, performance ratings, and MVP accolades calculated live across all official tournament matches.
+            </p>
+          </div>
+        </header>
+
+        {/* ── High-Impact Metric Cards ─────────────────────────────────────── */}
+        <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="relative overflow-hidden rounded-2xl border border-[#06b6d4]/25 bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#06b6d4]/50 hover:shadow-[0_0_25px_rgba(6,182,212,0.15)]">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#06b6d4]">
+                COMBATANTS
+              </span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#06b6d4]/30 bg-[#06b6d4]/10 text-sm text-[#22d3ee]">
+                👥
+              </span>
+            </div>
+            <div className="mt-4 text-4xl font-black text-white">
+              {totalPlayers}
+            </div>
+            <p className="mt-1 text-[11px] font-bold text-[#64748b]">
+              Registered across 4 Franchise Rosters
+            </p>
+          </div>
+
+          <div className="relative overflow-hidden rounded-2xl border border-[#10b981]/25 bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#10b981]/50 hover:shadow-[0_0_25px_rgba(16,185,129,0.15)]">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#10b981]">
+                BATTLES CONCLUDED
+              </span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#10b981]/30 bg-[#10b981]/10 text-sm text-[#34d399]">
+                ⚔️
+              </span>
+            </div>
+            <div className="mt-4 text-4xl font-black text-[#34d399]">
+              {completedMatches.length}
+            </div>
+            <p className="mt-1 text-[11px] font-bold text-[#64748b]">
+              Official Published Match Scoreboards
+            </p>
+          </div>
+
+          <div className="relative overflow-hidden rounded-2xl border border-[#f59e0b]/25 bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#f59e0b]/50 hover:shadow-[0_0_25px_rgba(245,158,11,0.15)]">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#f59e0b]">
+                HONORS AWARDED
+              </span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#f59e0b]/30 bg-[#f59e0b]/10 text-sm text-[#fbbf24]">
+                🌟
+              </span>
+            </div>
+            <div className="mt-4 text-4xl font-black text-[#fbbf24]">
+              {totalMvpAwards}
+            </div>
+            <p className="mt-1 text-[11px] font-bold text-[#64748b]">
+              Official Match MVP Accolades
+            </p>
+          </div>
+
+          <div className="relative overflow-hidden rounded-2xl border border-[#7c3aed]/25 bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#7c3aed]/50 hover:shadow-[0_0_25px_rgba(124,58,237,0.15)]">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#a78bfa]">
+                FRANCHISES
+              </span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#7c3aed]/30 bg-[#7c3aed]/10 text-sm text-[#c084fc]">
+                🛡️
+              </span>
+            </div>
+            <div className="mt-4 text-4xl font-black text-[#c084fc]">
+              {teams.length}
+            </div>
+            <p className="mt-1 text-[11px] font-bold text-[#64748b]">
+              Active Competitive Teams in Tournament
+            </p>
+          </div>
+        </section>
+
+        {/* ── Standout Season Leaders Spotlight (When Data Exists) ──────────── */}
+        {completedMatches.length > 0 && (acsLeader || killLeader || mvpLeader) && (
+          <section className="mt-8">
+            <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-3 mb-4">
+              <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#f59e0b]">
+                ★ STANDOUT PERFORMERS // CURRENT LEADERS
+              </span>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              {/* Rating Leader */}
+              {acsLeader && (
+                <div className="relative overflow-hidden rounded-2xl border border-[#f59e0b]/40 bg-gradient-to-br from-[#f59e0b]/10 via-[#0c0c18]/90 to-[#080812] p-5 backdrop-blur-xl shadow-[0_0_25px_rgba(245,158,11,0.15)]">
+                  <div className="flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#f59e0b]/40 bg-[#f59e0b]/15 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#fbbf24]">
+                      👑 {game.podiumLabels.ratingLeader}
+                    </span>
+                    <span className="text-xs font-mono font-bold text-[#64748b]">
+                      [{acsLeader.team.tag}]
+                    </span>
+                  </div>
+                  <div className="mt-4 flex items-center justify-between">
+                    <div>
+                      <h4 className="text-xl font-black uppercase text-white tracking-tight">
+                        {parseRiotName(acsLeader.player.name).ign}
+                      </h4>
+                      <p className="text-xs font-semibold text-[#94a3b8]">
+                        {acsLeader.team.name}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-2xl font-black text-[#22d3ee]">
+                        {Math.round(acsLeader.acsMatches > 0 ? acsLeader.acsTotal / acsLeader.acsMatches : 0)}
+                      </span>
+                      <span className="block text-[9px] font-black uppercase tracking-widest text-[#64748b]">
+                        AVG {game.statColumns[0]?.label || "RATING"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Frag / Performer Leader */}
+              {killLeader && (
+                <div className="relative overflow-hidden rounded-2xl border border-[#ff2d55]/40 bg-gradient-to-br from-[#ff2d55]/10 via-[#0c0c18]/90 to-[#080812] p-5 backdrop-blur-xl shadow-[0_0_25px_rgba(255,45,85,0.15)]">
+                  <div className="flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#ff2d55]/40 bg-[#ff2d55]/15 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#ff4d6a]">
+                      🎯 {game.podiumLabels.topFragger}
+                    </span>
+                    <span className="text-xs font-mono font-bold text-[#64748b]">
+                      [{killLeader.team.tag}]
+                    </span>
+                  </div>
+                  <div className="mt-4 flex items-center justify-between">
+                    <div>
+                      <h4 className="text-xl font-black uppercase text-white tracking-tight">
+                        {parseRiotName(killLeader.player.name).ign}
+                      </h4>
+                      <p className="text-xs font-semibold text-[#94a3b8]">
+                        {killLeader.team.name}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-2xl font-black text-[#ff4d6a]">
+                        {killLeader.kills}
+                      </span>
+                      <span className="block text-[9px] font-black uppercase tracking-widest text-[#64748b]">
+                        TOTAL {game.statColumns.find((c) => c.key === "kills")?.label || "KILLS"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* MVP Leader */}
+              {mvpLeader && (
+                <div className="relative overflow-hidden rounded-2xl border border-[#a855f7]/40 bg-gradient-to-br from-[#a855f7]/10 via-[#0c0c18]/90 to-[#080812] p-5 backdrop-blur-xl shadow-[0_0_25px_rgba(168,85,247,0.15)]">
+                  <div className="flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#a855f7]/40 bg-[#a855f7]/15 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#c084fc]">
+                      🌟 {game.podiumLabels.mvp}
+                    </span>
+                    <span className="text-xs font-mono font-bold text-[#64748b]">
+                      [{mvpLeader.team.tag}]
+                    </span>
+                  </div>
+                  <div className="mt-4 flex items-center justify-between">
+                    <div>
+                      <h4 className="text-xl font-black uppercase text-white tracking-tight">
+                        {parseRiotName(mvpLeader.player.name).ign}
+                      </h4>
+                      <p className="text-xs font-semibold text-[#94a3b8]">
+                        {mvpLeader.team.name}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-2xl font-black text-[#fbbf24]">
+                        {mvpLeader.mvp}
+                      </span>
+                      <span className="block text-[9px] font-black uppercase tracking-widest text-[#64748b]">
+                        AWARDS
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* ── Command Filter & Search Deck ─────────────────────────────────── */}
+        <section className="mt-8 rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between border-b border-[#1e1e3a] pb-6">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#06b6d4]">
+                FILTER & SORT ROSTER DATABASE
+              </p>
+              <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
+                Displaying {visibleRows.length} of {totalPlayers} Players
+              </h2>
+            </div>
+
+            {/* Quick Sort Tabs */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#64748b] mr-1 hidden sm:inline">
+                SORT BY:
+              </span>
+              {[
+                { id: "acs", label: `⚡ ${game.statColumns[0]?.label || "ACS"}` },
+                { id: "kills", label: `🎯 ${game.statColumns.find((c) => c.key === "kills")?.label || "Kills"}` },
+                { id: "kd", label: "⚔️ K/D Ratio" },
+                { id: "mvp", label: "🌟 MVPs" },
+                { id: "wins", label: "🏆 Wins" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => toggleSort(tab.id as SortField)}
+                  className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-black uppercase tracking-wider transition ${
+                    sortBy === tab.id
+                      ? "border border-[#06b6d4]/50 bg-[#06b6d4]/20 text-[#22d3ee] shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                      : "border border-[#1e1e3a] bg-[#080812] text-[#94a3b8] hover:border-[#7c3aed]/40 hover:text-white"
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  {sortBy === tab.id && (
+                    <span className="text-[9px]">{sortDir === "desc" ? "▼" : "▲"}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Filter Inputs Grid */}
+          <div className="mt-6 grid gap-4 sm:grid-cols-12">
+            <div className="sm:col-span-4">
+              <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">
+                Tournament Stage
+              </label>
+              <select
+                value={stageFilter}
+                onChange={(e) => setStageFilter(e.target.value)}
+                className="mt-1.5 w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-4 py-3 text-xs font-bold text-white outline-none transition focus:border-[#06b6d4]"
+              >
+                {STAGES.map((stage) => (
+                  <option key={stage} value={stage} className="bg-[#0c0c18]">
+                    {stage}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="sm:col-span-4">
+              <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">
+                Franchise Team
+              </label>
+              <select
+                value={teamFilter}
+                onChange={(e) => setTeamFilter(e.target.value)}
+                className="mt-1.5 w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-4 py-3 text-xs font-bold text-white outline-none transition focus:border-[#7c3aed]"
+              >
+                <option value="ALL" className="bg-[#0c0c18]">
+                  ALL FRANCHISES ({teams.length})
+                </option>
+                {teams.map((team) => (
+                  <option key={team.id} value={team.id} className="bg-[#0c0c18]">
+                    {team.name} [{team.tag}]
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="sm:col-span-4">
+              <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">
+                Search Player / Team
+              </label>
+              <div className="relative mt-1.5">
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="e.g. zippaz, nandu, naadan..."
+                  className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] pl-10 pr-4 py-3 text-xs font-bold text-white placeholder-[#475569] outline-none transition focus:border-[#06b6d4]"
+                />
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-[#64748b]">
+                  🔍
+                </span>
+                {search && (
+                  <button
+                    type="button"
+                    onClick={() => setSearch("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#64748b] hover:text-white"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Active Filter Chips */}
+          <div className="mt-4 flex flex-wrap items-center gap-2 pt-2 border-t border-[#1e1e3a]/50">
+            <span className="text-[9px] font-black uppercase tracking-widest text-[#475569]">
+              ACTIVE SCOPE:
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-lg border border-[#06b6d4]/30 bg-[#06b6d4]/10 px-2.5 py-1 text-[10px] font-bold text-[#22d3ee]">
+              STAGE: {stageFilter.toUpperCase()}
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-lg border border-[#7c3aed]/30 bg-[#7c3aed]/10 px-2.5 py-1 text-[10px] font-bold text-[#c084fc]">
+              TEAM: {teamFilter === "ALL" ? "ALL TEAMS" : teams.find((t) => t.id === teamFilter)?.tag || teamFilter}
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-lg border border-[#10b981]/30 bg-[#10b981]/10 px-2.5 py-1 text-[10px] font-bold text-[#34d399]">
+              COMPLETED MATCHES: {filteredMatches.length}
+            </span>
+          </div>
+        </section>
+
+        {/* ── Ultra-Modern Leaderboard Table ───────────────────────────────── */}
+        <section className="mt-8 overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.4)]">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[1080px] text-left border-collapse">
+              <thead>
+                <tr className="border-b border-[#1e1e3a] bg-[#080812] text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+                  <th className="px-5 py-4 text-center w-16">#</th>
+                  <th className="px-5 py-4">Player Details</th>
+                  <th className="px-4 py-4">Franchise</th>
+                  <th
+                    className="px-3 py-4 text-center cursor-pointer hover:text-white transition"
+                    onClick={() => toggleSort("matches")}
+                  >
+                    MP {sortBy === "matches" ? (sortDir === "desc" ? "▼" : "▲") : ""}
+                  </th>
+                  <th
+                    className="px-3 py-4 text-center cursor-pointer hover:text-white transition"
+                    onClick={() => toggleSort("wins")}
+                  >
+                    W - L {sortBy === "wins" ? (sortDir === "desc" ? "▼" : "▲") : ""}
+                  </th>
+                  <th
+                    className="px-3 py-4 text-center cursor-pointer hover:text-white transition"
+                    onClick={() => toggleSort("kills")}
+                  >
+                    K {sortBy === "kills" ? (sortDir === "desc" ? "▼" : "▲") : ""}
+                  </th>
+                  <th className="px-3 py-4 text-center">D</th>
+                  <th className="px-3 py-4 text-center">A</th>
+                  <th
+                    className="px-4 py-4 text-center cursor-pointer hover:text-white transition"
+                    onClick={() => toggleSort("kd")}
+                  >
+                    K/D {sortBy === "kd" ? (sortDir === "desc" ? "▼" : "▲") : ""}
+                  </th>
+                  <th
+                    className="px-4 py-4 text-center cursor-pointer text-[#22d3ee] hover:brightness-125 transition"
+                    onClick={() => toggleSort("acs")}
+                  >
+                    ⚡ {game.statColumns.find((c) => c.key === "acs")?.label || "ACS"} {sortBy === "acs" ? (sortDir === "desc" ? "▼" : "▲") : ""}
+                  </th>
+                  <th className="px-3 py-4 text-center">
+                    {game.statColumns.find((c) => c.key === "adr")?.label || "ADR"}
+                  </th>
+                  <th className="px-3 py-4 text-center">
+                    {game.statColumns.find((c) => c.key === "kast")?.label || "KAST%"}
+                  </th>
+                  <th
+                    className="px-3 py-4 text-center cursor-pointer text-[#fbbf24] hover:brightness-125 transition"
+                    onClick={() => toggleSort("mvp")}
+                  >
+                    ★ MVP {sortBy === "mvp" ? (sortDir === "desc" ? "▼" : "▲") : ""}
+                  </th>
+                  <th className="px-3 py-4 text-center text-[#ff4d6a]">TF</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#1e1e3a] text-sm">
+                {visibleRows.length === 0 ? (
+                  <tr>
+                    <td colSpan={14} className="py-16 text-center">
+                      <div className="flex flex-col items-center justify-center">
+                        <span className="text-3xl mb-2">🔍</span>
+                        <h3 className="text-base font-black uppercase text-white">
+                          No Players Found
+                        </h3>
+                        <p className="mt-1 text-xs text-[#64748b]">
+                          Try adjusting your stage, team filter, or search query.
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  visibleRows.map((row, idx) => {
+                    const rank = idx + 1;
+                    const { ign, tag } = parseRiotName(row.player.name);
+                    const acs = row.acsMatches > 0 ? Math.round(row.acsTotal / row.acsMatches) : 0;
+                    const adr = row.adrMatches > 0 ? (row.adrTotal / row.adrMatches).toFixed(1) : "--";
+                    const kast = row.kastMatches > 0 ? (row.kastTotal / row.kastMatches).toFixed(1) + "%" : "--";
+                    const kdNum = row.deaths > 0 ? (row.kills / row.deaths) : row.kills;
+                    const kdStr = row.matches > 0 ? kdNum.toFixed(2) : "--";
+
+                    // Highlight top 3 medals
+                    const isRank1 = rank === 1;
+                    const isRank2 = rank === 2;
+                    const isRank3 = rank === 3;
+
+                    return (
+                      <tr
+                        key={row.player.id}
+                        className={`group transition hover:bg-[#0c0c18] ${
+                          isRank1
+                            ? "bg-[#f59e0b]/[0.03] border-l-2 border-l-[#f59e0b]"
+                            : isRank2
+                            ? "border-l-2 border-l-[#94a3b8]"
+                            : isRank3
+                            ? "border-l-2 border-l-[#d97706]"
+                            : ""
+                        }`}
+                      >
+                        {/* RANK BADGE */}
+                        <td className="px-5 py-4 text-center">
+                          {isRank1 ? (
+                            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-[#f59e0b]/60 bg-gradient-to-br from-[#f59e0b]/30 to-[#f59e0b]/10 text-xs font-black text-[#fbbf24] shadow-[0_0_12px_rgba(245,158,11,0.3)]">
+                              01
+                            </span>
+                          ) : isRank2 ? (
+                            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-400/50 bg-slate-400/10 text-xs font-black text-slate-200">
+                              02
+                            </span>
+                          ) : isRank3 ? (
+                            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-amber-700/50 bg-amber-700/10 text-xs font-black text-amber-400">
+                              03
+                            </span>
+                          ) : (
+                            <span className="text-xs font-mono font-bold text-[#64748b]">
+                              {String(rank).padStart(2, "0")}
+                            </span>
+                          )}
+                        </td>
+
+                        {/* PLAYER DETAILS */}
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#1e1e3a] bg-[#080812] text-xs font-black text-[#7c3aed] group-hover:border-[#7c3aed]/50 transition">
+                              {getInitials(row.player.name)}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-black uppercase tracking-tight text-white group-hover:text-[#22d3ee] transition-colors">
+                                  {ign}
+                                </span>
+                                {tag && (
+                                  <span className="rounded bg-[#1e1e3a]/90 px-1.5 py-0.5 text-[9px] font-mono font-bold text-[#a78bfa] border border-[#7c3aed]/30">
+                                    #{tag}
+                                  </span>
+                                )}
+                                {row.player.role === "Captain" && (
+                                  <span className="rounded bg-[#f59e0b]/15 border border-[#f59e0b]/40 px-1.5 py-0.5 text-[8px] font-black text-[#fbbf24]">
+                                    ★ IGL
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-[10px] text-[#64748b] font-medium">
+                                {row.team.name}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* FRANCHISE TEAM */}
+                        <td className="px-4 py-4">
+                          <Link
+                            href={`/tournament/teams/${row.team.id}`}
+                            className="inline-flex items-center gap-2 rounded-lg px-2 py-1 transition hover:bg-[#1e1e3a]/30"
+                          >
+                            {row.team.logo ? (
+                              <div className="relative h-5 w-5 shrink-0 overflow-hidden rounded-md border border-[#1e1e3a] bg-[#080812]">
+                                <Image
+                                  src={row.team.logo}
+                                  alt={row.team.name}
+                                  fill
+                                  className="object-contain p-0.5"
+                                />
+                              </div>
+                            ) : null}
+                            <span className="rounded bg-[#06b6d4]/10 border border-[#06b6d4]/30 px-1.5 py-0.5 text-[9px] font-black text-[#22d3ee]">
+                              [{row.team.tag}]
+                            </span>
+                          </Link>
+                        </td>
+
+                        {/* MATCHES PLAYED */}
+                        <td className="px-3 py-4 text-center font-black text-[#f1f5f9]">
+                          {row.matches}
+                        </td>
+
+                        {/* W - L */}
+                        <td className="px-3 py-4 text-center">
+                          {row.matches > 0 ? (
+                            <span className="text-xs font-bold">
+                              <span className="text-[#34d399] font-black">{row.wins}</span>
+                              <span className="text-[#475569] mx-1">-</span>
+                              <span className="text-[#ff4d6a] font-black">{row.losses}</span>
+                            </span>
+                          ) : (
+                            <span className="text-xs text-[#475569]">0 - 0</span>
+                          )}
+                        </td>
+
+                        {/* KILLS */}
+                        <td className="px-3 py-4 text-center font-black text-white">
+                          {row.kills}
+                        </td>
+
+                        {/* DEATHS */}
+                        <td className="px-3 py-4 text-center font-semibold text-[#ff4d6a]">
+                          {row.deaths}
+                        </td>
+
+                        {/* ASSISTS */}
+                        <td className="px-3 py-4 text-center font-semibold text-[#94a3b8]">
+                          {row.assists}
+                        </td>
+
+                        {/* K/D RATIO */}
+                        <td className="px-4 py-4 text-center">
+                          {row.matches > 0 ? (
+                            <span
+                              className={`rounded-lg px-2 py-1 text-xs font-black ${
+                                kdNum >= 1.3
+                                  ? "bg-[#10b981]/15 text-[#34d399] border border-[#10b981]/30"
+                                  : kdNum >= 1.0
+                                  ? "bg-[#06b6d4]/10 text-[#22d3ee] border border-[#06b6d4]/25"
+                                  : kdNum >= 0.8
+                                  ? "text-[#94a3b8]"
+                                  : "text-[#ff4d6a]"
+                              }`}
+                            >
+                              {kdStr}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-[#475569]">--</span>
+                          )}
+                        </td>
+
+                        {/* ACS RATING */}
+                        <td className="px-4 py-4 text-center">
+                          {row.matches > 0 ? (
+                            <span className="inline-flex items-center justify-center rounded-xl border border-[#06b6d4]/40 bg-[#06b6d4]/10 px-2.5 py-1 text-xs font-black text-[#22d3ee] shadow-[0_0_12px_rgba(6,182,212,0.15)]">
+                              {acs}
+                            </span>
+                          ) : (
+                            <span className="text-xs font-bold text-[#475569]">0</span>
+                          )}
+                        </td>
+
+                        {/* ADR */}
+                        <td className="px-3 py-4 text-center text-xs font-semibold text-[#94a3b8]">
+                          {adr}
+                        </td>
+
+                        {/* KAST% */}
+                        <td className="px-3 py-4 text-center text-xs font-semibold text-[#94a3b8]">
+                          {kast}
+                        </td>
+
+                        {/* MVP COUNT */}
+                        <td className="px-3 py-4 text-center">
+                          {row.mvp > 0 ? (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-[#f59e0b]/40 bg-[#f59e0b]/15 px-2 py-0.5 text-[10px] font-black text-[#fbbf24]">
+                              ★ {row.mvp}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-[#475569]">0</span>
+                          )}
+                        </td>
+
+                        {/* TOP FRAGGER COUNT */}
+                        <td className="px-3 py-4 text-center">
+                          {row.topFragger > 0 ? (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-[#ff2d55]/40 bg-[#ff2d55]/15 px-2 py-0.5 text-[10px] font-black text-[#ff4d6a]">
+                              ⚔️ {row.topFragger}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-[#475569]">0</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* ── Esports Metric Explainer Legends ──────────────────────────────── */}
+        <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl">
+            <div className="flex items-center gap-2 text-[#22d3ee]">
+              <span className="text-sm">⚡</span>
+              <span className="text-xs font-black uppercase tracking-wider">ACS (COMBAT SCORE)</span>
+            </div>
+            <p className="mt-2 text-[11px] text-[#94a3b8] leading-relaxed">
+              Average Combat Score calculated per round. High damage, multi-kills, and first bloods heavily boost this rating.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl">
+            <div className="flex items-center gap-2 text-[#ff4d6a]">
+              <span className="text-sm">⚔️</span>
+              <span className="text-xs font-black uppercase tracking-wider">K/D & ADR RATINGS</span>
+            </div>
+            <p className="mt-2 text-[11px] text-[#94a3b8] leading-relaxed">
+              Kill-to-Death ratio and Average Damage per Round. Accurately measures combat efficiency across every contested round.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl">
+            <div className="flex items-center gap-2 text-[#34d399]">
+              <span className="text-sm">🛡️</span>
+              <span className="text-xs font-black uppercase tracking-wider">KAST PERCENTAGE</span>
+            </div>
+            <p className="mt-2 text-[11px] text-[#94a3b8] leading-relaxed">
+              Percentage of rounds where the player got a Kill, Assist, Survived, or was Traded by a teammate.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl">
+            <div className="flex items-center gap-2 text-[#fbbf24]">
+              <span className="text-sm">🌟</span>
+              <span className="text-xs font-black uppercase tracking-wider">MVP & TOP FRAGGER</span>
+            </div>
+            <p className="mt-2 text-[11px] text-[#94a3b8] leading-relaxed">
+              MVP awards the highest impact performer on the winning team; TF awards the player with the highest total match kills.
+            </p>
+          </div>
+        </section>
+
+        {/* ── Modern Footer ────────────────────────────────────────────────── */}
+        <footer className="mt-12 flex flex-col justify-between items-center gap-4 border-t border-[#1e1e3a] pt-6 text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b] sm:flex-row">
+          <span>VALORANT TOURNAMENT // PLAYER TELEMETRY SYSTEM</span>
+          <span>POWERED BY RIOT GAMES API & HENRIKDEV TELEMETRY</span>
+        </footer>
+      </main>
+    </div>
+  );
 }

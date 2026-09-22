@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { Match, MatchStatus, Team } from "@/lib/types";
+import { getGameDefinition } from "@/lib/games/registry";
 
 const GROUP_FIXTURES = [
   { matchNumber: 1, team1Seed: 1, team2Seed: 2, map: "Lotus" },
@@ -68,7 +69,6 @@ function matchLabel(matchNumber: number) {
   if (matchNumber <= 12) {
     return `M${String(matchNumber).padStart(2, "0")}`;
   }
-
   return `M${matchNumber}`;
 }
 
@@ -135,9 +135,7 @@ function calculateStandings(teams: Team[], matches: Match[]) {
 
 function toDateTimeLocal(value?: string) {
   if (!value) return "";
-
   const date = new Date(value);
-
   if (Number.isNaN(date.getTime())) return "";
 
   const pad = (number: number) => String(number).padStart(2, "0");
@@ -166,9 +164,10 @@ export default function MatchCenterPage() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [stageFilter, setStageFilter] = useState("All");
 
-  const [activeSection, setActiveSection] = useState<
-    "group" | "phase2"
-  >("group");
+  const [activeSection, setActiveSection] = useState<"group" | "phase2">("group");
+  const [gameId, setGameId] = useState<string>("valorant");
+
+  const activeGame = useMemo(() => getGameDefinition(gameId), [gameId]);
 
   const loadData = async (isRefresh = false) => {
     try {
@@ -177,17 +176,18 @@ export default function MatchCenterPage() {
       }
       setError("");
 
-      const [teamsResponse, matchesResponse] = await Promise.all([
-        fetch("/api/teams?lite=1", {
-          cache: "no-store",
-        }),
-        fetch("/api/matches", {
-          cache: "no-store",
-        }),
+      const [teamsResponse, matchesResponse, settingsResponse] = await Promise.all([
+        fetch("/api/teams?lite=1", { cache: "no-store" }),
+        fetch("/api/matches", { cache: "no-store" }),
+        fetch("/api/settings", { cache: "no-store" }).catch(() => null),
       ]);
 
       const teamsData = teamsResponse.ok ? await teamsResponse.json() : null;
       const matchesData = matchesResponse.ok ? await matchesResponse.json() : null;
+      if (settingsResponse && settingsResponse.ok) {
+        const settingsData = await settingsResponse.json();
+        if (settingsData?.gameId) setGameId(settingsData.gameId);
+      }
 
       const teamList = Array.isArray(teamsData)
         ? teamsData
@@ -203,9 +203,7 @@ export default function MatchCenterPage() {
       setTeams([]);
       setMatches([]);
       setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to load tournament data.",
+        err instanceof Error ? err.message : "Failed to load tournament data.",
       );
     } finally {
       setLoading(false);
@@ -248,9 +246,7 @@ export default function MatchCenterPage() {
         setTeams((prev) => (prev.length > 0 ? prev : []));
         setMatches((prev) => (prev.length > 0 ? prev : []));
         setError(
-          err instanceof Error
-            ? err.message
-            : "Failed to load tournament data.",
+          err instanceof Error ? err.message : "Failed to load tournament data.",
         );
       } finally {
         setLoading(false);
@@ -303,21 +299,13 @@ export default function MatchCenterPage() {
     teams.length === 4 && completedGroupMatches === 12;
 
   const filteredMatches = useMemo(() => {
-    const source =
-      activeSection === "group"
-        ? groupMatches
-        : phase2Matches;
+    const source = activeSection === "group" ? groupMatches : phase2Matches;
 
     return source.filter((match) => {
       const query = search.trim().toLowerCase();
 
-      const team1 =
-        teams.find((team) => team.id === match.team1Id)
-          ?.name ?? "TBD";
-
-      const team2 =
-        teams.find((team) => team.id === match.team2Id)
-          ?.name ?? "TBD";
+      const team1 = teams.find((t) => t.id === match.team1Id)?.name ?? "TBD";
+      const team2 = teams.find((t) => t.id === match.team2Id)?.name ?? "TBD";
 
       const matchesSearch =
         !query ||
@@ -327,18 +315,12 @@ export default function MatchCenterPage() {
         match.map.toLowerCase().includes(query);
 
       const matchesStatus =
-        statusFilter === "All" ||
-        match.status === statusFilter;
+        statusFilter === "All" || match.status === statusFilter;
 
       const matchesStage =
-        stageFilter === "All" ||
-        match.stage === stageFilter;
+        stageFilter === "All" || match.stage === stageFilter;
 
-      return (
-        matchesSearch &&
-        matchesStatus &&
-        matchesStage
-      );
+      return matchesSearch && matchesStatus && matchesStage;
     });
   }, [
     activeSection,
@@ -352,11 +334,7 @@ export default function MatchCenterPage() {
 
   function getTeamName(teamId?: string) {
     if (!teamId) return "TBD";
-
-    return (
-      teams.find((team) => team.id === teamId)?.name ??
-      "TBD"
-    );
+    return teams.find((team) => team.id === teamId)?.name ?? "TBD";
   }
 
   function resetEditor() {
@@ -373,10 +351,7 @@ export default function MatchCenterPage() {
   function startNewGroupMatch() {
     const nextFixture = GROUP_FIXTURES.find(
       (fixture) =>
-        !matches.some(
-          (match) =>
-            match.matchNumber === fixture.matchNumber,
-        ),
+        !matches.some((match) => match.matchNumber === fixture.matchNumber),
     );
 
     if (!nextFixture) {
@@ -386,19 +361,11 @@ export default function MatchCenterPage() {
       return;
     }
 
-    const team1 = teams.find(
-      (team) => team.seed === nextFixture.team1Seed,
-    );
-
-    const team2 = teams.find(
-      (team) => team.seed === nextFixture.team2Seed,
-    );
+    const team1 = teams.find((team) => team.seed === nextFixture.team1Seed);
+    const team2 = teams.find((team) => team.seed === nextFixture.team2Seed);
 
     setEditor({
-      id: `M${String(nextFixture.matchNumber).padStart(
-        2,
-        "0",
-      )}`,
+      id: `M${String(nextFixture.matchNumber).padStart(2, "0")}`,
       matchNumber: String(nextFixture.matchNumber),
       stage: "Group Stage",
       team1Id: team1?.id ?? "",
@@ -431,9 +398,7 @@ export default function MatchCenterPage() {
       stage: "Group Stage",
       team1Id: match.team1Id,
       team2Id: match.team2Id,
-      scheduledAt: toDateTimeLocal(
-        match.scheduledAt,
-      ),
+      scheduledAt: toDateTimeLocal(match.scheduledAt),
       map: match.map,
       bestOf: String(match.bestOf),
       team1Score: String(match.team1Score),
@@ -487,38 +452,20 @@ export default function MatchCenterPage() {
       return;
     }
 
-    if (
-      editor.status === "Completed" &&
-      score1 === score2
-    ) {
-      setError(
-        "A completed Valorant match cannot have a tied final score.",
-      );
+    if (editor.status === "Completed" && score1 === score2) {
+      setError("A completed Valorant match cannot have a tied final score.");
       return;
     }
 
-    const existing = matches.find(
-      (match) =>
-        match.matchNumber === matchNumber,
-    );
+    const existing = matches.find((match) => match.matchNumber === matchNumber);
 
-    if (
-      existing &&
-      editor.id !== existing.id
-    ) {
-      setError(
-        `M${String(matchNumber).padStart(
-          2,
-          "0",
-        )} already exists.`,
-      );
+    if (existing && editor.id !== existing.id) {
+      setError(`M${String(matchNumber).padStart(2, "0")} already exists.`);
       return;
     }
 
     const payload = {
-      id:
-        editor.id ||
-        `M${String(matchNumber).padStart(2, "0")}`,
+      id: editor.id || `M${String(matchNumber).padStart(2, "0")}`,
       matchNumber,
       stage: "Group Stage",
       team1Id: editor.team1Id,
@@ -537,40 +484,28 @@ export default function MatchCenterPage() {
             ? editor.team1Id
             : editor.team2Id
           : undefined,
-      playerStats:
-        existing?.playerStats ?? [],
+      playerStats: existing?.playerStats ?? [],
     };
 
     try {
       setSaving(true);
 
       const response = existing
-        ? await fetch(
-            `/api/matches/${encodeURIComponent(
-              existing.id,
-            )}`,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(payload),
-            },
-          )
+        ? await fetch(`/api/matches/${encodeURIComponent(existing.id)}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          })
         : await fetch("/api/matches", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.error || "Failed to save match.",
-        );
+        throw new Error(data.error || "Failed to save match.");
       }
 
       setMessage(
@@ -583,19 +518,9 @@ export default function MatchCenterPage() {
       setIsEditorOpen(false);
 
       await loadData();
-
-      /*
-       * Phase 2 is checked after every Group Stage save.
-       * This makes progression automatic without requiring
-       * the admin to manually create M13–M16.
-       */
       await generateAutomaticPhase2();
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to save match.",
-      );
+      setError(err instanceof Error ? err.message : "Failed to save match.");
     } finally {
       setSaving(false);
     }
@@ -606,15 +531,17 @@ export default function MatchCenterPage() {
     stage: string,
     team1Id: string,
     team2Id: string,
-    existing?: Match,
+    existingMatch?: Match,
   ) {
-    if (!team1Id || !team2Id) {
+    const id = `M${matchNumber}`;
+
+    if (
+      existingMatch &&
+      existingMatch.team1Id === team1Id &&
+      existingMatch.team2Id === team2Id
+    ) {
       return;
     }
-
-    const id =
-      existing?.id ||
-      `M${String(matchNumber).padStart(2, "0")}`;
 
     const payload = {
       id,
@@ -622,35 +549,25 @@ export default function MatchCenterPage() {
       stage,
       team1Id,
       team2Id,
-      scheduledAt: existing?.scheduledAt || "",
-      map: existing?.map || "TBD",
-      bestOf: existing?.bestOf || 3,
-      team1Score: existing?.team1Score || 0,
-      team2Score: existing?.team2Score || 0,
-      status: existing?.status || "Scheduled",
-      winnerId: existing?.winnerId,
-      mvpPlayerId: existing?.mvpPlayerId,
-      topFraggerPlayerId:
-        existing?.topFraggerPlayerId,
-      playerStats: existing?.playerStats || [],
+      scheduledAt: existingMatch?.scheduledAt ?? "",
+      map: existingMatch?.map ?? "TBD",
+      bestOf: matchNumber === 16 ? 3 : 1,
+      team1Score: existingMatch?.team1Score ?? 0,
+      team2Score: existingMatch?.team2Score ?? 0,
+      status: existingMatch?.status ?? "Scheduled",
+      winnerId: existingMatch?.winnerId,
+      playerStats: existingMatch?.playerStats ?? [],
     };
 
-    const response = existing
-      ? await fetch(
-          `/api/matches/${encodeURIComponent(existing.id)}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          },
-        )
+    const response = existingMatch
+      ? await fetch(`/api/matches/${encodeURIComponent(existingMatch.id)}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        })
       : await fetch("/api/matches", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
 
@@ -658,124 +575,80 @@ export default function MatchCenterPage() {
 
     if (!response.ok) {
       throw new Error(
-        data.error ||
-          `Failed to create ${matchLabel(matchNumber)}.`,
+        data.error || `Failed to create automatic match ${id}.`,
       );
     }
   }
 
   async function generateAutomaticPhase2() {
-    if (generating) return;
-
     try {
       setGenerating(true);
-      setError("");
 
-      const latestMatchesResponse =
-        await fetch("/api/matches", {
-          cache: "no-store",
-        });
+      const [teamsResponse, matchesResponse] = await Promise.all([
+        fetch("/api/teams?lite=1", { cache: "no-store" }),
+        fetch("/api/matches", { cache: "no-store" }),
+      ]);
 
-      const latestMatchesData =
-        await latestMatchesResponse.json();
+      const teamsData = await teamsResponse.json();
+      const matchesData = await matchesResponse.json();
 
-      if (!latestMatchesResponse.ok) {
-        throw new Error(
-          latestMatchesData.error ||
-            "Failed to refresh matches.",
-        );
+      if (!teamsResponse.ok || !matchesResponse.ok) {
+        throw new Error("Unable to check tournament status.");
       }
+
+      const currentTeams: Team[] = (
+        Array.isArray(teamsData) ? teamsData : (teamsData?.teams ?? [])
+      ).sort((a: Team, b: Team) => a.seed - b.seed);
 
       const currentMatches: Match[] = (
-        latestMatchesData.matches ?? []
+        Array.isArray(matchesData)
+          ? matchesData
+          : (matchesData?.matches ?? [])
       ).map(normalizeMatch);
 
-      const currentGroupMatches =
-        currentMatches.filter(
-          (match) =>
-            match.stage === "Group Stage" &&
-            match.matchNumber >= 1 &&
-            match.matchNumber <= 12,
-        );
-
-      const completed = currentGroupMatches.filter(
-        (match) => match.status === "Completed",
-      );
-
-      /*
-       * NOTHING in Phase 2 is generated until all
-       * twelve Group Stage matches are completed.
-       */
-      if (
-        teams.length !== 4 ||
-        completed.length !== 12
-      ) {
+      if (currentTeams.length !== 4) {
         return;
       }
 
-      const currentStandings =
-        calculateStandings(
-          teams,
-          currentMatches,
-        );
+      const completedGroups = currentMatches.filter(
+        (match) =>
+          match.stage === "Group Stage" &&
+          match.matchNumber >= 1 &&
+          match.matchNumber <= 12 &&
+          match.status === "Completed",
+      );
 
-      if (currentStandings.length !== 4) {
+      if (completedGroups.length < 12) {
         return;
       }
 
-      const first = currentStandings[0].team.id;
-      const second = currentStandings[1].team.id;
-      const third = currentStandings[2].team.id;
-      const fourth = currentStandings[3].team.id;
-
-      /*
-       * M13 — Qualifier 1
-       * #1 vs #2
-       */
-      const m13 = currentMatches.find(
-        (match) => match.matchNumber === 13,
+      const calculatedStandings = calculateStandings(
+        currentTeams,
+        currentMatches,
       );
 
-      await createAutomaticMatch(
-        13,
-        "Qualifiers",
-        first,
-        second,
-        m13,
+      const [first, second, third, fourth] = calculatedStandings.map(
+        (row) => row.team.id,
       );
 
-      /*
-       * M14 — Elimination
-       * #3 vs #4
-       */
-      const m14 = currentMatches.find(
-        (match) => match.matchNumber === 14,
-      );
+      if (!first || !second || !third || !fourth) {
+        return;
+      }
 
-      await createAutomaticMatch(
-        14,
-        "Qualifiers",
-        third,
-        fourth,
-        m14,
-      );
+      const m13 = currentMatches.find((match) => match.matchNumber === 13);
+      const m14 = currentMatches.find((match) => match.matchNumber === 14);
 
-      /*
-       * Refresh so we have the latest M13/M14
-       * completion states.
-       */
-      const refreshedResponse =
-        await fetch("/api/matches", {
-          cache: "no-store",
-        });
+      await createAutomaticMatch(13, "Qualifiers", first, second, m13);
+      await createAutomaticMatch(14, "Qualifiers", third, fourth, m14);
 
-      const refreshedData =
-        await refreshedResponse.json();
+      const refreshedResponse = await fetch("/api/matches", {
+        cache: "no-store",
+      });
+      const refreshedData = await refreshedResponse.json();
 
       if (!refreshedResponse.ok) {
         throw new Error(
-          refreshedData.error ||
-            "Failed to refresh Phase 2.",
+          refreshedData.error || "Failed to refresh playoff matches.",
         );
       }
 
@@ -786,15 +659,10 @@ export default function MatchCenterPage() {
       const qualifier1 = refreshedMatches.find(
         (match) => match.matchNumber === 13,
       );
-
       const elimination = refreshedMatches.find(
         (match) => match.matchNumber === 14,
       );
 
-      /*
-       * M15 only exists after BOTH M13 and M14
-       * have been completed.
-       */
       if (
         qualifier1?.status === "Completed" &&
         elimination?.status === "Completed" &&
@@ -806,13 +674,9 @@ export default function MatchCenterPage() {
             ? qualifier1.team2Id
             : qualifier1.team1Id;
 
-        const winnerOfM14 =
-          elimination.winnerId;
+        const winnerOfM14 = elimination.winnerId;
 
-        if (
-          loserOfM13 &&
-          winnerOfM14
-        ) {
+        if (loserOfM13 && winnerOfM14) {
           const m15 = refreshedMatches.find(
             (match) => match.matchNumber === 15,
           );
@@ -827,22 +691,14 @@ export default function MatchCenterPage() {
         }
       }
 
-      /*
-       * Refresh again to check whether M15
-       * has completed.
-       */
-      const finalRefreshResponse =
-        await fetch("/api/matches", {
-          cache: "no-store",
-        });
-
-      const finalRefreshData =
-        await finalRefreshResponse.json();
+      const finalRefreshResponse = await fetch("/api/matches", {
+        cache: "no-store",
+      });
+      const finalRefreshData = await finalRefreshResponse.json();
 
       if (!finalRefreshResponse.ok) {
         throw new Error(
-          finalRefreshData.error ||
-            "Failed to refresh Grand Final progression.",
+          finalRefreshData.error || "Failed to refresh Grand Final progression.",
         );
       }
 
@@ -850,31 +706,16 @@ export default function MatchCenterPage() {
         finalRefreshData.matches ?? []
       ).map(normalizeMatch);
 
-      const finalM13 = finalMatches.find(
-        (match) => match.matchNumber === 13,
-      );
+      const finalM13 = finalMatches.find((match) => match.matchNumber === 13);
+      const finalM15 = finalMatches.find((match) => match.matchNumber === 15);
 
-      const finalM15 = finalMatches.find(
-        (match) => match.matchNumber === 15,
-      );
-
-      /*
-       * M16 — Grand Final
-       *
-       * Winner M13 vs Winner M15
-       *
-       * M16 is generated only after both
-       * prerequisite matches are completed.
-       */
       if (
         finalM13?.status === "Completed" &&
         finalM15?.status === "Completed" &&
         finalM13.winnerId &&
         finalM15.winnerId
       ) {
-        const m16 = finalMatches.find(
-          (match) => match.matchNumber === 16,
-        );
+        const m16 = finalMatches.find((match) => match.matchNumber === 16);
 
         await createAutomaticMatch(
           16,
@@ -899,16 +740,12 @@ export default function MatchCenterPage() {
 
   async function deleteGroupMatch(match: Match) {
     if (match.matchNumber > 12) {
-      setError(
-        "Automatic Phase 2 matches cannot be deleted manually.",
-      );
+      setError("Automatic Phase 2 matches cannot be deleted manually.");
       return;
     }
 
     const confirmed = window.confirm(
-      `Delete ${matchLabel(
-        match.matchNumber,
-      )}? This cannot be undone.`,
+      `Delete ${matchLabel(match.matchNumber)}? This cannot be undone.`,
     );
 
     if (!confirmed) return;
@@ -919,24 +756,16 @@ export default function MatchCenterPage() {
 
       const response = await fetch(
         `/api/matches/${encodeURIComponent(match.id)}`,
-        {
-          method: "DELETE",
-        },
+        { method: "DELETE" },
       );
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.error || "Failed to delete match.",
-        );
+        throw new Error(data.error || "Failed to delete match.");
       }
 
-      setMessage(
-        `${matchLabel(
-          match.matchNumber,
-        )} deleted successfully.`,
-      );
+      setMessage(`${matchLabel(match.matchNumber)} deleted successfully.`);
 
       if (editor.id === match.id) {
         resetEditor();
@@ -945,249 +774,285 @@ export default function MatchCenterPage() {
 
       await loadData();
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to delete match.",
-      );
+      setError(err instanceof Error ? err.message : "Failed to delete match.");
     }
   }
 
   async function refreshAndProgress() {
     setMessage("");
     setError("");
-
     await loadData();
     await generateAutomaticPhase2();
   }
 
-  function statusClass(status: MatchStatus) {
-    if (status === "Completed") {
-      return "border-emerald-500/40 bg-emerald-500/10 text-emerald-300";
+  function statusBadge(status: MatchStatus) {
+    switch (status) {
+      case "Live":
+        return (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#ff2d55]/40 bg-[#ff2d55]/15 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-[#ff4d6a]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#ff2d55] animate-pulse" />
+            LIVE
+          </span>
+        );
+      case "Completed":
+        return (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#10b981]/40 bg-[#10b981]/15 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-[#34d399]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#34d399]" />
+            COMPLETED
+          </span>
+        );
+      case "Cancelled":
+        return (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#64748b]/40 bg-[#64748b]/15 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-[#94a3b8]">
+            CANCELLED
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#f59e0b]/40 bg-[#f59e0b]/15 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-[#fbbf24]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#fbbf24]" />
+            SCHEDULED
+          </span>
+        );
     }
-
-    if (status === "Live") {
-      return "border-red-500/40 bg-red-500/10 text-red-300";
-    }
-
-    if (status === "Cancelled") {
-      return "border-zinc-600 bg-zinc-800 text-zinc-400";
-    }
-
-    return "border-yellow-500/30 bg-yellow-500/10 text-yellow-300";
   }
 
   return (
-    <main className="valorant-page min-h-screen bg-[#070a10] text-white">
-      <div className="mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8">
-        <header className="mb-8">
-          <div className="flex flex-col gap-4 border-b border-[#1c2635] pb-6 lg:flex-row lg:items-end lg:justify-between">
+    <div className="relative min-h-screen text-[#f1f5f9] pb-24">
+      {/* ── Ambient Neon Glow Orbs ────────────────────────────────────────── */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/12 blur-[180px]" />
+        <div className="absolute top-1/3 -right-40 h-[500px] w-[500px] rounded-full bg-[#ff2d55]/10 blur-[160px]" />
+        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#06b6d4]/8 blur-[160px]" />
+      </div>
+
+      {/* ── Modern Command Header ─────────────────────────────────────────── */}
+      <header className="sticky top-0 z-40 border-b border-white/[0.08] bg-[#030308]/85 px-4 py-3 backdrop-blur-2xl sm:px-8 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <Link
+              href="/admin"
+              className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.08] to-white/[0.02] text-sm font-black text-rose-400 shadow-inner transition hover:scale-105 hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300"
+              title="Return to Admin Hub"
+            >
+              <span className="drop-shadow-[0_0_8px_rgba(244,63,94,0.4)]">←</span>
+            </Link>
             <div>
-              <div className="mb-2 text-xs font-black tracking-[0.35em] text-red-400">
-                VALORANT TOURNAMENT
+              <div className="flex items-center gap-2">
+                <h1 className="text-base font-black tracking-tight sm:text-lg text-white">
+                  MATCH CENTRE{" "}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff2d55] to-[#9d63ff]">
+                    // FIXTURES & RESULTS
+                  </span>
+                </h1>
+                <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[9px] font-mono font-bold tracking-wider text-emerald-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  12 GROUP + 4 PLAYOFF
+                </span>
               </div>
-
-              <h1 className="text-3xl font-black tracking-tight sm:text-4xl">
-                MATCH CENTER
-              </h1>
-
-              <p className="mt-2 max-w-3xl text-sm text-[#7f91a8]">
-                Create and manage the 12 Group Stage
-                fixtures. Qualifiers and the Grand Final
-                are generated automatically from completed
-                results.
+              <p className="text-[10px] text-slate-400">
+                {activeGame.name} Tournament Bracket & Live Schedule Orchestrator
               </p>
             </div>
-
-            <div className="flex flex-wrap gap-2">
-              <Link
-                href="/admin"
-                className="rounded border border-[#29384d] bg-[#101722] px-4 py-2 text-xs font-black tracking-wide text-[#c9d7e8] hover:bg-[#162131]"
-              >
-                ADMIN HUB
-              </Link>
-
-              <Link
-                href="/teams"
-                className="rounded border border-[#29384d] bg-[#101722] px-4 py-2 text-xs font-black tracking-wide text-[#c9d7e8] hover:bg-[#162131]"
-              >
-                TEAMS
-              </Link>
-
-              <Link
-                href="/tournament"
-                className="rounded border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-black tracking-wide text-red-300 hover:bg-red-500/15"
-              >
-                PUBLIC SITE ↗
-              </Link>
-            </div>
           </div>
-        </header>
 
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href="/admin"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-[11px] font-bold tracking-wider text-slate-300 backdrop-blur-xl transition hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300 hover:scale-[1.02]"
+            >
+              <span>← ADMIN HUB</span>
+            </Link>
+
+            <Link
+              href="/teams"
+              className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/40 bg-gradient-to-r from-purple-600/25 to-purple-600/15 px-4 py-1.5 text-[11px] font-bold tracking-wider text-purple-300 backdrop-blur-xl transition hover:border-purple-400 hover:bg-purple-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:scale-[1.02]"
+            >
+              <span>TEAMS & ROSTERS</span>
+              <span className="text-xs">↗</span>
+            </Link>
+
+            <Link
+              href="/admin/settings"
+              className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-gradient-to-r from-amber-600/25 to-amber-600/15 px-4 py-1.5 text-[11px] font-bold tracking-wider text-amber-300 backdrop-blur-xl transition hover:border-amber-400 hover:bg-amber-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:scale-[1.02]"
+            >
+              <span>SETTINGS</span>
+              <span className="text-xs">⚙</span>
+            </Link>
+
+            <Link
+              href="/tournament"
+              target="_blank"
+              className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/40 bg-cyan-500/10 px-4 py-1.5 text-[11px] font-bold tracking-wider text-cyan-300 backdrop-blur-xl transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:scale-[1.02]"
+            >
+              <span>PUBLIC SITE</span>
+              <span className="text-xs">↗</span>
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* ── Main Dashboard Workspace ───────────────────────────────────────── */}
+      <main className="relative z-10 mx-auto max-w-7xl px-4 pt-8 sm:px-8">
+        {/* Metric Cards Row */}
         <section className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="rounded-xl border border-[#1d2a3b] bg-[#0d131d] p-5">
-            <div className="text-[10px] font-black tracking-[0.2em] text-[#687a91]">
-              TEAMS
+          <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#7c3aed]/40">
+            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+              TEAMS REGISTERED
             </div>
-            <div className="mt-2 text-3xl font-black">
+            <div className="mt-2 text-3xl font-black text-white">
               {teams.length}
             </div>
+            <p className="mt-1 text-[10px] text-[#64748b]">4 seeded teams required</p>
           </div>
 
-          <div className="rounded-xl border border-[#1d2a3b] bg-[#0d131d] p-5">
-            <div className="text-[10px] font-black tracking-[0.2em] text-[#687a91]">
-              GROUP MATCHES
+          <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#06b6d4]/40">
+            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#06b6d4]">
+              GROUP FIXTURES
             </div>
-            <div className="mt-2 text-3xl font-black">
+            <div className="mt-2 text-3xl font-black text-white">
               {groupMatches.length}
-              <span className="ml-2 text-sm text-[#667991]">
-                / 12
-              </span>
+              <span className="ml-1 text-sm font-bold text-[#64748b]">/ 12</span>
             </div>
+            <p className="mt-1 text-[10px] text-[#64748b]">Double round-robin</p>
           </div>
 
-          <div className="rounded-xl border border-[#1d2a3b] bg-[#0d131d] p-5">
-            <div className="text-[10px] font-black tracking-[0.2em] text-[#687a91]">
-              GROUP COMPLETED
+          <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#10b981]/40">
+            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#34d399]">
+              COMPLETED MATCHES
             </div>
-            <div className="mt-2 text-3xl font-black">
+            <div className="mt-2 text-3xl font-black text-[#34d399]">
               {completedGroupMatches}
-              <span className="ml-2 text-sm text-[#667991]">
-                / 12
-              </span>
+              <span className="ml-1 text-sm font-bold text-[#64748b]">/ 12</span>
             </div>
+            <p className="mt-1 text-[10px] text-[#64748b]">Official results verified</p>
           </div>
 
-          <div className="rounded-xl border border-[#1d2a3b] bg-[#0d131d] p-5">
-            <div className="text-[10px] font-black tracking-[0.2em] text-[#687a91]">
-              PHASE 2
+          <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#f59e0b]/40">
+            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#fbbf24]">
+              PLAYOFF BRACKET
             </div>
-            <div className="mt-2 text-3xl font-black">
+            <div className="mt-2 text-3xl font-black text-white">
               {phase2Matches.length}
-              <span className="ml-2 text-sm text-[#667991]">
-                / 4
-              </span>
+              <span className="ml-1 text-sm font-bold text-[#64748b]">/ 4</span>
             </div>
+            <p className="mt-1 text-[10px] text-[#64748b]">Q1, Elim, Q2, GF</p>
           </div>
 
           <div
-            className={`rounded-xl border p-5 ${
+            className={`rounded-2xl border p-5 backdrop-blur-xl ${
               groupStageComplete
-                ? "border-emerald-500/30 bg-emerald-500/10"
-                : "border-[#1d2a3b] bg-[#0d131d]"
+                ? "border-[#10b981]/40 bg-[#10b981]/10 shadow-[0_0_25px_rgba(16,185,129,0.15)]"
+                : "border-[#1e1e3a] bg-[#0c0c18]/85"
             }`}
           >
-            <div className="text-[10px] font-black tracking-[0.2em] text-[#687a91]">
-              TOURNAMENT FLOW
+            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+              STAGE STATUS
             </div>
             <div
-              className={`mt-2 text-sm font-black ${
-                groupStageComplete
-                  ? "text-emerald-300"
-                  : "text-[#c8d3e1]"
+              className={`mt-2 flex items-center gap-2 text-sm font-black uppercase ${
+                groupStageComplete ? "text-[#34d399]" : "text-[#f1f5f9]"
               }`}
             >
-              {groupStageComplete
-                ? "PHASE 2 READY"
-                : "GROUP STAGE ACTIVE"}
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  groupStageComplete ? "bg-[#34d399] animate-pulse" : "bg-[#06b6d4]"
+                }`}
+              />
+              {groupStageComplete ? "PHASE 2 READY" : "GROUP STAGE ACTIVE"}
             </div>
+            <p className="mt-1 text-[10px] text-[#64748b]">
+              {groupStageComplete ? "Playoffs in progress" : "12 group games running"}
+            </p>
           </div>
         </section>
 
-        <section className="mb-6 overflow-hidden rounded-xl border border-[#1d2a3b] bg-[#0b111a]">
-          <div className="border-b border-[#1d2a3b] p-5">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <h2 className="text-lg font-black">
-                  TOURNAMENT PROGRESSION
-                </h2>
-                <p className="mt-1 text-xs text-[#70829a]">
-                  Phase 2 is controlled entirely by completed
-                  results.
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={refreshAndProgress}
-                disabled={generating}
-                className="rounded border border-[#33455d] bg-[#111a27] px-4 py-2 text-xs font-black text-[#c8d7e9] hover:bg-[#172234] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {generating
-                  ? "CHECKING..."
-                  : "CHECK AUTO PROGRESSION"}
-              </button>
+        {/* Progression Stepper Card */}
+        <section className="mb-8 overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 backdrop-blur-xl">
+          <div className="flex flex-col gap-3 border-b border-[#1e1e3a] p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#7c3aed]">
+                AUTOMATED IPL BRACKET SYSTEM
+              </p>
+              <h2 className="mt-0.5 text-lg font-black uppercase tracking-tight text-white">
+                Tournament Stage Pipeline
+              </h2>
             </div>
+
+            <button
+              type="button"
+              onClick={refreshAndProgress}
+              disabled={generating}
+              className="inline-flex items-center gap-2 rounded-xl border border-[#7c3aed]/40 bg-[#7c3aed]/15 px-4 py-2 text-xs font-black uppercase tracking-widest text-[#a78bfa] transition hover:bg-[#7c3aed]/25 disabled:opacity-50"
+            >
+              {generating ? (
+                <>
+                  <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-[#a78bfa] border-t-transparent" />
+                  <span>Checking Progression...</span>
+                </>
+              ) : (
+                <span>Check Auto Progression ⟳</span>
+              )}
+            </button>
           </div>
 
-          <div className="grid gap-px bg-[#1d2a3b] sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-px bg-[#1e1e3a] sm:grid-cols-2 lg:grid-cols-4">
             {[
               {
                 number: "01",
                 title: "GROUP STAGE",
-                text: "M01–M12",
+                text: "M01–M12 Double Round",
                 active: !groupStageComplete,
               },
               {
                 number: "02",
                 title: "QUALIFIERS",
-                text: "M13–M14",
-                active:
-                  groupStageComplete &&
-                  phase2Matches.length < 2,
+                text: "M13 (1v2) & M14 (3v4)",
+                active: groupStageComplete && phase2Matches.length < 2,
               },
               {
                 number: "03",
                 title: "LOWER QUALIFIER",
-                text: "M15",
+                text: "M15 (Loser Q1 vs Winner Elim)",
                 active:
                   phase2Matches.some(
-                    (match) =>
-                      match.matchNumber === 13 &&
-                      match.status === "Completed",
+                    (m) => m.matchNumber === 13 && m.status === "Completed",
                   ) &&
                   phase2Matches.some(
-                    (match) =>
-                      match.matchNumber === 14 &&
-                      match.status === "Completed",
+                    (m) => m.matchNumber === 14 && m.status === "Completed",
                   ),
               },
               {
                 number: "04",
                 title: "GRAND FINAL",
-                text: "M16",
-                active:
-                  phase2Matches.some(
-                    (match) =>
-                      match.matchNumber === 15 &&
-                      match.status === "Completed",
-                  ),
+                text: "M16 (Winner Q1 vs Winner Q2)",
+                active: phase2Matches.some(
+                  (m) => m.matchNumber === 15 && m.status === "Completed",
+                ),
               },
             ].map((step) => (
-              <div
-                key={step.number}
-                className="bg-[#0b111a] p-5"
-              >
-                <div className="text-xs font-black text-red-400">
+              <div key={step.number} className="bg-[#0c0c18] p-5">
+                <span className="text-xs font-black text-[#ff2d55]">
                   {step.number}
-                </div>
-                <div className="mt-2 text-sm font-black">
+                </span>
+                <h3 className="mt-1 text-sm font-black uppercase text-white">
                   {step.title}
-                </div>
-                <div className="mt-1 text-xs text-[#71839a]">
-                  {step.text}
-                </div>
-
+                </h3>
+                <p className="mt-1 text-xs text-[#64748b]">{step.text}</p>
                 <div
-                  className={`mt-4 inline-flex rounded-full border px-2 py-1 text-[9px] font-black tracking-wider ${
+                  className={`mt-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider ${
                     step.active
-                      ? "border-red-500/30 bg-red-500/10 text-red-300"
-                      : "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                      ? "border border-[#06b6d4]/40 bg-[#06b6d4]/10 text-[#22d3ee]"
+                      : "border border-[#1e1e3a] bg-[#080812] text-[#64748b]"
                   }`}
                 >
-                  {step.active
-                    ? "ACTIVE"
-                    : "READY / COMPLETE"}
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      step.active ? "bg-[#22d3ee] animate-pulse" : "bg-[#475569]"
+                    }`}
+                  />
+                  {step.active ? "ACTIVE STAGE" : "STANDBY / DONE"}
                 </div>
               </div>
             ))}
@@ -1195,277 +1060,220 @@ export default function MatchCenterPage() {
         </section>
 
         {error && (
-          <div className="mb-5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-            {error}
+          <div className="mb-6 flex items-center gap-3 rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55]/10 p-4 text-sm font-semibold text-[#ff4d6a] shadow-[0_0_20px_rgba(255,45,85,0.15)]">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#ff2d55]/20 text-xs font-black">!</span>
+            <span>{error}</span>
           </div>
         )}
 
         {message && (
-          <div className="mb-5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
-            {message}
+          <div className="mb-6 flex items-center gap-3 rounded-xl border border-[#10b981]/40 bg-[#10b981]/10 p-4 text-sm font-semibold text-[#34d399] shadow-[0_0_20px_rgba(16,185,129,0.15)]">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#10b981]/20 text-xs font-black">✓</span>
+            <span>{message}</span>
           </div>
         )}
 
-        <div className="grid gap-6 xl:grid-cols-[1fr_400px]">
-          <section className="min-w-0">
-            <div className="mb-4 flex flex-col gap-3 rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex rounded-lg border border-[#26364b] bg-[#080d14] p-1">
+        {/* ── Two-Column Layout (Match Feed + Sidebar) ───────────────────────── */}
+        <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
+          {/* Main Feed Column */}
+          <section className="min-w-0 space-y-4">
+            {/* Section Switcher & New Match CTA */}
+            <div className="flex flex-col gap-3 rounded-2xl border border-white/[0.08] bg-[#0c0c18]/85 p-3.5 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between shadow-[0_4px_25px_rgba(0,0,0,0.4)]">
+              <div className="inline-flex rounded-full border border-white/[0.08] bg-white/[0.03] p-1 backdrop-blur-xl">
                 <button
                   type="button"
-                  onClick={() =>
-                    setActiveSection("group")
-                  }
-                  className={`rounded px-4 py-2 text-xs font-black ${
+                  onClick={() => setActiveSection("group")}
+                  className={`rounded-full px-4 py-2 text-xs font-black uppercase tracking-wider transition ${
                     activeSection === "group"
-                      ? "bg-red-500 text-white"
-                      : "text-[#7d8ea5]"
+                      ? "bg-gradient-to-r from-rose-500 to-rose-600 text-white shadow-[0_0_15px_rgba(244,63,94,0.4)]"
+                      : "text-slate-400 hover:text-white"
                   }`}
                 >
-                  GROUP STAGE
+                  GROUP STAGE (M01–M12)
                 </button>
 
                 <button
                   type="button"
-                  onClick={() =>
-                    setActiveSection("phase2")
-                  }
-                  className={`rounded px-4 py-2 text-xs font-black ${
+                  onClick={() => setActiveSection("phase2")}
+                  className={`rounded-full px-4 py-2 text-xs font-black uppercase tracking-wider transition ${
                     activeSection === "phase2"
-                      ? "bg-red-500 text-white"
-                      : "text-[#7d8ea5]"
+                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-[0_0_15px_rgba(168,85,247,0.4)]"
+                      : "text-slate-400 hover:text-white"
                   }`}
                 >
-                  AUTO PHASE 2
+                  AUTO PLAYOFFS (M13–M16)
                 </button>
               </div>
 
               <button
                 type="button"
                 onClick={startNewGroupMatch}
-                disabled={
-                  teams.length !== 4 ||
-                  groupMatches.length >= 12
-                }
-                className="rounded bg-red-500 px-4 py-2 text-xs font-black text-white hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-40"
+                disabled={teams.length !== 4 || groupMatches.length >= 12}
+                className="inline-flex items-center justify-center gap-1.5 rounded-full border border-rose-500/40 bg-gradient-to-r from-rose-600 to-[#ff2d55] px-5 py-2.5 text-xs font-black uppercase tracking-widest text-white shadow-[0_0_20px_rgba(255,45,85,0.3)] transition hover:brightness-110 hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
               >
-                + NEW GROUP MATCH
+                <span>+ NEW GROUP MATCH</span>
               </button>
             </div>
 
-            <div className="mb-4 grid gap-3 md:grid-cols-[1fr_180px_180px]">
+            {/* Filter Bar */}
+            <div className="grid gap-3 rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-4 backdrop-blur-xl md:grid-cols-[1fr_180px_180px]">
               <input
                 value={search}
-                onChange={(event) =>
-                  setSearch(event.target.value)
-                }
-                placeholder="Search match, team or map..."
-                className="rounded-lg border border-[#26364b] bg-[#0d141f] px-4 py-3 text-sm text-white outline-none placeholder:text-[#53647b] focus:border-red-500/50"
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search match ID, team name or map..."
+                className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-4 py-2.5 text-xs font-semibold text-white outline-none placeholder:text-[#475569] focus:border-[#06b6d4]"
               />
 
               <select
                 value={statusFilter}
-                onChange={(event) =>
-                  setStatusFilter(event.target.value)
-                }
-                className="rounded-lg border border-[#26364b] bg-[#0d141f] px-4 py-3 text-sm text-white outline-none"
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-xs font-semibold text-white outline-none"
               >
-                <option value="All">
-                  All Statuses
-                </option>
-                <option value="Scheduled">
-                  Scheduled
-                </option>
-                <option value="Live">
-                  Live
-                </option>
-                <option value="Completed">
-                  Completed
-                </option>
-                <option value="Cancelled">
-                  Cancelled
-                </option>
+                <option value="All">All Statuses</option>
+                <option value="Scheduled">Scheduled</option>
+                <option value="Live">Live</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
               </select>
 
               <select
                 value={stageFilter}
-                onChange={(event) =>
-                  setStageFilter(event.target.value)
-                }
-                className="rounded-lg border border-[#26364b] bg-[#0d141f] px-4 py-3 text-sm text-white outline-none"
+                onChange={(e) => setStageFilter(e.target.value)}
+                className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-xs font-semibold text-white outline-none"
               >
-                <option value="All">
-                  All Stages
-                </option>
-                <option value="Group Stage">
-                  Group Stage
-                </option>
-                <option value="Qualifiers">
-                  Qualifiers
-                </option>
-                <option value="Grand Final">
-                  Grand Final
-                </option>
+                <option value="All">All Stages</option>
+                <option value="Group Stage">Group Stage</option>
+                <option value="Qualifiers">Qualifiers</option>
+                <option value="Grand Final">Grand Final</option>
               </select>
             </div>
 
-            <div className="space-y-3">
+            {/* Match Cards List */}
+            <div className="space-y-4">
               {loading ? (
-                <div className="rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-10 text-center text-sm text-[#71839a]">
-                  Loading matches...
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="h-32 animate-pulse rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85"
+                    />
+                  ))}
                 </div>
               ) : filteredMatches.length === 0 ? (
-                <div className="rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-10 text-center">
-                  <div className="text-sm font-black">
-                    No matches found
-                  </div>
-                  <div className="mt-2 text-xs text-[#667991]">
+                <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-12 text-center backdrop-blur-xl">
+                  <p className="text-base font-black text-white">No matches found</p>
+                  <p className="mt-1 text-xs text-[#64748b]">
                     {activeSection === "group"
-                      ? "Create the Group Stage fixtures M01–M12."
-                      : "Phase 2 matches will appear automatically."}
-                  </div>
+                      ? "Create the Group Stage fixtures M01–M12 using '+ NEW GROUP MATCH'."
+                      : "Phase 2 matches will appear automatically when Group Stage concludes."}
+                  </p>
                 </div>
               ) : (
                 filteredMatches.map((match) => {
-                  const isAutomatic =
-                    match.matchNumber >= 13;
+                  const isAutomatic = match.matchNumber >= 13;
 
                   return (
                     <div
                       key={match.id}
-                      className="rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-5"
+                      className="group relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#7c3aed]/50 hover:shadow-[0_0_30px_rgba(124,58,237,0.08)] sm:p-6"
                     >
-                      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="min-w-[58px] rounded border border-[#2b3d55] bg-[#101925] px-2 py-2 text-center">
-                            <div className="text-[9px] font-black text-[#687b94]">
-                              MATCH
-                            </div>
-                            <div className="mt-1 text-sm font-black">
-                              {matchLabel(
-                                match.matchNumber,
-                              )}
-                            </div>
-                          </div>
+                      {/* Top Header */}
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1e1e3a] pb-4">
+                        <div className="flex items-center gap-2.5">
+                          <span className="flex h-7 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 text-xs font-black tracking-wider text-white">
+                            {matchLabel(match.matchNumber)}
+                          </span>
 
-                          <div>
-                            <div className="text-xs font-black tracking-wider text-red-400">
-                              {isAutomatic
-                                ? phaseLabel(
-                                    match.matchNumber,
-                                  )
-                                : "GROUP STAGE"}
-                            </div>
+                          <span className="rounded-lg border border-[#ff2d55]/30 bg-[#ff2d55]/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-[#ff4d6a]">
+                            {isAutomatic ? phaseLabel(match.matchNumber) : "GROUP STAGE"}
+                          </span>
 
-                            <div className="mt-1 text-[11px] text-[#667991]">
-                              {match.map} · BO{match.bestOf}
-                            </div>
-                          </div>
+                          <span className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-[#94a3b8]">
+                            {match.map || "TBD"} • BO{match.bestOf}
+                          </span>
 
                           {isAutomatic && (
-                            <span className="rounded-full border border-purple-500/30 bg-purple-500/10 px-2 py-1 text-[9px] font-black text-purple-300">
+                            <span className="rounded-full border border-[#7c3aed]/40 bg-[#7c3aed]/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#a78bfa]">
                               AUTO
                             </span>
                           )}
                         </div>
 
-                        <span
-                          className={`w-fit rounded-full border px-3 py-1 text-[10px] font-black ${statusClass(
-                            match.status,
-                          )}`}
-                        >
-                          {match.status.toUpperCase()}
-                        </span>
+                        {statusBadge(match.status)}
                       </div>
 
+                      {/* Versus Arena */}
                       <div className="mt-5 grid items-center gap-4 md:grid-cols-[1fr_auto_1fr]">
-                        <div className="rounded-lg border border-[#1d2a3b] bg-[#0e151f] p-4 md:text-right">
-                          <div className="text-sm font-black">
-                            {getTeamName(
-                              match.team1Id,
-                            )}
-                          </div>
+                        <div className="rounded-xl border border-[#1e1e3a]/60 bg-[#080812]/70 p-4 md:text-right">
+                          <p className="text-base font-black uppercase tracking-tight text-white">
+                            {getTeamName(match.team1Id)}
+                          </p>
                         </div>
 
-                        <div className="text-center">
-                          <div className="text-3xl font-black tracking-wider">
-                            {match.team1Score}
-                            <span className="mx-2 text-[#45566e]">
-                              :
-                            </span>
+                        <div className="text-center px-4">
+                          <div className="text-3xl font-black tracking-tight text-white">
+                            {match.team1Score}{" "}
+                            <span className="text-[#475569]">:</span>{" "}
                             {match.team2Score}
                           </div>
 
                           {match.winnerId && (
-                            <div className="mt-1 text-[9px] font-black tracking-wider text-emerald-400">
-                              WINNER:{" "}
-                              {getTeamName(
-                                match.winnerId,
-                              )}
-                            </div>
+                            <p className="mt-1 text-[9px] font-black uppercase tracking-wider text-[#34d399]">
+                              WINNER: {getTeamName(match.winnerId)}
+                            </p>
                           )}
                         </div>
 
-                        <div className="rounded-lg border border-[#1d2a3b] bg-[#0e151f] p-4">
-                          <div className="text-sm font-black">
-                            {getTeamName(
-                              match.team2Id,
-                            )}
-                          </div>
+                        <div className="rounded-xl border border-[#1e1e3a]/60 bg-[#080812]/70 p-4">
+                          <p className="text-base font-black uppercase tracking-tight text-white">
+                            {getTeamName(match.team2Id)}
+                          </p>
                         </div>
                       </div>
 
-                      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[#1b2737] pt-4">
-                        <div className="text-xs text-[#667991]">
+                      {/* Actions Footer */}
+                      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#1e1e3a] pt-4">
+                        <span className="text-xs font-semibold text-[#64748b]">
                           {match.scheduledAt
-                            ? new Date(
-                                match.scheduledAt,
-                              ).toLocaleString()
+                            ? new Date(match.scheduledAt).toLocaleString()
                             : "Schedule TBD"}
-                        </div>
+                        </span>
 
-                        {!isAutomatic ? (
-                          <div className="flex gap-2">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                editMatch(match)
-                              }
-                              className="rounded border border-[#304159] bg-[#111a27] px-3 py-2 text-[10px] font-black text-[#bdcde0] hover:bg-[#182435]"
-                            >
-                              EDIT
-                            </button>
+                        <div className="flex flex-wrap items-center gap-2">
+                          {!isAutomatic ? (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => editMatch(match)}
+                                className="rounded-xl border border-[#1e1e3a] bg-[#080812] px-3.5 py-2 text-[10px] font-black uppercase tracking-wider text-[#94a3b8] transition hover:border-white hover:text-white"
+                              >
+                                EDIT
+                              </button>
 
+                              <Link
+                                href={`/matches/${encodeURIComponent(match.id)}`}
+                                className="rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55]/10 px-4 py-2 text-[10px] font-black uppercase tracking-wider text-[#ff4d6a] transition hover:bg-[#ff2d55]/20 hover:shadow-[0_0_15px_rgba(255,45,85,0.2)]"
+                              >
+                                RECORD RESULT ↗
+                              </Link>
+
+                              <button
+                                type="button"
+                                onClick={() => deleteGroupMatch(match)}
+                                className="rounded-xl border border-[#ff2d55]/20 bg-[#ff2d55]/5 px-3 py-2 text-[10px] font-black uppercase tracking-wider text-[#ff4d6a]/80 transition hover:bg-[#ff2d55]/15"
+                              >
+                                DELETE
+                              </button>
+                            </>
+                          ) : (
                             <Link
-                              href={`/matches/${encodeURIComponent(
-                                match.id,
-                              )}`}
-                              className="rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-[10px] font-black text-red-300 hover:bg-red-500/15"
+                              href={`/matches/${encodeURIComponent(match.id)}`}
+                              className="rounded-xl border border-[#7c3aed]/40 bg-[#7c3aed]/15 px-4 py-2 text-[10px] font-black uppercase tracking-wider text-[#a78bfa] transition hover:bg-[#7c3aed]/25"
                             >
-                              RESULT
+                              VIEW / EDIT RESULT ↗
                             </Link>
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                deleteGroupMatch(
-                                  match,
-                                )
-                              }
-                              className="rounded border border-red-900/50 bg-red-950/30 px-3 py-2 text-[10px] font-black text-red-400 hover:bg-red-950/50"
-                            >
-                              DELETE
-                            </button>
-                          </div>
-                        ) : (
-                          <Link
-                            href={`/matches/${encodeURIComponent(
-                              match.id,
-                            )}`}
-                            className="rounded border border-purple-500/30 bg-purple-500/10 px-3 py-2 text-[10px] font-black text-purple-300"
-                          >
-                            VIEW RESULT
-                          </Link>
-                        )}
+                          )}
+                        </div>
                       </div>
                     </div>
                   );
@@ -1474,537 +1282,376 @@ export default function MatchCenterPage() {
             </div>
           </section>
 
+          {/* Right Sidebar Column */}
           <aside className="space-y-6">
-            <section className="rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-5">
-              <div className="flex items-center justify-between">
+            {/* Live Standings Panel */}
+            <section className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl">
+              <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
                 <div>
-                  <h2 className="text-lg font-black">
-                    GROUP STANDINGS
-                  </h2>
-                  <p className="mt-1 text-[10px] text-[#65778f]">
-                    3 points per win · RD tiebreak
+                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#06b6d4]">
+                    GROUP STAGE
                   </p>
+                  <h3 className="mt-0.5 text-base font-black uppercase tracking-tight text-white">
+                    Standings Table
+                  </h3>
                 </div>
-
-                <span className="rounded border border-[#29394f] bg-[#111a26] px-2 py-1 text-[9px] font-black text-[#7890aa]">
+                <span className="rounded-full border border-[#06b6d4]/30 bg-[#06b6d4]/10 px-2.5 py-0.5 text-[9px] font-black text-[#22d3ee]">
                   LIVE
                 </span>
               </div>
 
-              <div className="mt-5 overflow-hidden rounded-lg border border-[#1d2a3b]">
-                <div className="grid grid-cols-[30px_1fr_34px_34px_45px] gap-2 border-b border-[#1d2a3b] bg-[#101722] px-3 py-2 text-[8px] font-black tracking-wider text-[#62748c]">
+              <div className="mt-5 overflow-hidden rounded-xl border border-[#1e1e3a]">
+                <div className="grid grid-cols-[28px_1fr_32px_32px_44px] gap-2 border-b border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-[9px] font-black tracking-wider text-[#64748b]">
                   <div>#</div>
                   <div>TEAM</div>
-                  <div>W</div>
-                  <div>L</div>
-                  <div>PTS</div>
+                  <div className="text-center">W</div>
+                  <div className="text-center">L</div>
+                  <div className="text-right">PTS</div>
                 </div>
 
-                {standings.map(
-                  (row, index) => (
-                    <div
-                      key={row.team.id}
-                      className="grid grid-cols-[30px_1fr_34px_34px_45px] gap-2 border-b border-[#151f2d] px-3 py-3 last:border-b-0"
-                    >
-                      <div className="text-xs font-black text-[#71839b]">
-                        {index + 1}
-                      </div>
-
-                      <div className="min-w-0">
-                        <div className="truncate text-xs font-black">
-                          {row.team.name}
-                        </div>
-                        <div className="mt-1 text-[8px] text-[#5f7189]">
-                          RD {row.roundDiff >= 0 ? "+" : ""}
-                          {row.roundDiff}
-                        </div>
-                      </div>
-
-                      <div className="text-xs font-black text-emerald-300">
-                        {row.wins}
-                      </div>
-
-                      <div className="text-xs font-black text-red-300">
-                        {row.losses}
-                      </div>
-
-                      <div className="text-xs font-black">
-                        {row.points}
-                      </div>
+                {standings.map((row, index) => (
+                  <div
+                    key={row.team.id}
+                    className="grid grid-cols-[28px_1fr_32px_32px_44px] items-center gap-2 border-b border-[#1e1e3a] px-3 py-3 last:border-b-0 hover:bg-[#080812]/50"
+                  >
+                    <div className="text-xs font-black text-[#64748b]">
+                      {index + 1}
                     </div>
-                  ),
-                )}
+
+                    <div className="min-w-0">
+                      <p className="truncate text-xs font-black uppercase text-white">
+                        {row.team.name}
+                      </p>
+                      <p className="text-[9px] font-bold text-[#64748b]">
+                        RD {row.roundDiff >= 0 ? `+${row.roundDiff}` : row.roundDiff}
+                      </p>
+                    </div>
+
+                    <div className="text-center text-xs font-black text-[#34d399]">
+                      {row.wins}
+                    </div>
+
+                    <div className="text-center text-xs font-black text-[#ff4d6a]">
+                      {row.losses}
+                    </div>
+
+                    <div className="text-right text-xs font-black text-white">
+                      {row.points}
+                    </div>
+                  </div>
+                ))}
               </div>
             </section>
 
-            <section className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5">
-              <div className="text-[10px] font-black tracking-[0.2em] text-purple-300">
-                AUTOMATIC FLOW
+            {/* Playoff Auto Flow Rules */}
+            <section className="rounded-2xl border border-[#7c3aed]/30 bg-[#0c0c18]/85 p-6 backdrop-blur-xl">
+              <div className="border-b border-[#1e1e3a] pb-3">
+                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#a78bfa]">
+                  AUTOMATED SEEDING
+                </p>
+                <h3 className="mt-0.5 text-base font-black uppercase tracking-tight text-white">
+                  Playoff Progression
+                </h3>
               </div>
 
               <div className="mt-4 space-y-3">
-                <div className="flex gap-3">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-purple-500/15 text-[10px] font-black text-purple-300">
+                <div className="flex items-center gap-3 rounded-xl border border-[#1e1e3a] bg-[#080812] p-3">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#7c3aed]/20 text-xs font-black text-[#a78bfa]">
                     13
-                  </div>
+                  </span>
                   <div>
-                    <div className="text-xs font-black">
-                      Q1
-                    </div>
-                    <div className="mt-1 text-[10px] text-[#70829a]">
-                      Group #1 vs #2
-                    </div>
+                    <p className="text-xs font-black text-white">Q1 (Qualifier 1)</p>
+                    <p className="text-[10px] text-[#64748b]">Group Rank #1 vs Group Rank #2</p>
                   </div>
                 </div>
 
-                <div className="flex gap-3">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-purple-500/15 text-[10px] font-black text-purple-300">
+                <div className="flex items-center gap-3 rounded-xl border border-[#1e1e3a] bg-[#080812] p-3">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#7c3aed]/20 text-xs font-black text-[#a78bfa]">
                     14
-                  </div>
+                  </span>
                   <div>
-                    <div className="text-xs font-black">
-                      ELIMINATION
-                    </div>
-                    <div className="mt-1 text-[10px] text-[#70829a]">
-                      Group #3 vs #4
-                    </div>
+                    <p className="text-xs font-black text-white">ELIM (Elimination)</p>
+                    <p className="text-[10px] text-[#64748b]">Group Rank #3 vs Group Rank #4</p>
                   </div>
                 </div>
 
-                <div className="flex gap-3">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-purple-500/15 text-[10px] font-black text-purple-300">
+                <div className="flex items-center gap-3 rounded-xl border border-[#1e1e3a] bg-[#080812] p-3">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#7c3aed]/20 text-xs font-black text-[#a78bfa]">
                     15
-                  </div>
+                  </span>
                   <div>
-                    <div className="text-xs font-black">
-                      Q2
-                    </div>
-                    <div className="mt-1 text-[10px] text-[#70829a]">
-                      Loser Q1 vs Winner Elimination
-                    </div>
+                    <p className="text-xs font-black text-white">Q2 (Qualifier 2)</p>
+                    <p className="text-[10px] text-[#64748b]">Loser of M13 vs Winner of M14</p>
                   </div>
                 </div>
 
-                <div className="flex gap-3">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-red-500/15 text-[10px] font-black text-red-300">
+                <div className="flex items-center gap-3 rounded-xl border border-[#ff2d55]/30 bg-[#ff2d55]/10 p-3">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#ff2d55]/20 text-xs font-black text-[#ff4d6a]">
                     16
-                  </div>
+                  </span>
                   <div>
-                    <div className="text-xs font-black">
-                      GRAND FINAL
-                    </div>
-                    <div className="mt-1 text-[10px] text-[#70829a]">
-                      Winner Q1 vs Winner Q2
-                    </div>
+                    <p className="text-xs font-black text-white">GRAND FINAL (BO3)</p>
+                    <p className="text-[10px] text-[#ff4d6a]">Winner of M13 vs Winner of M15</p>
                   </div>
                 </div>
               </div>
-            </section>
-
-            <section className="rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-5">
-              <div className="text-[10px] font-black tracking-[0.2em] text-[#687a91]">
-                ADMIN RULES
-              </div>
-
-              <ul className="mt-4 space-y-3 text-xs leading-5 text-[#8495aa]">
-                <li>
-                  <span className="font-black text-white">
-                    01.
-                  </span>{" "}
-                  Only M01–M12 can be created manually.
-                </li>
-
-                <li>
-                  <span className="font-black text-white">
-                    02.
-                  </span>{" "}
-                  M13 and M14 appear after all 12 Group
-                  Stage matches are completed.
-                </li>
-
-                <li>
-                  <span className="font-black text-white">
-                    03.
-                  </span>{" "}
-                  M15 appears after M13 and M14 are
-                  completed.
-                </li>
-
-                <li>
-                  <span className="font-black text-white">
-                    04.
-                  </span>{" "}
-                  M16 appears after M13 and M15 are
-                  completed.
-                </li>
-
-                <li>
-                  <span className="font-black text-white">
-                    05.
-                  </span>{" "}
-                  Phase 2 team assignments are determined
-                  automatically from results.
-                </li>
-              </ul>
             </section>
           </aside>
         </div>
 
+        {/* ── Group Match Editor Modal ─────────────────────────────────────── */}
         {isEditorOpen && (
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="group-match-editor-title"
-            className="fixed inset-0 z-50 overflow-y-auto bg-black/70 p-4 backdrop-blur-sm sm:p-8"
+            className="fixed inset-0 z-50 overflow-y-auto bg-black/80 p-4 backdrop-blur-md sm:p-8"
           >
-            <section className="mx-auto w-full max-w-6xl rounded-xl border border-[#1d2a3b] bg-[#0b111a] p-5 shadow-2xl">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 id="group-match-editor-title" className="text-lg font-black">
-                GROUP MATCH EDITOR
-              </h2>
-              <p className="mt-1 text-xs text-[#667991]">
-                Manual editor is restricted to M01–M12.
-              </p>
+            <div className="mx-auto w-full max-w-4xl rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] p-6 shadow-[0_0_60px_rgba(0,0,0,0.8)] sm:p-8">
+              <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#06b6d4]">
+                    FIXTURE EDITOR
+                  </p>
+                  <h2 id="group-match-editor-title" className="mt-0.5 text-xl font-black uppercase tracking-tight text-white">
+                    {editor.id ? `Edit ${editor.id}` : "Schedule New Group Match"}
+                  </h2>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={closeEditor}
+                  className="rounded-xl border border-[#1e1e3a] bg-[#080812] px-3.5 py-2 text-xs font-black uppercase text-[#94a3b8] hover:text-white"
+                >
+                  ✕ Close
+                </button>
+              </div>
+
+              <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <label className="block">
+                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                    MATCH ID
+                  </span>
+                  <input
+                    value={editor.id}
+                    onChange={(e) =>
+                      setEditor((curr) => ({ ...curr, id: e.target.value }))
+                    }
+                    disabled={Boolean(editor.id)}
+                    placeholder="M01"
+                    className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-sm font-bold text-white outline-none disabled:opacity-50"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                    MATCH NUMBER
+                  </span>
+                  <select
+                    value={editor.matchNumber}
+                    onChange={(e) => {
+                      const number = Number(e.target.value);
+                      const fixture = GROUP_FIXTURES.find(
+                        (item) => item.matchNumber === number,
+                      );
+                      const t1 = teams.find((t) => t.seed === fixture?.team1Seed);
+                      const t2 = teams.find((t) => t.seed === fixture?.team2Seed);
+
+                      setEditor((curr) => ({
+                        ...curr,
+                        id: curr.id || `M${String(number).padStart(2, "0")}`,
+                        matchNumber: e.target.value,
+                        team1Id: t1?.id ?? curr.team1Id,
+                        team2Id: t2?.id ?? curr.team2Id,
+                        map: fixture?.map ?? curr.map,
+                      }));
+                    }}
+                    className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-sm font-bold text-white outline-none"
+                  >
+                    <option value="">Select Match</option>
+                    {GROUP_FIXTURES.map((fixture) => (
+                      <option key={fixture.matchNumber} value={fixture.matchNumber} className="bg-[#0c0c18]">
+                        M{String(fixture.matchNumber).padStart(2, "0")}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                    MAP
+                  </span>
+                  <select
+                    value={editor.map}
+                    onChange={(e) =>
+                      setEditor((curr) => ({ ...curr, map: e.target.value }))
+                    }
+                    className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-sm font-bold text-white outline-none"
+                  >
+                    {["TBD", ...activeGame.maps.map((m) => m.name)].map(
+                      (mapName) => (
+                        <option key={mapName} value={mapName} className="bg-[#0c0c18]">
+                          {mapName}
+                        </option>
+                      ),
+                    )}
+                  </select>
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                    BEST OF
+                  </span>
+                  <select
+                    value={editor.bestOf}
+                    onChange={(e) =>
+                      setEditor((curr) => ({ ...curr, bestOf: e.target.value }))
+                    }
+                    className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-sm font-bold text-white outline-none"
+                  >
+                    <option value="1" className="bg-[#0c0c18]">BO1</option>
+                    <option value="3" className="bg-[#0c0c18]">BO3</option>
+                    <option value="5" className="bg-[#0c0c18]">BO5</option>
+                  </select>
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                    TEAM 1
+                  </span>
+                  <select
+                    value={editor.team1Id}
+                    onChange={(e) =>
+                      setEditor((curr) => ({ ...curr, team1Id: e.target.value }))
+                    }
+                    className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-sm font-bold text-white outline-none"
+                  >
+                    <option value="" className="bg-[#0c0c18]">Select Team</option>
+                    {sortedTeams.map((team) => (
+                      <option key={team.id} value={team.id} className="bg-[#0c0c18]">
+                        #{team.seed} {team.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                    TEAM 2
+                  </span>
+                  <select
+                    value={editor.team2Id}
+                    onChange={(e) =>
+                      setEditor((curr) => ({ ...curr, team2Id: e.target.value }))
+                    }
+                    className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-sm font-bold text-white outline-none"
+                  >
+                    <option value="" className="bg-[#0c0c18]">Select Team</option>
+                    {sortedTeams.map((team) => (
+                      <option key={team.id} value={team.id} className="bg-[#0c0c18]">
+                        #{team.seed} {team.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                    TEAM 1 SCORE
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={editor.team1Score}
+                    onChange={(e) =>
+                      setEditor((curr) => ({ ...curr, team1Score: e.target.value }))
+                    }
+                    className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-sm font-bold text-white outline-none"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                    TEAM 2 SCORE
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={editor.team2Score}
+                    onChange={(e) =>
+                      setEditor((curr) => ({ ...curr, team2Score: e.target.value }))
+                    }
+                    className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-sm font-bold text-white outline-none"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                    STATUS
+                  </span>
+                  <select
+                    value={editor.status}
+                    onChange={(e) =>
+                      setEditor((curr) => ({
+                        ...curr,
+                        status: e.target.value as MatchStatus,
+                      }))
+                    }
+                    className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-sm font-bold text-white outline-none"
+                  >
+                    <option value="Scheduled" className="bg-[#0c0c18]">Scheduled</option>
+                    <option value="Live" className="bg-[#0c0c18]">Live</option>
+                    <option value="Completed" className="bg-[#0c0c18]">Completed</option>
+                    <option value="Cancelled" className="bg-[#0c0c18]">Cancelled</option>
+                  </select>
+                </label>
+
+                <label className="block md:col-span-2 lg:col-span-3">
+                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                    SCHEDULE (DATE & TIME)
+                  </span>
+                  <input
+                    type="datetime-local"
+                    value={editor.scheduledAt}
+                    onChange={(e) =>
+                      setEditor((curr) => ({ ...curr, scheduledAt: e.target.value }))
+                    }
+                    className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-sm font-bold text-white outline-none"
+                  />
+                </label>
+              </div>
+
+              <div className="mt-8 flex flex-wrap items-center justify-end gap-3 border-t border-[#1e1e3a] pt-5">
+                <button
+                  type="button"
+                  onClick={closeEditor}
+                  className="rounded-xl border border-[#1e1e3a] bg-[#080812] px-5 py-3 text-xs font-black uppercase tracking-wider text-[#94a3b8] hover:text-white"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  onClick={saveGroupMatch}
+                  disabled={saving}
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55] px-6 py-3 text-xs font-black uppercase tracking-widest text-white shadow-[0_0_20px_rgba(255,45,85,0.25)] transition hover:opacity-90 disabled:opacity-50"
+                >
+                  {saving ? (
+                    <>
+                      <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      <span>Saving...</span>
+                    </>
+                  ) : editor.id ? (
+                    "Update Group Match"
+                  ) : (
+                    "Create Group Match"
+                  )}
+                </button>
+              </div>
             </div>
-
-            <button
-              type="button"
-              onClick={closeEditor}
-              className="rounded border border-[#304159] bg-[#111a27] px-3 py-2 text-[10px] font-black text-[#b9c9dc] hover:bg-[#182435]"
-            >
-              CLOSE EDITOR
-            </button>
-          </div>
-
-          <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <label className="block">
-              <span className="mb-2 block text-[9px] font-black tracking-wider text-[#667991]">
-                MATCH ID
-              </span>
-              <input
-                value={editor.id}
-                onChange={(event) =>
-                  setEditor((current) => ({
-                    ...current,
-                    id: event.target.value,
-                  }))
-                }
-                disabled={Boolean(editor.id)}
-                placeholder="M01"
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none disabled:opacity-50"
-              />
-            </label>
-
-            <label className="block">
-              <span className="mb-2 block text-[9px] font-black tracking-wider text-[#667991]">
-                MATCH NUMBER
-              </span>
-              <select
-                value={editor.matchNumber}
-                onChange={(event) => {
-                  const number = Number(
-                    event.target.value,
-                  );
-
-                  const fixture =
-                    GROUP_FIXTURES.find(
-                      (item) =>
-                        item.matchNumber === number,
-                    );
-
-                  const team1 = teams.find(
-                    (team) =>
-                      team.seed ===
-                      fixture?.team1Seed,
-                  );
-
-                  const team2 = teams.find(
-                    (team) =>
-                      team.seed ===
-                      fixture?.team2Seed,
-                  );
-
-                  setEditor((current) => ({
-                    ...current,
-                    id:
-                      current.id ||
-                      `M${String(number).padStart(
-                        2,
-                        "0",
-                      )}`,
-                    matchNumber:
-                      event.target.value,
-                    team1Id:
-                      team1?.id ??
-                      current.team1Id,
-                    team2Id:
-                      team2?.id ??
-                      current.team2Id,
-                    map:
-                      fixture?.map ??
-                      current.map,
-                  }));
-                }}
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
-              >
-                <option value="">
-                  Select Match
-                </option>
-                {GROUP_FIXTURES.map(
-                  (fixture) => (
-                    <option
-                      key={fixture.matchNumber}
-                      value={fixture.matchNumber}
-                    >
-                      M
-                      {String(
-                        fixture.matchNumber,
-                      ).padStart(2, "0")}
-                    </option>
-                  ),
-                )}
-              </select>
-            </label>
-
-            <label className="block">
-              <span className="mb-2 block text-[9px] font-black tracking-wider text-[#667991]">
-                MAP
-              </span>
-              <select
-                value={editor.map}
-                onChange={(event) =>
-                  setEditor((current) => ({
-                    ...current,
-                    map: event.target.value,
-                  }))
-                }
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
-              >
-                <option value="TBD">TBD</option>
-                <option value="Ascent">
-                  Ascent
-                </option>
-                <option value="Bind">Bind</option>
-                <option value="Breeze">
-                  Breeze
-                </option>
-                <option value="Haven">
-                  Haven
-                </option>
-                <option value="Icebox">
-                  Icebox
-                </option>
-                <option value="Lotus">
-                  Lotus
-                </option>
-                <option value="Pearl">
-                  Pearl
-                </option>
-                <option value="Split">
-                  Split
-                </option>
-                <option value="Sunset">
-                  Sunset
-                </option>
-              </select>
-            </label>
-
-            <label className="block">
-              <span className="mb-2 block text-[9px] font-black tracking-wider text-[#667991]">
-                BEST OF
-              </span>
-              <select
-                value={editor.bestOf}
-                onChange={(event) =>
-                  setEditor((current) => ({
-                    ...current,
-                    bestOf: event.target.value,
-                  }))
-                }
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
-              >
-                <option value="1">BO1</option>
-                <option value="3">BO3</option>
-                <option value="5">BO5</option>
-              </select>
-            </label>
-
-            <label className="block">
-              <span className="mb-2 block text-[9px] font-black tracking-wider text-[#667991]">
-                TEAM 1
-              </span>
-              <select
-                value={editor.team1Id}
-                onChange={(event) =>
-                  setEditor((current) => ({
-                    ...current,
-                    team1Id:
-                      event.target.value,
-                  }))
-                }
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
-              >
-                <option value="">
-                  Select Team
-                </option>
-                {sortedTeams.map((team) => (
-                  <option
-                    key={team.id}
-                    value={team.id}
-                  >
-                    #{team.seed} {team.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="block">
-              <span className="mb-2 block text-[9px] font-black tracking-wider text-[#667991]">
-                TEAM 2
-              </span>
-              <select
-                value={editor.team2Id}
-                onChange={(event) =>
-                  setEditor((current) => ({
-                    ...current,
-                    team2Id:
-                      event.target.value,
-                  }))
-                }
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
-              >
-                <option value="">
-                  Select Team
-                </option>
-                {sortedTeams.map((team) => (
-                  <option
-                    key={team.id}
-                    value={team.id}
-                  >
-                    #{team.seed} {team.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="block">
-              <span className="mb-2 block text-[9px] font-black tracking-wider text-[#667991]">
-                TEAM 1 SCORE
-              </span>
-              <input
-                type="number"
-                min="0"
-                value={editor.team1Score}
-                onChange={(event) =>
-                  setEditor((current) => ({
-                    ...current,
-                    team1Score:
-                      event.target.value,
-                  }))
-                }
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
-              />
-            </label>
-
-            <label className="block">
-              <span className="mb-2 block text-[9px] font-black tracking-wider text-[#667991]">
-                TEAM 2 SCORE
-              </span>
-              <input
-                type="number"
-                min="0"
-                value={editor.team2Score}
-                onChange={(event) =>
-                  setEditor((current) => ({
-                    ...current,
-                    team2Score:
-                      event.target.value,
-                  }))
-                }
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
-              />
-            </label>
-
-            <label className="block">
-              <span className="mb-2 block text-[9px] font-black tracking-wider text-[#667991]">
-                STATUS
-              </span>
-              <select
-                value={editor.status}
-                onChange={(event) =>
-                  setEditor((current) => ({
-                    ...current,
-                    status:
-                      event.target.value as MatchStatus,
-                  }))
-                }
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
-              >
-                <option value="Scheduled">
-                  Scheduled
-                </option>
-                <option value="Live">
-                  Live
-                </option>
-                <option value="Completed">
-                  Completed
-                </option>
-                <option value="Cancelled">
-                  Cancelled
-                </option>
-              </select>
-            </label>
-
-            <label className="block md:col-span-2 lg:col-span-4">
-              <span className="mb-2 block text-[9px] font-black tracking-wider text-[#667991]">
-                SCHEDULE
-              </span>
-              <input
-                type="datetime-local"
-                value={editor.scheduledAt}
-                onChange={(event) =>
-                  setEditor((current) => ({
-                    ...current,
-                    scheduledAt:
-                      event.target.value,
-                  }))
-                }
-                className="w-full rounded-lg border border-[#26364b] bg-[#0d141f] px-3 py-3 text-sm outline-none"
-              />
-            </label>
-          </div>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={saveGroupMatch}
-              disabled={saving}
-              className="rounded bg-red-500 px-5 py-3 text-xs font-black text-white hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {saving
-                ? "SAVING..."
-                : editor.id
-                  ? "UPDATE GROUP MATCH"
-                  : "CREATE GROUP MATCH"}
-            </button>
-
-            <button
-              type="button"
-              onClick={closeEditor}
-              className="rounded border border-[#304159] bg-[#111a27] px-5 py-3 text-xs font-black text-[#b9c9dc] hover:bg-[#182435]"
-            >
-              CANCEL
-            </button>
-          </div>
-            </section>
           </div>
         )}
-
-        <footer className="mt-8 border-t border-[#172231] pt-5 text-center text-[10px] font-bold tracking-wider text-[#4e6078]">
-          GROUP STAGE: M01–M12 MANUAL · M13–M16 AUTOMATIC
-        </footer>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

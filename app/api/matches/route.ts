@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { syncPlayoffsWithDatabase } from "@/lib/playoffs";
 
 const supabaseUrl =
   process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -226,6 +227,13 @@ async function getAllMatches(
 
 export async function GET() {
   try {
+    try {
+      const adminClient = getAdminClient();
+      await syncPlayoffsWithDatabase(adminClient);
+    } catch {
+      // Ignore background sync errors
+    }
+
     const client =
       getPublicClient();
 

@@ -4,11 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { TournamentBrand } from "./tournament-brand";
+import { getGameDefinition } from "@/lib/games/registry";
 
 const NAV_LINKS = [
   { href: "/tournament",          label: "OVERVIEW" },
   { href: "/tournament/bracket",  label: "BRACKET" },
-  { href: "/tournament/fixtures", label: "FIXTURES" },
   { href: "/tournament/matches",  label: "MATCHES" },
   { href: "/tournament/teams",    label: "TEAMS" },
   { href: "/tournament/players",  label: "LEADERBOARD" },
@@ -18,15 +18,21 @@ export function TournamentNav() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [status, setStatus] = useState<string>("LIVE");
+  const [gameId, setGameId] = useState<string>("valorant");
+  const [logoUrl, setLogoUrl] = useState<string>("");
 
   useEffect(() => {
     fetch("/api/settings")
       .then((r) => r.json())
       .then((d) => {
         if (d?.tournamentStatus) setStatus(d.tournamentStatus.toUpperCase());
+        if (d?.gameId) setGameId(d.gameId);
+        if (d?.logoUrl) setLogoUrl(d.logoUrl);
       })
       .catch(() => {});
   }, []);
+
+  const game = getGameDefinition(gameId);
 
   const isActive = (href: string) =>
     href === "/tournament"
@@ -34,71 +40,88 @@ export function TournamentNav() {
       : pathname.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#1e1e3a] bg-[#030308]/90 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-        {/* ── Brand + Status ─────────────────────────────────────── */}
+    <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#030308]/85 backdrop-blur-2xl transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+      {/* Micro-ambient bottom border glow */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
+
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2.5 sm:px-6">
+        {/* ── 1. Brand & Game Identity ──────────────────────────────── */}
         <div className="flex items-center gap-4">
           <Link href="/tournament" className="group flex items-center gap-3">
-            {/* V logo box */}
-            <div
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#ff2d55]/40 bg-[#ff2d55]/10 text-sm font-black text-[#ff2d55] transition group-hover:border-[#ff2d55]/80 group-hover:bg-[#ff2d55]/20"
-              style={{ boxShadow: "0 0 12px rgba(255,45,85,0.18)" }}
-            >
-              V
-            </div>
+            {/* Dynamic Game Icon / Logo Box */}
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt="Logo"
+                className="h-10 w-10 rounded-xl border border-white/10 bg-[#0c0c18] object-contain p-1 shadow-md transition group-hover:border-white/30 group-hover:scale-105"
+              />
+            ) : (
+              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.08] to-white/[0.02] text-sm font-black text-white shadow-inner transition-transform duration-200 group-hover:scale-105 group-hover:border-white/25">
+                <span className="drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
+                  {game.icon}
+                </span>
+              </div>
+            )}
             <TournamentBrand compact />
           </Link>
 
-          {/* Status pill */}
-          <span
-            className={`hidden sm:inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[9px] font-black tracking-widest ${
+          {/* Pulse Live / Upcoming Badge */}
+          <div
+            className={`hidden sm:inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[9px] font-mono font-bold tracking-widest uppercase transition ${
               status === "LIVE"
-                ? "border-[#ff2d55]/40 bg-[#ff2d55]/10 text-[#ff4d6a]"
-                : "border-[#06b6d4]/40 bg-[#06b6d4]/10 text-[#22d3ee]"
+                ? "border-rose-500/30 bg-rose-500/10 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.15)]"
+                : "border-cyan-500/30 bg-cyan-500/10 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.15)]"
             }`}
           >
-            {status === "LIVE" && <span className="live-dot h-1.5 w-1.5 flex-shrink-0" />}
-            {status}
-          </span>
+            <span className="relative flex h-2 w-2">
+              {status === "LIVE" && (
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
+              )}
+              <span
+                className={`relative inline-flex h-2 w-2 rounded-full ${
+                  status === "LIVE" ? "bg-rose-500" : "bg-cyan-400"
+                }`}
+              />
+            </span>
+            <span>{status}</span>
+          </div>
         </div>
 
-        {/* ── Desktop Nav ────────────────────────────────────────── */}
-        <nav className="hidden md:flex items-center gap-0.5">
+        {/* ── 2. Modern Floating Capsule Nav ──────────────────────────── */}
+        <nav className="hidden md:flex items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.03] p-1 backdrop-blur-xl shadow-inner">
           {NAV_LINKS.map((link) => {
             const active = isActive(link.href);
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative px-3.5 py-2.5 text-[10px] font-black tracking-widest transition-colors duration-150 ${
-                  active ? "text-[#ff2d55]" : "text-[#64748b] hover:text-[#f1f5f9]"
+                className={`relative rounded-full px-4 py-1.5 text-[11px] font-bold tracking-wider uppercase transition-all duration-200 ${
+                  active
+                    ? "bg-white/10 text-white border border-white/15 shadow-[0_2px_12px_rgba(0,0,0,0.5)]"
+                    : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
                 }`}
               >
                 {link.label}
-                {active && (
-                  <span
-                    className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-[#ff2d55]"
-                    style={{ boxShadow: "0 0 8px #ff2d55" }}
-                  />
-                )}
               </Link>
             );
           })}
         </nav>
 
-        {/* ── Right controls ─────────────────────────────────────── */}
-        <div className="flex items-center gap-2">
+        {/* ── 3. Right Action Pill & Mobile Toggle ───────────────────── */}
+        <div className="flex items-center gap-2.5">
           <Link
             href="/admin"
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-[#7c3aed]/50 bg-[#7c3aed]/10 px-3 py-1.5 text-[10px] font-black tracking-widest text-[#9d63ff] transition hover:bg-[#7c3aed]/25 hover:border-[#7c3aed]"
+            className="hidden sm:inline-flex items-center gap-2 rounded-full border border-purple-500/40 bg-gradient-to-r from-purple-600/25 via-indigo-600/20 to-purple-600/25 px-4 py-1.5 text-[11px] font-black tracking-wider text-purple-200 transition-all duration-200 hover:border-purple-400 hover:bg-purple-600/40 hover:text-white hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:scale-[1.02]"
           >
-            ADMIN ↗
+            <span className="text-[10px] text-purple-400">⚡</span>
+            <span>ADMIN HUB</span>
+            <span className="text-[10px] text-purple-400">↗</span>
           </Link>
 
-          {/* Mobile toggle */}
+          {/* Mobile hamburger toggle */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="rounded-lg border border-[#1e1e3a] bg-[#0c0c18] p-2 text-[#64748b] hover:text-[#f1f5f9] transition md:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-slate-400 hover:text-white hover:border-white/20 transition md:hidden"
             aria-label="Toggle navigation menu"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,8 +137,8 @@ export function TournamentNav() {
 
       {/* ── Mobile Drawer ──────────────────────────────────────────── */}
       {mobileOpen && (
-        <div className="border-t border-[#1e1e3a] bg-[#030308] px-4 py-3 md:hidden">
-          <div className="flex flex-col gap-0.5">
+        <div className="border-t border-white/[0.08] bg-[#030308]/95 px-4 py-4 backdrop-blur-2xl md:hidden">
+          <div className="flex flex-col gap-1">
             {NAV_LINKS.map((link) => {
               const active = isActive(link.href);
               return (
@@ -123,10 +146,10 @@ export function TournamentNav() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`rounded-lg px-3 py-2.5 text-[10px] font-black tracking-widest transition ${
+                  className={`rounded-xl px-4 py-2.5 text-xs font-bold tracking-wider uppercase transition ${
                     active
-                      ? "bg-[#ff2d55]/10 text-[#ff4d6a]"
-                      : "text-[#64748b] hover:bg-[#0c0c18] hover:text-[#f1f5f9]"
+                      ? "bg-white/10 text-white border border-white/15"
+                      : "text-slate-400 hover:bg-white/[0.04] hover:text-white"
                   }`}
                 >
                   {link.label}
@@ -136,9 +159,10 @@ export function TournamentNav() {
             <Link
               href="/admin"
               onClick={() => setMobileOpen(false)}
-              className="mt-2 rounded-lg border border-[#7c3aed]/40 bg-[#7c3aed]/10 px-3 py-2.5 text-center text-[10px] font-black tracking-widest text-[#9d63ff]"
+              className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-purple-500/40 bg-purple-600/25 px-4 py-2.5 text-xs font-black tracking-wider text-purple-200"
             >
-              ADMIN HUB ↗
+              <span>⚡ ADMIN HUB</span>
+              <span>↗</span>
             </Link>
           </div>
         </div>

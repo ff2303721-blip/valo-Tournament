@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
     };
 
     const teamQuery = isLite
-      ? client.from("teams").select("id, name, tag, seed, wins, losses, captain_rank")
+      ? client.from("teams").select("id, name, tag, seed, logo, wins, losses, captain_rank")
       : client.from("teams").select("*");
 
     const { data: teamsData, error: teamsError } = await teamQuery.order("seed", {

@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
     useTypeScriptCli: false,
     workerThreads: true,
   },
+  images: {
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;

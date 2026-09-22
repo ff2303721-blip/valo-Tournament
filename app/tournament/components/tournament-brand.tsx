@@ -8,8 +8,8 @@ type TournamentSettings = {
 };
 
 const DEFAULT_SETTINGS: TournamentSettings = {
-  tournamentName: "VALORANT TOURNAMENT",
-  tagline: "COMPETITIVE VALORANT",
+  tournamentName: "ESPORTS TOURNAMENT",
+  tagline: "COMPETITIVE ESPORTS",
 };
 
 export function TournamentBrand({ compact = false }: { compact?: boolean }) {
@@ -46,11 +46,12 @@ export function TournamentBrand({ compact = false }: { compact?: boolean }) {
 
   if (compact) {
     return (
-      <div>
-        <div className="text-[8px] font-black uppercase tracking-[0.3em] text-[#ff2d55]">
-          {settings.tagline || DEFAULT_SETTINGS.tagline}
+      <div className="flex flex-col">
+        <div className="flex items-center gap-1.5 text-[8.5px] font-bold uppercase tracking-[0.25em] text-[#94a3b8]">
+          <span className="h-1 w-1 rounded-full bg-[#ff2d55]" />
+          <span>{settings.tagline || DEFAULT_SETTINGS.tagline}</span>
         </div>
-        <div className="mt-0.5 text-sm font-black uppercase tracking-tight text-white">
+        <div className="text-sm font-black uppercase tracking-tight text-white group-hover:text-white/90 transition-colors">
           {settings.tournamentName || DEFAULT_SETTINGS.tournamentName}
         </div>
       </div>

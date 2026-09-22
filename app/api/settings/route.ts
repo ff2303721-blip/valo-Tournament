@@ -1,7 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import fs from "fs";
+import path from "path";
 
 const SESSION_COOKIE = "valorant_admin_session";
+const GAME_SETTINGS_PATH = path.join(process.cwd(), "app", "data", "game-settings.json");
+
+function readGameSettings() {
+  try {
+    if (fs.existsSync(GAME_SETTINGS_PATH)) {
+      const raw = fs.readFileSync(GAME_SETTINGS_PATH, "utf-8");
+      return JSON.parse(raw);
+    }
+  } catch {}
+  return { gameId: "valorant", gameCustomName: "", gameCustomMaps: [] };
+}
+
+function writeGameSettings(data: { gameId?: string; gameCustomName?: string; gameCustomMaps?: string[] }) {
+  try {
+    const current = readGameSettings();
+    const updated = {
+      ...current,
+      gameId: data.gameId ?? current.gameId ?? "valorant",
+      gameCustomName: data.gameCustomName ?? current.gameCustomName ?? "",
+      gameCustomMaps: data.gameCustomMaps ?? current.gameCustomMaps ?? [],
+    };
+    fs.writeFileSync(GAME_SETTINGS_PATH, JSON.stringify(updated, null, 2), "utf-8");
+    return updated;
+  } catch (err) {
+    console.warn("Failed to write game-settings.json:", err);
+    return { gameId: data.gameId || "valorant" };
+  }
+}
 
 function getPublicClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -67,6 +97,8 @@ export async function GET() {
       );
     }
 
+    const gameConfig = readGameSettings();
+
     return NextResponse.json({
       id: data.id,
       tournamentName: data.tournament_name,
@@ -79,6 +111,9 @@ export async function GET() {
       announcement: data.announcement ?? "",
       logoUrl: data.logo_url ?? "",
       bannerUrl: data.banner_url ?? "",
+      gameId: gameConfig.gameId || "valorant",
+      gameCustomName: gameConfig.gameCustomName || "",
+      gameCustomMaps: gameConfig.gameCustomMaps || [],
       updatedAt: data.updated_at,
     });
   } catch (error) {
@@ -213,6 +248,12 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    const savedGameConfig = writeGameSettings({
+      gameId: body.gameId,
+      gameCustomName: body.gameCustomName,
+      gameCustomMaps: body.gameCustomMaps,
+    });
+
     return NextResponse.json({
       id: data.id,
       tournamentName: data.tournament_name,
@@ -225,6 +266,9 @@ export async function PUT(request: NextRequest) {
       announcement: data.announcement ?? "",
       logoUrl: data.logo_url ?? "",
       bannerUrl: data.banner_url ?? "",
+      gameId: savedGameConfig.gameId || "valorant",
+      gameCustomName: savedGameConfig.gameCustomName || "",
+      gameCustomMaps: savedGameConfig.gameCustomMaps || [],
       updatedAt: data.updated_at,
     });
   } catch (error) {

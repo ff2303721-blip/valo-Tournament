@@ -329,7 +329,7 @@ export default function FixturesPage() {
     ).length;
 
   return (
-    <div className="min-h-screen overflow-hidden bg-[#030308] text-white">
+    <div className="min-h-screen overflow-hidden text-white">
       {/* Ambient background glows */}
       <div className="pointer-events-none fixed inset-0 z-0">
         <div className="absolute left-[-10%] top-[-15%] h-[520px] w-[520px] rounded-full bg-[#ff2d55]/10 blur-[150px]" />

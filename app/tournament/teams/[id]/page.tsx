@@ -39,8 +39,10 @@ export default function PublicTeamDetailsPage() {
   const params = useParams();
 
   const teamId =
-    typeof params.id === "string"
+    typeof params?.id === "string"
       ? params.id
+      : Array.isArray(params?.id)
+      ? params.id[0]
       : "";
 
   const [team, setTeam] = useState<Team | null>(null);
@@ -57,7 +59,9 @@ export default function PublicTeamDetailsPage() {
       }
 
       try {
-        const response = await fetch(`/api/teams/${encodeURIComponent(teamId)}`, { cache: "no-store" });
+        const response = await fetch(`/api/teams/${encodeURIComponent(teamId)}`, {
+          cache: "no-store",
+        });
         const foundTeam = response.ok ? await response.json() : null;
 
         if (!mounted) {
@@ -97,288 +101,271 @@ export default function PublicTeamDetailsPage() {
     };
   }, [teamId]);
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-[#060a12] text-white">
-        <div className="mx-auto max-w-[1200px] px-5 py-8 sm:px-8">
-          <header className="mb-8 border-b border-white/10 pb-6">
-            <Link
-              href="/tournament/teams"
-              className="text-xs font-bold uppercase tracking-[0.2em] text-white/40 transition hover:text-white"
-            >
-              ← All Teams
-            </Link>
-          </header>
-
-          <section className="overflow-hidden rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-400/[0.06] via-white/[0.03] to-purple-500/[0.06] p-8 shadow-[0_0_60px_rgba(34,211,238,0.05)]">
-            <div className="animate-pulse">
-              <div className="h-5 w-24 rounded bg-white/10" />
-
-              <div className="mt-4 h-12 w-72 rounded bg-white/10" />
-
-              <div className="mt-3 h-4 w-40 rounded bg-white/10" />
-
-              <div className="mt-8 h-24 rounded-xl bg-white/5" />
-            </div>
-          </section>
-        </div>
-      </main>
-    );
-  }
-
-  if (error) {
-    return (
-      <main className="min-h-screen bg-[#060a12] text-white">
-        <div className="mx-auto max-w-3xl px-6 py-24 text-center">
-          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-red-400">
-            Database Error
-          </p>
-
-          <h1 className="mt-3 text-4xl font-black uppercase">
-            Team unavailable
-          </h1>
-
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-white/40">
-            {error}
-          </p>
-
-          <Link
-            href="/tournament/teams"
-            className="mt-8 inline-block rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-6 py-3 text-[10px] font-black uppercase tracking-wider text-cyan-200 transition hover:bg-cyan-400/20"
-          >
-            ← All Teams
-          </Link>
-        </div>
-      </main>
-    );
-  }
-
-  if (!team) {
-    return (
-      <main className="min-h-screen bg-[#060a12] text-white">
-        <div className="mx-auto max-w-3xl px-6 py-24 text-center">
-          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-red-400">
-            Team Not Found
-          </p>
-
-          <h1 className="mt-3 text-4xl font-black uppercase">
-            Team unavailable
-          </h1>
-
-          <p className="mt-4 text-sm text-white/40">
-            This team does not exist in the tournament database.
-          </p>
-
-          <Link
-            href="/tournament/teams"
-            className="mt-8 inline-block rounded-lg border border-white/10 bg-white px-6 py-3 text-[10px] font-black uppercase tracking-wider text-black transition hover:bg-cyan-300"
-          >
-            ← All Teams
-          </Link>
-        </div>
-      </main>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-[#060a12] text-white">
-      <TournamentNav />
-      <main className="text-white">
-        <div className="mx-auto max-w-[1200px] px-5 py-8 sm:px-8">
-          <header className="mb-8 flex flex-col gap-5 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
-            <Link
-              href="/tournament/teams"
-              className="text-xs font-bold uppercase tracking-[0.2em] text-white/40 transition hover:text-cyan-300"
-            >
-              ← All Teams
-            </Link>
+    <div className="relative min-h-screen text-[#f1f5f9] pb-20">
+      {/* ── Ambient Neon Glow Orbs ────────────────────────────────────────── */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/12 blur-[180px]" />
+        <div className="absolute top-1/3 -right-40 h-[500px] w-[500px] rounded-full bg-[#ff2d55]/10 blur-[160px]" />
+        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#06b6d4]/8 blur-[160px]" />
+      </div>
 
+      <TournamentNav />
+
+      <main className="relative z-10 mx-auto max-w-6xl px-4 pt-6 sm:px-8">
+        {/* Navigation Breadcrumb */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[#1e1e3a] pb-4">
+          <Link
+            href="/tournament/teams"
+            className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-[#94a3b8] transition hover:text-[#22d3ee]"
+          >
+            <span>← ALL TEAMS</span>
+          </Link>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/tournament/matches"
+              className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/90 px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-[#94a3b8] transition hover:border-[#7c3aed]/50 hover:text-white"
+            >
+              FIXTURES ↗
+            </Link>
             <Link
               href="/tournament"
-              className="text-xs font-bold uppercase tracking-[0.2em] text-white/30 transition hover:text-white"
+              className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/90 px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-[#94a3b8] transition hover:border-[#06b6d4]/50 hover:text-[#22d3ee]"
             >
-              Tournament Central
+              STANDINGS ↗
             </Link>
-          </header>
+          </div>
+        </div>
 
-          <section className="overflow-hidden rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-400/[0.08] via-white/[0.03] to-purple-500/[0.08] shadow-[0_0_70px_rgba(34,211,238,0.06)]">
-            <div className="flex flex-col gap-7 border-b border-white/10 p-6 sm:flex-row sm:items-center sm:p-8">
-              <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-cyan-400/20 bg-black/30 shadow-[0_0_35px_rgba(34,211,238,0.08)]">
-                {team.logo ? (
-                  <Image
-                    src={team.logo}
-                    alt={`${team.name} logo`}
-                    width={112}
-                    height={112}
-                    unoptimized
-                    className="h-full w-full object-contain"
-                  />
-                ) : (
-                  <span className="text-3xl font-black text-cyan-300/60">
-                    {initials(team.name)}
-                  </span>
-                )}
+        {loading ? (
+          <section className="animate-pulse rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-8 backdrop-blur-xl">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+              <div className="h-28 w-28 rounded-2xl bg-white/5" />
+              <div className="flex-1 space-y-3">
+                <div className="h-5 w-24 rounded bg-white/10" />
+                <div className="h-10 w-64 rounded bg-white/10" />
+                <div className="h-4 w-40 rounded bg-white/5" />
               </div>
-
-              <div className="flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300">
-                  Seed {team.seed}
-                </span>
-
-                <span className="rounded-full border border-purple-400/30 bg-purple-400/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-purple-300">
-                  {team.tag}
-                </span>
-              </div>
-
-              <h1 className="mt-4 text-4xl font-black uppercase tracking-tight sm:text-5xl">
-                {team.name}
-              </h1>
-
-              <p className="mt-2 text-xs font-bold uppercase tracking-[0.2em] text-white/30">
-                Official Tournament Roster
-              </p>
             </div>
-          </div>
-
-          <div className="grid grid-cols-3 divide-x divide-white/10">
-            <Stat
-              label="Wins"
-              value={team.wins}
-              accent="text-emerald-300"
-            />
-
-            <Stat
-              label="Losses"
-              value={team.losses}
-              accent="text-red-300"
-            />
-
-            <Stat
-              label="Players"
-              value={team.players.length}
-              accent="text-cyan-300"
-            />
-          </div>
-        </section>
-
-        <section className="mt-10">
-          <div className="mb-5">
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400">
-              Team Information
-            </p>
-
-            <h2 className="mt-1 text-2xl font-black uppercase">
-              Captain / Rank
-            </h2>
-          </div>
-
-          <div className="rounded-xl border border-purple-400/20 bg-gradient-to-r from-purple-500/[0.07] to-cyan-500/[0.04] p-5">
-            <p className="text-sm font-bold text-white/75">
-              {team.captainRank ||
-                "Not specified"}
-            </p>
-          </div>
-        </section>
-
-        <section className="mt-10">
-          <div className="mb-5">
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400">
-              Registered Roster
-            </p>
-
-            <h2 className="mt-1 text-2xl font-black uppercase">
-              Players
-            </h2>
-          </div>
-
-          {team.players.length === 0 ? (
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-8 text-center">
-              <p className="text-sm font-bold text-white/40">
-                No players registered.
-              </p>
+            <div className="mt-8 grid grid-cols-3 gap-4 border-t border-[#1e1e3a] pt-6">
+              <div className="h-16 rounded-xl bg-white/5" />
+              <div className="h-16 rounded-xl bg-white/5" />
+              <div className="h-16 rounded-xl bg-white/5" />
             </div>
-          ) : (
-            <div className="grid gap-3 md:grid-cols-2">
-              {team.players.map(
-                (player, index) => (
-                  <div
-                    key={player.id}
-                    className="group flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-5 transition hover:border-cyan-400/30 hover:bg-cyan-400/[0.04]"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-cyan-400/10 bg-black/30 text-[10px] font-black text-cyan-300/50">
-                        {String(
-                          index + 1,
-                        ).padStart(
-                          2,
-                          "0",
-                        )}
-                      </div>
+          </section>
+        ) : error ? (
+          <div className="rounded-2xl border border-[#ff2d55]/40 bg-[#ff2d55]/10 p-12 text-center backdrop-blur-xl">
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
+              Database Error
+            </p>
+            <h1 className="mt-2 text-3xl font-black uppercase text-white">
+              Unable to load team
+            </h1>
+            <p className="mx-auto mt-3 max-w-md text-sm text-[#94a3b8]">
+              {error}
+            </p>
+            <Link
+              href="/tournament/teams"
+              className="mt-6 inline-flex rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55]/15 px-6 py-3 text-xs font-black uppercase tracking-wider text-[#ff4d6a] transition hover:bg-[#ff2d55]/25"
+            >
+              ← Return to Teams
+            </Link>
+          </div>
+        ) : !team ? (
+          <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-12 text-center backdrop-blur-xl">
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
+              Not Found
+            </p>
+            <h1 className="mt-2 text-3xl font-black uppercase text-white">
+              Team Not Found
+            </h1>
+            <p className="mt-3 text-sm text-[#64748b]">
+              The requested team could not be found in the tournament registry.
+            </p>
+            <Link
+              href="/tournament/teams"
+              className="mt-6 inline-flex rounded-xl border border-[#1e1e3a] bg-[#0c0c18] px-6 py-3 text-xs font-black uppercase tracking-wider text-[#f1f5f9] transition hover:border-[#7c3aed]"
+            >
+              ← Browse All Teams
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {/* Team Hero Section */}
+            <section className="relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl shadow-[0_0_50px_rgba(124,58,237,0.06)] sm:p-8">
+              <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+                {/* Team Logo / Avatar */}
+                <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#7c3aed]/40 bg-[#080812] shadow-[0_0_30px_rgba(124,58,237,0.2)]">
+                  {team.logo ? (
+                    <Image
+                      src={team.logo}
+                      alt={`${team.name} logo`}
+                      width={112}
+                      height={112}
+                      unoptimized
+                      className="h-full w-full object-contain p-2"
+                    />
+                  ) : (
+                    <span className="text-3xl font-black text-[#7c3aed]">
+                      {initials(team.name)}
+                    </span>
+                  )}
+                </div>
 
-                      <div>
-                        <p className="text-sm font-black uppercase">
-                          {player.name}
-                        </p>
-
-                        <p className="mt-1 text-[9px] font-bold uppercase tracking-wider text-cyan-400/60">
-                          {player.role ||
-                            "Player"}
-                        </p>
-                      </div>
-                    </div>
-
-                    <span className="text-lg font-black text-white/10 transition group-hover:text-cyan-300/30">
-                      →
+                {/* Team Info */}
+                <div className="flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full border border-[#06b6d4]/40 bg-[#06b6d4]/10 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#22d3ee]">
+                      Seed #{team.seed}
+                    </span>
+                    <span className="rounded-full border border-[#7c3aed]/40 bg-[#7c3aed]/10 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#a78bfa]">
+                      [{team.tag}]
                     </span>
                   </div>
-                ),
+
+                  <h1 className="mt-3 text-3xl font-black uppercase tracking-tight text-[#f1f5f9] sm:text-5xl">
+                    {team.name}
+                  </h1>
+
+                  <p className="mt-1.5 text-xs font-bold uppercase tracking-widest text-[#64748b]">
+                    Official Tournament Franchise
+                  </p>
+                </div>
+              </div>
+
+              {/* Stat Strip */}
+              <div className="mt-8 grid grid-cols-3 divide-x divide-[#1e1e3a] border-t border-[#1e1e3a] pt-6">
+                <div className="text-center">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">
+                    Victories
+                  </p>
+                  <p className="mt-1.5 text-2xl font-black text-[#34d399] sm:text-3xl">
+                    {team.wins}
+                  </p>
+                </div>
+
+                <div className="text-center">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">
+                    Defeats
+                  </p>
+                  <p className="mt-1.5 text-2xl font-black text-[#ff4d6a] sm:text-3xl">
+                    {team.losses}
+                  </p>
+                </div>
+
+                <div className="text-center">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">
+                    Roster Size
+                  </p>
+                  <p className="mt-1.5 text-2xl font-black text-[#22d3ee] sm:text-3xl">
+                    {team.players.length}
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* Captain & Rank Info */}
+            <section className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl">
+              <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#7c3aed]">
+                    LEADERSHIP
+                  </p>
+                  <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[#f1f5f9]">
+                    Captain & Competitive Tier
+                  </h2>
+                </div>
+                <span className="rounded-full border border-[#7c3aed]/30 bg-[#7c3aed]/10 px-3 py-1 text-[9px] font-black text-[#a78bfa]">
+                  LEADER
+                </span>
+              </div>
+
+              <div className="mt-4 flex items-center gap-3 rounded-xl border border-[#1e1e3a] bg-[#080812]/60 p-4">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#f59e0b]/40 bg-[#f59e0b]/10 text-sm font-black text-[#f59e0b]">
+                  ★
+                </span>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                    Assigned Rank / In-Game Lead
+                  </p>
+                  <p className="text-base font-black text-[#f1f5f9]">
+                    {team.captainRank || "Unassigned"}
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* Roster Lineup */}
+            <section className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl sm:p-8">
+              <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#06b6d4]">
+                    ACTIVE ROSTER
+                  </p>
+                  <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[#f1f5f9]">
+                    Players ({team.players.length})
+                  </h2>
+                </div>
+                <span className="rounded-full border border-[#06b6d4]/30 bg-[#06b6d4]/10 px-3 py-1 text-[9px] font-black text-[#22d3ee]">
+                  LINEUP
+                </span>
+              </div>
+
+              {team.players.length === 0 ? (
+                <div className="mt-6 rounded-xl border border-dashed border-[#1e1e3a] p-10 text-center text-sm text-[#64748b]">
+                  No players registered in roster yet.
+                </div>
+              ) : (
+                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                  {team.players.map((player, index) => (
+                    <div
+                      key={player.id || index}
+                      className="group flex items-center justify-between rounded-xl border border-[#1e1e3a] bg-[#080812]/80 p-4 transition hover:border-[#7c3aed]/50 hover:bg-[#0c0c18] hover:shadow-[0_0_20px_rgba(124,58,237,0.1)]"
+                    >
+                      <div className="flex items-center gap-3.5">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#1e1e3a] bg-[#0c0c18] text-xs font-black text-[#7c3aed] group-hover:border-[#7c3aed]/40 group-hover:text-[#a78bfa]">
+                          {String(index + 1).padStart(2, "0")}
+                        </div>
+
+                        <div>
+                          <p className="text-sm font-black uppercase tracking-tight text-[#f1f5f9]">
+                            {player.name}
+                          </p>
+                          <span className="mt-1 inline-flex rounded border border-[#06b6d4]/30 bg-[#06b6d4]/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#22d3ee]">
+                            {player.role || "Flex"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <span className="text-sm font-black text-[#475569] transition group-hover:text-[#7c3aed]">
+                        →
+                      </span>
+                    </div>
+                  ))}
+                </div>
               )}
+            </section>
+
+            {/* Bottom Actions */}
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-4">
+              <Link
+                href="/tournament/teams"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#1e1e3a] bg-[#0c0c18] px-5 py-3 text-xs font-black uppercase tracking-wider text-[#94a3b8] transition hover:border-[#7c3aed]/50 hover:text-white"
+              >
+                <span>← All Teams</span>
+              </Link>
+
+              <Link
+                href="/tournament/matches"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#06b6d4]/40 bg-[#06b6d4]/10 px-6 py-3 text-xs font-black uppercase tracking-wider text-[#22d3ee] transition hover:bg-[#06b6d4]/20 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]"
+              >
+                <span>View Tournament Matches →</span>
+              </Link>
             </div>
-          )}
-        </section>
-
-        <div className="mt-10 flex flex-wrap gap-3">
-          <Link
-            href="/tournament/matches"
-            className="rounded-lg border border-white/10 bg-white/[0.03] px-5 py-3 text-[10px] font-black uppercase tracking-wider text-white/50 transition hover:border-cyan-400/30 hover:bg-cyan-400/[0.05] hover:text-cyan-200"
-          >
-            View Tournament Matches →
-          </Link>
-
-          <Link
-            href="/tournament/teams"
-            className="rounded-lg border border-purple-400/20 bg-purple-400/[0.05] px-5 py-3 text-[10px] font-black uppercase tracking-wider text-purple-200 transition hover:bg-purple-400/10"
-          >
-            ← Browse Teams
-          </Link>
-        </div>
-      </div>
-    </main>
-  </div>
-);
-}
-
-function Stat({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: number;
-  accent: string;
-}) {
-  return (
-    <div className="p-5 text-center">
-      <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/25">
-        {label}
-      </p>
-
-      <p
-        className={`mt-2 text-2xl font-black ${accent}`}
-      >
-        {value}
-      </p>
+          </div>
+        )}
+      </main>
     </div>
   );
 }

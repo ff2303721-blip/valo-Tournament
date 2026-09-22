@@ -566,7 +566,7 @@ export default function TournamentBracketPage() {
       : undefined;
 
   return (
-    <div className="min-h-screen bg-[#030308] text-[#f1f5f9]">
+    <div className="min-h-screen text-[#f1f5f9]">
       {/* Ambient glow blobs */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/[0.06] blur-[120px]" />

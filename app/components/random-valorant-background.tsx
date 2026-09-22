@@ -1,26 +1,78 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { getGameDefinition, GAMES } from "@/lib/games/registry";
 
-const BACKGROUNDS = [
-  "https://images5.alphacoders.com/120/thumb-1920-1202339.png",
-  "https://images4.alphacoders.com/120/1202336.png",
-  "https://wallpapers.com/images/hd/red-valorant-8k-gaming-2h2qxvq2arallyki.jpg",
-  "https://cdn.wallpapersafari.com/4/74/XAY3GaV.jpg",
-  "https://i.pinimg.com/736x/ea/30/ea/ea30ea61571b1086b5502c4f82a5fb0c.jpg",
-  "https://images2.alphacoders.com/119/1195538.jpg",
-];
+function getRandomWallpaper(pool: string[], current?: string): string {
+  if (!pool || pool.length === 0) return GAMES.valorant.wallpapers[0];
+  if (pool.length <= 1) return pool[0];
+  let next = current;
+  while (next === current) {
+    const idx = Math.floor(Math.random() * pool.length);
+    next = pool[idx];
+  }
+  return next || pool[0];
+}
 
 export default function RandomValorantBackground() {
-  useEffect(() => {
-    const background =
-      BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)];
+  const pathname = usePathname();
+  const [wallpaper, setWallpaper] = useState<string>("");
+  const [gameId, setGameId] = useState<string>("valorant");
 
-    document.documentElement.style.setProperty(
-      "--valorant-background",
-      `url("${background}")`,
-    );
+  useEffect(() => {
+    let mounted = true;
+    async function loadGameSettings() {
+      try {
+        const res = await fetch("/api/settings", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          if (mounted && data?.gameId) {
+            setGameId(data.gameId);
+          }
+        }
+      } catch {
+        // Fallback to valorant default
+      }
+    }
+    loadGameSettings();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  return null;
+  useEffect(() => {
+    const game = getGameDefinition(gameId);
+    const pool = game.wallpapers && game.wallpapers.length > 0 ? game.wallpapers : GAMES.valorant.wallpapers;
+    setWallpaper((prev) => getRandomWallpaper(pool, prev));
+  }, [pathname, gameId]);
+
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
+      style={{ backgroundColor: "#030308" }}
+    >
+      {/* Background Wallpaper Image */}
+      {wallpaper ? (
+        <div
+          key={wallpaper}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000"
+          style={{
+            backgroundImage: `url("${wallpaper}")`,
+            backgroundAttachment: "fixed",
+          }}
+        />
+      ) : null}
+
+      {/* Dark cinematic gradient overlay - ensures 100% readability of cards and text while showing map art */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(3,3,8,0.72) 0%, rgba(6,10,18,0.64) 40%, rgba(3,3,8,0.85) 100%)",
+        }}
+      />
+    </div>
+  );
 }
