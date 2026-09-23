@@ -789,27 +789,27 @@ export default function MatchCenterPage() {
     switch (status) {
       case "Live":
         return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#ff2d55]/40 bg-[#ff2d55]/15 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-[#ff4d6a]">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#ff2d55]/40 bg-[#ff2d55]/15 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#ff4d6a]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#ff2d55] animate-pulse" />
             LIVE
           </span>
         );
       case "Completed":
         return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#10b981]/40 bg-[#10b981]/15 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-[#34d399]">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#10b981]/40 bg-[#10b981]/15 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#34d399]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#34d399]" />
             COMPLETED
           </span>
         );
       case "Cancelled":
         return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#64748b]/40 bg-[#64748b]/15 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-[#94a3b8]">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#64748b]/40 bg-[#64748b]/15 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#94a3b8]">
             CANCELLED
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#f59e0b]/40 bg-[#f59e0b]/15 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-[#fbbf24]">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#f59e0b]/40 bg-[#f59e0b]/15 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#fbbf24]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#fbbf24]" />
             SCHEDULED
           </span>
@@ -821,15 +821,15 @@ export default function MatchCenterPage() {
     <div className="relative min-h-screen text-[#f1f5f9] pb-24">
       {/* ── Ambient Neon Glow Orbs ────────────────────────────────────────── */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/12 blur-[180px]" />
+        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#94a3b8]/12 blur-[180px]" />
         <div className="absolute top-1/3 -right-40 h-[500px] w-[500px] rounded-full bg-[#ff2d55]/10 blur-[160px]" />
-        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#06b6d4]/8 blur-[160px]" />
+        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#94a3b8]/8 blur-[160px]" />
       </div>
 
       {/* ── Modern Command Header ─────────────────────────────────────────── */}
       <header className="sticky top-0 z-40 border-b border-white/[0.08] bg-[#030308]/85 px-4 py-3 backdrop-blur-2xl sm:px-8 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
+        <div className="mx-auto flex max-w-[1680px] flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <Link
               href="/admin"
@@ -842,16 +842,16 @@ export default function MatchCenterPage() {
               <div className="flex items-center gap-2">
                 <h1 className="text-base font-black tracking-tight sm:text-lg text-white">
                   MATCH CENTRE{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff2d55] to-[#9d63ff]">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff2d55] to-[#94a3b8]">
                     // FIXTURES & RESULTS
                   </span>
                 </h1>
-                <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[9px] font-mono font-bold tracking-wider text-emerald-400">
+                <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-mono font-bold tracking-wider text-emerald-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   12 GROUP + 4 PLAYOFF
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[12px] text-slate-400">
                 {activeGame.name} Tournament Bracket & Live Schedule Orchestrator
               </p>
             </div>
@@ -860,84 +860,84 @@ export default function MatchCenterPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Link
               href="/admin"
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-[11px] font-bold tracking-wider text-slate-300 backdrop-blur-xl transition hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300 hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-[13px] font-bold tracking-wider text-slate-300 backdrop-blur-xl transition hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300 hover:scale-[1.02]"
             >
               <span>← ADMIN HUB</span>
             </Link>
 
             <Link
               href="/teams"
-              className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/40 bg-gradient-to-r from-purple-600/25 to-purple-600/15 px-4 py-1.5 text-[11px] font-bold tracking-wider text-purple-300 backdrop-blur-xl transition hover:border-purple-400 hover:bg-purple-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/40 bg-gradient-to-r from-purple-600/25 to-purple-600/15 px-4 py-1.5 text-[13px] font-bold tracking-wider text-purple-300 backdrop-blur-xl transition hover:border-purple-400 hover:bg-purple-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:scale-[1.02]"
             >
               <span>TEAMS & ROSTERS</span>
-              <span className="text-xs">↗</span>
+              <span className="text-sm">↗</span>
             </Link>
 
             <Link
               href="/admin/settings"
-              className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-gradient-to-r from-amber-600/25 to-amber-600/15 px-4 py-1.5 text-[11px] font-bold tracking-wider text-amber-300 backdrop-blur-xl transition hover:border-amber-400 hover:bg-amber-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-gradient-to-r from-amber-600/25 to-amber-600/15 px-4 py-1.5 text-[13px] font-bold tracking-wider text-amber-300 backdrop-blur-xl transition hover:border-amber-400 hover:bg-amber-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:scale-[1.02]"
             >
               <span>SETTINGS</span>
-              <span className="text-xs">⚙</span>
+              <span className="text-sm">⚙</span>
             </Link>
 
             <Link
               href="/tournament"
               target="_blank"
-              className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/40 bg-cyan-500/10 px-4 py-1.5 text-[11px] font-bold tracking-wider text-cyan-300 backdrop-blur-xl transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/40 bg-cyan-500/10 px-4 py-1.5 text-[13px] font-bold tracking-wider text-cyan-300 backdrop-blur-xl transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:shadow-[0_0_15px_rgba(148,163,184,0.3)] hover:scale-[1.02]"
             >
               <span>PUBLIC SITE</span>
-              <span className="text-xs">↗</span>
+              <span className="text-sm">↗</span>
             </Link>
           </div>
         </div>
       </header>
 
       {/* ── Main Dashboard Workspace ───────────────────────────────────────── */}
-      <main className="relative z-10 mx-auto max-w-7xl px-4 pt-8 sm:px-8">
+      <main className="relative z-10 mx-auto max-w-[1680px] px-4 pt-8 sm:px-8">
         {/* Metric Cards Row */}
         <section className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#7c3aed]/40">
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+          <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#94a3b8]/40">
+            <div className="text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
               TEAMS REGISTERED
             </div>
             <div className="mt-2 text-3xl font-black text-white">
               {teams.length}
             </div>
-            <p className="mt-1 text-[10px] text-[#64748b]">4 seeded teams required</p>
+            <p className="mt-1 text-[12px] text-[#64748b]">4 seeded teams required</p>
           </div>
 
-          <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#06b6d4]/40">
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#06b6d4]">
+          <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#94a3b8]/40">
+            <div className="text-[12px] font-black uppercase tracking-[0.2em] text-[#94a3b8]">
               GROUP FIXTURES
             </div>
             <div className="mt-2 text-3xl font-black text-white">
               {groupMatches.length}
               <span className="ml-1 text-sm font-bold text-[#64748b]">/ 12</span>
             </div>
-            <p className="mt-1 text-[10px] text-[#64748b]">Double round-robin</p>
+            <p className="mt-1 text-[12px] text-[#64748b]">Double round-robin</p>
           </div>
 
           <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#10b981]/40">
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#34d399]">
+            <div className="text-[12px] font-black uppercase tracking-[0.2em] text-[#34d399]">
               COMPLETED MATCHES
             </div>
             <div className="mt-2 text-3xl font-black text-[#34d399]">
               {completedGroupMatches}
               <span className="ml-1 text-sm font-bold text-[#64748b]">/ 12</span>
             </div>
-            <p className="mt-1 text-[10px] text-[#64748b]">Official results verified</p>
+            <p className="mt-1 text-[12px] text-[#64748b]">Official results verified</p>
           </div>
 
           <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#f59e0b]/40">
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#fbbf24]">
+            <div className="text-[12px] font-black uppercase tracking-[0.2em] text-[#fbbf24]">
               PLAYOFF BRACKET
             </div>
             <div className="mt-2 text-3xl font-black text-white">
               {phase2Matches.length}
               <span className="ml-1 text-sm font-bold text-[#64748b]">/ 4</span>
             </div>
-            <p className="mt-1 text-[10px] text-[#64748b]">Q1, Elim, Q2, GF</p>
+            <p className="mt-1 text-[12px] text-[#64748b]">Q1, Elim, Q2, GF</p>
           </div>
 
           <div
@@ -947,7 +947,7 @@ export default function MatchCenterPage() {
                 : "border-[#1e1e3a] bg-[#0c0c18]/85"
             }`}
           >
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+            <div className="text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
               STAGE STATUS
             </div>
             <div
@@ -957,12 +957,12 @@ export default function MatchCenterPage() {
             >
               <span
                 className={`h-2 w-2 rounded-full ${
-                  groupStageComplete ? "bg-[#34d399] animate-pulse" : "bg-[#06b6d4]"
+                  groupStageComplete ? "bg-[#34d399] animate-pulse" : "bg-[#94a3b8]"
                 }`}
               />
               {groupStageComplete ? "PHASE 2 READY" : "GROUP STAGE ACTIVE"}
             </div>
-            <p className="mt-1 text-[10px] text-[#64748b]">
+            <p className="mt-1 text-[12px] text-[#64748b]">
               {groupStageComplete ? "Playoffs in progress" : "12 group games running"}
             </p>
           </div>
@@ -972,7 +972,7 @@ export default function MatchCenterPage() {
         <section className="mb-8 overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 backdrop-blur-xl">
           <div className="flex flex-col gap-3 border-b border-[#1e1e3a] p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#7c3aed]">
+              <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
                 AUTOMATED IPL BRACKET SYSTEM
               </p>
               <h2 className="mt-0.5 text-lg font-black uppercase tracking-tight text-white">
@@ -984,11 +984,11 @@ export default function MatchCenterPage() {
               type="button"
               onClick={refreshAndProgress}
               disabled={generating}
-              className="inline-flex items-center gap-2 rounded-xl border border-[#7c3aed]/40 bg-[#7c3aed]/15 px-4 py-2 text-xs font-black uppercase tracking-widest text-[#a78bfa] transition hover:bg-[#7c3aed]/25 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl border border-[#94a3b8]/40 bg-[#94a3b8]/15 px-4 py-2 text-sm font-black uppercase tracking-widest text-[#f1f5f9] transition hover:bg-[#94a3b8]/25 disabled:opacity-50"
             >
               {generating ? (
                 <>
-                  <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-[#a78bfa] border-t-transparent" />
+                  <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-[#f1f5f9] border-t-transparent" />
                   <span>Checking Progression...</span>
                 </>
               ) : (
@@ -1033,23 +1033,23 @@ export default function MatchCenterPage() {
               },
             ].map((step) => (
               <div key={step.number} className="bg-[#0c0c18] p-5">
-                <span className="text-xs font-black text-[#ff2d55]">
+                <span className="text-sm font-black text-[#ff2d55]">
                   {step.number}
                 </span>
                 <h3 className="mt-1 text-sm font-black uppercase text-white">
                   {step.title}
                 </h3>
-                <p className="mt-1 text-xs text-[#64748b]">{step.text}</p>
+                <p className="mt-1 text-sm text-[#64748b]">{step.text}</p>
                 <div
-                  className={`mt-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider ${
+                  className={`mt-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wider ${
                     step.active
-                      ? "border border-[#06b6d4]/40 bg-[#06b6d4]/10 text-[#22d3ee]"
+                      ? "border border-[#94a3b8]/40 bg-[#94a3b8]/10 text-[#f1f5f9]"
                       : "border border-[#1e1e3a] bg-[#080812] text-[#64748b]"
                   }`}
                 >
                   <span
                     className={`h-1.5 w-1.5 rounded-full ${
-                      step.active ? "bg-[#22d3ee] animate-pulse" : "bg-[#475569]"
+                      step.active ? "bg-[#f1f5f9] animate-pulse" : "bg-[#475569]"
                     }`}
                   />
                   {step.active ? "ACTIVE STAGE" : "STANDBY / DONE"}
@@ -1061,14 +1061,14 @@ export default function MatchCenterPage() {
 
         {error && (
           <div className="mb-6 flex items-center gap-3 rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55]/10 p-4 text-sm font-semibold text-[#ff4d6a] shadow-[0_0_20px_rgba(255,45,85,0.15)]">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#ff2d55]/20 text-xs font-black">!</span>
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#ff2d55]/20 text-sm font-black">!</span>
             <span>{error}</span>
           </div>
         )}
 
         {message && (
           <div className="mb-6 flex items-center gap-3 rounded-xl border border-[#10b981]/40 bg-[#10b981]/10 p-4 text-sm font-semibold text-[#34d399] shadow-[0_0_20px_rgba(16,185,129,0.15)]">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#10b981]/20 text-xs font-black">✓</span>
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#10b981]/20 text-sm font-black">✓</span>
             <span>{message}</span>
           </div>
         )}
@@ -1083,7 +1083,7 @@ export default function MatchCenterPage() {
                 <button
                   type="button"
                   onClick={() => setActiveSection("group")}
-                  className={`rounded-full px-4 py-2 text-xs font-black uppercase tracking-wider transition ${
+                  className={`rounded-full px-4 py-2 text-sm font-black uppercase tracking-wider transition ${
                     activeSection === "group"
                       ? "bg-gradient-to-r from-rose-500 to-rose-600 text-white shadow-[0_0_15px_rgba(244,63,94,0.4)]"
                       : "text-slate-400 hover:text-white"
@@ -1095,7 +1095,7 @@ export default function MatchCenterPage() {
                 <button
                   type="button"
                   onClick={() => setActiveSection("phase2")}
-                  className={`rounded-full px-4 py-2 text-xs font-black uppercase tracking-wider transition ${
+                  className={`rounded-full px-4 py-2 text-sm font-black uppercase tracking-wider transition ${
                     activeSection === "phase2"
                       ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-[0_0_15px_rgba(168,85,247,0.4)]"
                       : "text-slate-400 hover:text-white"
@@ -1109,7 +1109,7 @@ export default function MatchCenterPage() {
                 type="button"
                 onClick={startNewGroupMatch}
                 disabled={teams.length !== 4 || groupMatches.length >= 12}
-                className="inline-flex items-center justify-center gap-1.5 rounded-full border border-rose-500/40 bg-gradient-to-r from-rose-600 to-[#ff2d55] px-5 py-2.5 text-xs font-black uppercase tracking-widest text-white shadow-[0_0_20px_rgba(255,45,85,0.3)] transition hover:brightness-110 hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
+                className="inline-flex items-center justify-center gap-1.5 rounded-full border border-rose-500/40 bg-gradient-to-r from-rose-600 to-[#ff2d55] px-5 py-2.5 text-sm font-black uppercase tracking-widest text-white shadow-[0_0_20px_rgba(255,45,85,0.3)] transition hover:brightness-110 hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
               >
                 <span>+ NEW GROUP MATCH</span>
               </button>
@@ -1121,13 +1121,13 @@ export default function MatchCenterPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search match ID, team name or map..."
-                className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-4 py-2.5 text-xs font-semibold text-white outline-none placeholder:text-[#475569] focus:border-[#06b6d4]"
+                className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-4 py-2.5 text-sm font-semibold text-white outline-none placeholder:text-[#475569] focus:border-[#94a3b8]"
               />
 
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-xs font-semibold text-white outline-none"
+                className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-sm font-semibold text-white outline-none"
               >
                 <option value="All">All Statuses</option>
                 <option value="Scheduled">Scheduled</option>
@@ -1139,7 +1139,7 @@ export default function MatchCenterPage() {
               <select
                 value={stageFilter}
                 onChange={(e) => setStageFilter(e.target.value)}
-                className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-xs font-semibold text-white outline-none"
+                className="w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-sm font-semibold text-white outline-none"
               >
                 <option value="All">All Stages</option>
                 <option value="Group Stage">Group Stage</option>
@@ -1162,7 +1162,7 @@ export default function MatchCenterPage() {
               ) : filteredMatches.length === 0 ? (
                 <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-12 text-center backdrop-blur-xl">
                   <p className="text-base font-black text-white">No matches found</p>
-                  <p className="mt-1 text-xs text-[#64748b]">
+                  <p className="mt-1 text-sm text-[#64748b]">
                     {activeSection === "group"
                       ? "Create the Group Stage fixtures M01–M12 using '+ NEW GROUP MATCH'."
                       : "Phase 2 matches will appear automatically when Group Stage concludes."}
@@ -1175,25 +1175,25 @@ export default function MatchCenterPage() {
                   return (
                     <div
                       key={match.id}
-                      className="group relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#7c3aed]/50 hover:shadow-[0_0_30px_rgba(124,58,237,0.08)] sm:p-6"
+                      className="group relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#94a3b8]/50 hover:shadow-[0_0_30px_rgba(148,163,184,0.08)] sm:p-6"
                     >
                       {/* Top Header */}
                       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1e1e3a] pb-4">
                         <div className="flex items-center gap-2.5">
-                          <span className="flex h-7 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 text-xs font-black tracking-wider text-white">
+                          <span className="flex h-7 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 text-sm font-black tracking-wider text-white">
                             {matchLabel(match.matchNumber)}
                           </span>
 
-                          <span className="rounded-lg border border-[#ff2d55]/30 bg-[#ff2d55]/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-[#ff4d6a]">
+                          <span className="rounded-lg border border-[#ff2d55]/30 bg-[#ff2d55]/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-[#ff4d6a]">
                             {isAutomatic ? phaseLabel(match.matchNumber) : "GROUP STAGE"}
                           </span>
 
-                          <span className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-[#94a3b8]">
+                          <span className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-[#94a3b8]">
                             {match.map || "TBD"} • BO{match.bestOf}
                           </span>
 
                           {isAutomatic && (
-                            <span className="rounded-full border border-[#7c3aed]/40 bg-[#7c3aed]/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#a78bfa]">
+                            <span className="rounded-full border border-[#94a3b8]/40 bg-[#94a3b8]/15 px-2 py-0.5 text-[11px] font-black uppercase tracking-wider text-[#f1f5f9]">
                               AUTO
                             </span>
                           )}
@@ -1218,7 +1218,7 @@ export default function MatchCenterPage() {
                           </div>
 
                           {match.winnerId && (
-                            <p className="mt-1 text-[9px] font-black uppercase tracking-wider text-[#34d399]">
+                            <p className="mt-1 text-[11px] font-black uppercase tracking-wider text-[#34d399]">
                               WINNER: {getTeamName(match.winnerId)}
                             </p>
                           )}
@@ -1233,7 +1233,7 @@ export default function MatchCenterPage() {
 
                       {/* Actions Footer */}
                       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#1e1e3a] pt-4">
-                        <span className="text-xs font-semibold text-[#64748b]">
+                        <span className="text-sm font-semibold text-[#64748b]">
                           {match.scheduledAt
                             ? new Date(match.scheduledAt).toLocaleString()
                             : "Schedule TBD"}
@@ -1245,14 +1245,14 @@ export default function MatchCenterPage() {
                               <button
                                 type="button"
                                 onClick={() => editMatch(match)}
-                                className="rounded-xl border border-[#1e1e3a] bg-[#080812] px-3.5 py-2 text-[10px] font-black uppercase tracking-wider text-[#94a3b8] transition hover:border-white hover:text-white"
+                                className="rounded-xl border border-[#1e1e3a] bg-[#080812] px-3.5 py-2 text-[12px] font-black uppercase tracking-wider text-[#94a3b8] transition hover:border-white hover:text-white"
                               >
                                 EDIT
                               </button>
 
                               <Link
                                 href={`/matches/${encodeURIComponent(match.id)}`}
-                                className="rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55]/10 px-4 py-2 text-[10px] font-black uppercase tracking-wider text-[#ff4d6a] transition hover:bg-[#ff2d55]/20 hover:shadow-[0_0_15px_rgba(255,45,85,0.2)]"
+                                className="rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55]/10 px-4 py-2 text-[12px] font-black uppercase tracking-wider text-[#ff4d6a] transition hover:bg-[#ff2d55]/20 hover:shadow-[0_0_15px_rgba(255,45,85,0.2)]"
                               >
                                 RECORD RESULT ↗
                               </Link>
@@ -1260,7 +1260,7 @@ export default function MatchCenterPage() {
                               <button
                                 type="button"
                                 onClick={() => deleteGroupMatch(match)}
-                                className="rounded-xl border border-[#ff2d55]/20 bg-[#ff2d55]/5 px-3 py-2 text-[10px] font-black uppercase tracking-wider text-[#ff4d6a]/80 transition hover:bg-[#ff2d55]/15"
+                                className="rounded-xl border border-[#ff2d55]/20 bg-[#ff2d55]/5 px-3 py-2 text-[12px] font-black uppercase tracking-wider text-[#ff4d6a]/80 transition hover:bg-[#ff2d55]/15"
                               >
                                 DELETE
                               </button>
@@ -1268,7 +1268,7 @@ export default function MatchCenterPage() {
                           ) : (
                             <Link
                               href={`/matches/${encodeURIComponent(match.id)}`}
-                              className="rounded-xl border border-[#7c3aed]/40 bg-[#7c3aed]/15 px-4 py-2 text-[10px] font-black uppercase tracking-wider text-[#a78bfa] transition hover:bg-[#7c3aed]/25"
+                              className="rounded-xl border border-[#94a3b8]/40 bg-[#94a3b8]/15 px-4 py-2 text-[12px] font-black uppercase tracking-wider text-[#f1f5f9] transition hover:bg-[#94a3b8]/25"
                             >
                               VIEW / EDIT RESULT ↗
                             </Link>
@@ -1288,20 +1288,20 @@ export default function MatchCenterPage() {
             <section className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl">
               <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#06b6d4]">
+                  <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
                     GROUP STAGE
                   </p>
                   <h3 className="mt-0.5 text-base font-black uppercase tracking-tight text-white">
                     Standings Table
                   </h3>
                 </div>
-                <span className="rounded-full border border-[#06b6d4]/30 bg-[#06b6d4]/10 px-2.5 py-0.5 text-[9px] font-black text-[#22d3ee]">
+                <span className="rounded-full border border-[#94a3b8]/30 bg-[#94a3b8]/10 px-2.5 py-0.5 text-[11px] font-black text-[#f1f5f9]">
                   LIVE
                 </span>
               </div>
 
               <div className="mt-5 overflow-hidden rounded-xl border border-[#1e1e3a]">
-                <div className="grid grid-cols-[28px_1fr_32px_32px_44px] gap-2 border-b border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-[9px] font-black tracking-wider text-[#64748b]">
+                <div className="grid grid-cols-[28px_1fr_32px_32px_44px] gap-2 border-b border-[#1e1e3a] bg-[#080812] px-3 py-2.5 text-[11px] font-black tracking-wider text-[#64748b]">
                   <div>#</div>
                   <div>TEAM</div>
                   <div className="text-center">W</div>
@@ -1314,28 +1314,28 @@ export default function MatchCenterPage() {
                     key={row.team.id}
                     className="grid grid-cols-[28px_1fr_32px_32px_44px] items-center gap-2 border-b border-[#1e1e3a] px-3 py-3 last:border-b-0 hover:bg-[#080812]/50"
                   >
-                    <div className="text-xs font-black text-[#64748b]">
+                    <div className="text-sm font-black text-[#64748b]">
                       {index + 1}
                     </div>
 
                     <div className="min-w-0">
-                      <p className="truncate text-xs font-black uppercase text-white">
+                      <p className="truncate text-sm font-black uppercase text-white">
                         {row.team.name}
                       </p>
-                      <p className="text-[9px] font-bold text-[#64748b]">
+                      <p className="text-[11px] font-bold text-[#64748b]">
                         RD {row.roundDiff >= 0 ? `+${row.roundDiff}` : row.roundDiff}
                       </p>
                     </div>
 
-                    <div className="text-center text-xs font-black text-[#34d399]">
+                    <div className="text-center text-sm font-black text-[#34d399]">
                       {row.wins}
                     </div>
 
-                    <div className="text-center text-xs font-black text-[#ff4d6a]">
+                    <div className="text-center text-sm font-black text-[#ff4d6a]">
                       {row.losses}
                     </div>
 
-                    <div className="text-right text-xs font-black text-white">
+                    <div className="text-right text-sm font-black text-white">
                       {row.points}
                     </div>
                   </div>
@@ -1344,9 +1344,9 @@ export default function MatchCenterPage() {
             </section>
 
             {/* Playoff Auto Flow Rules */}
-            <section className="rounded-2xl border border-[#7c3aed]/30 bg-[#0c0c18]/85 p-6 backdrop-blur-xl">
+            <section className="rounded-2xl border border-[#94a3b8]/30 bg-[#0c0c18]/85 p-6 backdrop-blur-xl">
               <div className="border-b border-[#1e1e3a] pb-3">
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#a78bfa]">
+                <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#f1f5f9]">
                   AUTOMATED SEEDING
                 </p>
                 <h3 className="mt-0.5 text-base font-black uppercase tracking-tight text-white">
@@ -1356,42 +1356,42 @@ export default function MatchCenterPage() {
 
               <div className="mt-4 space-y-3">
                 <div className="flex items-center gap-3 rounded-xl border border-[#1e1e3a] bg-[#080812] p-3">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#7c3aed]/20 text-xs font-black text-[#a78bfa]">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#94a3b8]/20 text-sm font-black text-[#f1f5f9]">
                     13
                   </span>
                   <div>
-                    <p className="text-xs font-black text-white">Q1 (Qualifier 1)</p>
-                    <p className="text-[10px] text-[#64748b]">Group Rank #1 vs Group Rank #2</p>
+                    <p className="text-sm font-black text-white">Q1 (Qualifier 1)</p>
+                    <p className="text-[12px] text-[#64748b]">Group Rank #1 vs Group Rank #2</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3 rounded-xl border border-[#1e1e3a] bg-[#080812] p-3">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#7c3aed]/20 text-xs font-black text-[#a78bfa]">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#94a3b8]/20 text-sm font-black text-[#f1f5f9]">
                     14
                   </span>
                   <div>
-                    <p className="text-xs font-black text-white">ELIM (Elimination)</p>
-                    <p className="text-[10px] text-[#64748b]">Group Rank #3 vs Group Rank #4</p>
+                    <p className="text-sm font-black text-white">ELIM (Elimination)</p>
+                    <p className="text-[12px] text-[#64748b]">Group Rank #3 vs Group Rank #4</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3 rounded-xl border border-[#1e1e3a] bg-[#080812] p-3">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#7c3aed]/20 text-xs font-black text-[#a78bfa]">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#94a3b8]/20 text-sm font-black text-[#f1f5f9]">
                     15
                   </span>
                   <div>
-                    <p className="text-xs font-black text-white">Q2 (Qualifier 2)</p>
-                    <p className="text-[10px] text-[#64748b]">Loser of M13 vs Winner of M14</p>
+                    <p className="text-sm font-black text-white">Q2 (Qualifier 2)</p>
+                    <p className="text-[12px] text-[#64748b]">Loser of M13 vs Winner of M14</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3 rounded-xl border border-[#ff2d55]/30 bg-[#ff2d55]/10 p-3">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#ff2d55]/20 text-xs font-black text-[#ff4d6a]">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#ff2d55]/20 text-sm font-black text-[#ff4d6a]">
                     16
                   </span>
                   <div>
-                    <p className="text-xs font-black text-white">GRAND FINAL (BO3)</p>
-                    <p className="text-[10px] text-[#ff4d6a]">Winner of M13 vs Winner of M15</p>
+                    <p className="text-sm font-black text-white">GRAND FINAL (BO3)</p>
+                    <p className="text-[12px] text-[#ff4d6a]">Winner of M13 vs Winner of M15</p>
                   </div>
                 </div>
               </div>
@@ -1410,7 +1410,7 @@ export default function MatchCenterPage() {
             <div className="mx-auto w-full max-w-4xl rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] p-6 shadow-[0_0_60px_rgba(0,0,0,0.8)] sm:p-8">
               <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#06b6d4]">
+                  <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
                     FIXTURE EDITOR
                   </p>
                   <h2 id="group-match-editor-title" className="mt-0.5 text-xl font-black uppercase tracking-tight text-white">
@@ -1421,7 +1421,7 @@ export default function MatchCenterPage() {
                 <button
                   type="button"
                   onClick={closeEditor}
-                  className="rounded-xl border border-[#1e1e3a] bg-[#080812] px-3.5 py-2 text-xs font-black uppercase text-[#94a3b8] hover:text-white"
+                  className="rounded-xl border border-[#1e1e3a] bg-[#080812] px-3.5 py-2 text-sm font-black uppercase text-[#94a3b8] hover:text-white"
                 >
                   ✕ Close
                 </button>
@@ -1429,7 +1429,7 @@ export default function MatchCenterPage() {
 
               <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <label className="block">
-                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                  <span className="mb-2 block text-[12px] font-black uppercase tracking-wider text-[#64748b]">
                     MATCH ID
                   </span>
                   <input
@@ -1444,7 +1444,7 @@ export default function MatchCenterPage() {
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                  <span className="mb-2 block text-[12px] font-black uppercase tracking-wider text-[#64748b]">
                     MATCH NUMBER
                   </span>
                   <select
@@ -1478,7 +1478,7 @@ export default function MatchCenterPage() {
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                  <span className="mb-2 block text-[12px] font-black uppercase tracking-wider text-[#64748b]">
                     MAP
                   </span>
                   <select
@@ -1499,7 +1499,7 @@ export default function MatchCenterPage() {
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                  <span className="mb-2 block text-[12px] font-black uppercase tracking-wider text-[#64748b]">
                     BEST OF
                   </span>
                   <select
@@ -1516,7 +1516,7 @@ export default function MatchCenterPage() {
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                  <span className="mb-2 block text-[12px] font-black uppercase tracking-wider text-[#64748b]">
                     TEAM 1
                   </span>
                   <select
@@ -1536,7 +1536,7 @@ export default function MatchCenterPage() {
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                  <span className="mb-2 block text-[12px] font-black uppercase tracking-wider text-[#64748b]">
                     TEAM 2
                   </span>
                   <select
@@ -1556,7 +1556,7 @@ export default function MatchCenterPage() {
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                  <span className="mb-2 block text-[12px] font-black uppercase tracking-wider text-[#64748b]">
                     TEAM 1 SCORE
                   </span>
                   <input
@@ -1571,7 +1571,7 @@ export default function MatchCenterPage() {
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                  <span className="mb-2 block text-[12px] font-black uppercase tracking-wider text-[#64748b]">
                     TEAM 2 SCORE
                   </span>
                   <input
@@ -1586,7 +1586,7 @@ export default function MatchCenterPage() {
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                  <span className="mb-2 block text-[12px] font-black uppercase tracking-wider text-[#64748b]">
                     STATUS
                   </span>
                   <select
@@ -1607,7 +1607,7 @@ export default function MatchCenterPage() {
                 </label>
 
                 <label className="block md:col-span-2 lg:col-span-3">
-                  <span className="mb-2 block text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                  <span className="mb-2 block text-[12px] font-black uppercase tracking-wider text-[#64748b]">
                     SCHEDULE (DATE & TIME)
                   </span>
                   <input
@@ -1625,7 +1625,7 @@ export default function MatchCenterPage() {
                 <button
                   type="button"
                   onClick={closeEditor}
-                  className="rounded-xl border border-[#1e1e3a] bg-[#080812] px-5 py-3 text-xs font-black uppercase tracking-wider text-[#94a3b8] hover:text-white"
+                  className="rounded-xl border border-[#1e1e3a] bg-[#080812] px-5 py-3 text-sm font-black uppercase tracking-wider text-[#94a3b8] hover:text-white"
                 >
                   Cancel
                 </button>
@@ -1634,7 +1634,7 @@ export default function MatchCenterPage() {
                   type="button"
                   onClick={saveGroupMatch}
                   disabled={saving}
-                  className="inline-flex items-center gap-2 rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55] px-6 py-3 text-xs font-black uppercase tracking-widest text-white shadow-[0_0_20px_rgba(255,45,85,0.25)] transition hover:opacity-90 disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55] px-6 py-3 text-sm font-black uppercase tracking-widest text-white shadow-[0_0_20px_rgba(255,45,85,0.25)] transition hover:opacity-90 disabled:opacity-50"
                 >
                   {saving ? (
                     <>

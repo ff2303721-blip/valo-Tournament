@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { TournamentBrand } from "./tournament-brand";
 import { getGameDefinition } from "@/lib/games/registry";
+import { getTournamentStatusMeta } from "@/lib/tournament-status";
 
 const NAV_LINKS = [
   { href: "/tournament",          label: "OVERVIEW" },
@@ -19,7 +20,7 @@ let cachedNavSettings: { status?: string; gameId?: string; logoUrl?: string } | 
 export function TournamentNav() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [status, setStatus] = useState<string>(cachedNavSettings?.status || "LIVE");
+  const [status, setStatus] = useState<string | undefined>(cachedNavSettings?.status);
   const [gameId, setGameId] = useState<string>(cachedNavSettings?.gameId || "valorant");
   const [logoUrl, setLogoUrl] = useState<string>(cachedNavSettings?.logoUrl || "");
 
@@ -28,7 +29,7 @@ export function TournamentNav() {
     fetch("/api/settings")
       .then((r) => r.json())
       .then((d) => {
-        const nextStatus = d?.tournamentStatus ? d.tournamentStatus.toUpperCase() : "LIVE";
+        const nextStatus = d?.tournamentStatus as string | undefined;
         const nextGameId = d?.gameId || "valorant";
         const nextLogoUrl = d?.logoUrl || "";
         cachedNavSettings = { status: nextStatus, gameId: nextGameId, logoUrl: nextLogoUrl };
@@ -38,6 +39,8 @@ export function TournamentNav() {
       })
       .catch(() => {});
   }, []);
+
+  const statusMeta = getTournamentStatusMeta(status);
 
   const game = getGameDefinition(gameId);
 
@@ -51,7 +54,7 @@ export function TournamentNav() {
       {/* Micro-ambient bottom border glow */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
 
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2.5 sm:px-6">
+      <div className="mx-auto flex max-w-[1680px] items-center justify-between px-4 py-2.5 sm:px-6">
         {/* ── 1. Brand & Game Identity ──────────────────────────────── */}
         <div className="flex items-center gap-4">
           <Link href="/tournament" className="group flex items-center gap-3">
@@ -72,25 +75,20 @@ export function TournamentNav() {
             <TournamentBrand compact />
           </Link>
 
-          {/* Pulse Live / Upcoming Badge */}
+          {/* Pulse Status Badge */}
           <div
-            className={`hidden sm:inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[9px] font-mono font-bold tracking-widest uppercase transition ${
-              status === "LIVE"
-                ? "border-rose-500/30 bg-rose-500/10 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.15)]"
-                : "border-cyan-500/30 bg-cyan-500/10 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.15)]"
-            }`}
+            className={`hidden sm:inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-mono font-bold tracking-widest uppercase transition ${statusMeta.badgeClass}`}
           >
             <span className="relative flex h-2 w-2">
-              {status === "LIVE" && (
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
+              {statusMeta.isLive && (
+                <span className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${statusMeta.dotClass}`} />
               )}
-              <span
-                className={`relative inline-flex h-2 w-2 rounded-full ${
-                  status === "LIVE" ? "bg-rose-500" : "bg-cyan-400"
-                }`}
-              />
+              <span className={`relative inline-flex h-2 w-2 rounded-full ${statusMeta.dotClass}`} />
             </span>
-            <span>{status}</span>
+            <span>
+              {statusMeta.label}
+              {statusMeta.sublabel ? ` · ${statusMeta.sublabel}` : ""}
+            </span>
           </div>
         </div>
 
@@ -102,7 +100,7 @@ export function TournamentNav() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative rounded-full px-4 py-1.5 text-[11px] font-bold tracking-wider uppercase transition-all duration-200 ${
+                className={`relative rounded-full px-4 py-1.5 text-[13px] font-bold tracking-wider uppercase transition-all duration-200 ${
                   active
                     ? "bg-white/10 text-white border border-white/15 shadow-[0_2px_12px_rgba(0,0,0,0.5)]"
                     : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
@@ -118,11 +116,11 @@ export function TournamentNav() {
         <div className="flex items-center gap-2.5">
           <Link
             href="/admin"
-            className="hidden sm:inline-flex items-center gap-2 rounded-full border border-purple-500/40 bg-gradient-to-r from-purple-600/25 via-indigo-600/20 to-purple-600/25 px-4 py-1.5 text-[11px] font-black tracking-wider text-purple-200 transition-all duration-200 hover:border-purple-400 hover:bg-purple-600/40 hover:text-white hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:scale-[1.02]"
+            className="hidden sm:inline-flex items-center gap-2 rounded-full border border-purple-500/40 bg-gradient-to-r from-purple-600/25 via-indigo-600/20 to-purple-600/25 px-4 py-1.5 text-[13px] font-black tracking-wider text-purple-200 transition-all duration-200 hover:border-purple-400 hover:bg-purple-600/40 hover:text-white hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:scale-[1.02]"
           >
-            <span className="text-[10px] text-purple-400">⚡</span>
+            <span className="text-[12px] text-purple-400">⚡</span>
             <span>ADMIN HUB</span>
-            <span className="text-[10px] text-purple-400">↗</span>
+            <span className="text-[12px] text-purple-400">↗</span>
           </Link>
 
           {/* Mobile hamburger toggle */}
@@ -153,7 +151,7 @@ export function TournamentNav() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`rounded-xl px-4 py-2.5 text-xs font-bold tracking-wider uppercase transition ${
+                  className={`rounded-xl px-4 py-2.5 text-sm font-bold tracking-wider uppercase transition ${
                     active
                       ? "bg-white/10 text-white border border-white/15"
                       : "text-slate-400 hover:bg-white/[0.04] hover:text-white"
@@ -166,7 +164,7 @@ export function TournamentNav() {
             <Link
               href="/admin"
               onClick={() => setMobileOpen(false)}
-              className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-purple-500/40 bg-purple-600/25 px-4 py-2.5 text-xs font-black tracking-wider text-purple-200"
+              className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-purple-500/40 bg-purple-600/25 px-4 py-2.5 text-sm font-black tracking-wider text-purple-200"
             >
               <span>⚡ ADMIN HUB</span>
               <span>↗</span>

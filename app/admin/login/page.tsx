@@ -1,12 +1,9 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function AdminLoginPage() {
-  const router = useRouter();
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -38,11 +35,9 @@ export default function AdminLoginPage() {
         return;
       }
 
-      router.replace("/admin");
-      router.refresh();
+      window.location.href = "/admin";
     } catch {
       setError("Unable to connect to the login service.");
-    } finally {
       setLoading(false);
     }
   }
@@ -51,9 +46,9 @@ export default function AdminLoginPage() {
     <main className="relative min-h-screen text-[#f1f5f9] flex items-center justify-center px-4 py-12 sm:px-6">
       {/* ── Ambient Neon Glow Orbs ────────────────────────────────────────── */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute top-1/4 -left-32 h-[500px] w-[500px] rounded-full bg-[#7c3aed]/15 blur-[160px]" />
+        <div className="absolute top-1/4 -left-32 h-[500px] w-[500px] rounded-full bg-[#94a3b8]/15 blur-[160px]" />
         <div className="absolute top-1/3 -right-32 h-[500px] w-[500px] rounded-full bg-[#ff2d55]/12 blur-[160px]" />
-        <div className="absolute -bottom-32 left-1/2 -translate-x-1/2 h-[400px] w-[400px] rounded-full bg-[#06b6d4]/10 blur-[140px]" />
+        <div className="absolute -bottom-32 left-1/2 -translate-x-1/2 h-[400px] w-[400px] rounded-full bg-[#94a3b8]/10 blur-[140px]" />
       </div>
 
       <div className="relative z-10 w-full max-w-[440px]">
@@ -64,31 +59,31 @@ export default function AdminLoginPage() {
             V
           </div>
 
-          <div className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.35em] text-[#ff2d55]">
+          <div className="flex items-center justify-center gap-2 text-[12px] font-black uppercase tracking-[0.35em] text-[#ff2d55]">
             <span className="live-dot h-2 w-2 flex-shrink-0" />
             COMMAND ACCESS // VALORANT ESPORTS
           </div>
 
-          <h1 className="mt-2 text-3xl font-black uppercase tracking-tight sm:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-white via-[#e2e8f0] to-[#9d63ff]">
+          <h1 className="mt-2 text-3xl font-black uppercase tracking-tight sm:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-white via-[#e2e8f0] to-[#94a3b8]">
             Admin Portal
           </h1>
 
-          <p className="mt-1.5 text-xs text-[#64748b]">
+          <p className="mt-1.5 text-sm text-[#64748b]">
             Secure command center authentication
           </p>
         </div>
 
         {/* ── Modern Glassmorphism Card ───────────────────────────────────── */}
-        <div className="overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_30px_rgba(124,58,237,0.12)] backdrop-blur-2xl transition hover:border-[#2e2e5a]">
+        <div className="overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_30px_rgba(148,163,184,0.12)] backdrop-blur-2xl transition hover:border-[#2e2e5a]">
           {/* Card Top Banner */}
           <div className="flex items-center justify-between border-b border-[#1e1e3a] bg-[#030308]/60 px-6 py-3.5">
             <div className="flex items-center gap-2">
               <span className="flex h-2 w-2 rounded-full bg-[#10b981] shadow-[0_0_8px_#10b981]" />
-              <span className="text-[10px] font-black tracking-widest uppercase text-[#94a3b8]">
+              <span className="text-[12px] font-black tracking-widest uppercase text-[#94a3b8]">
                 SECURE TERMINAL
               </span>
             </div>
-            <span className="rounded-md border border-[#7c3aed]/30 bg-[#7c3aed]/10 px-2 py-0.5 text-[9px] font-black tracking-widest text-[#9d63ff]">
+            <span className="rounded-md border border-[#94a3b8]/30 bg-[#94a3b8]/10 px-2 py-0.5 text-[11px] font-black tracking-widest text-[#94a3b8]">
               ENCRYPTED
             </span>
           </div>
@@ -99,10 +94,10 @@ export default function AdminLoginPage() {
             <div>
               <label
                 htmlFor="username"
-                className="mb-2 flex items-center justify-between text-[10px] font-black tracking-widest uppercase text-[#64748b]"
+                className="mb-2 flex items-center justify-between text-[12px] font-black tracking-widest uppercase text-[#64748b]"
               >
                 <span>ADMIN USERNAME</span>
-                <span className="text-[9px] text-[#475569]">REQUIRED</span>
+                <span className="text-[11px] text-[#475569]">REQUIRED</span>
               </label>
 
               <div className="relative">
@@ -114,7 +109,7 @@ export default function AdminLoginPage() {
                   autoComplete="username"
                   required
                   placeholder="Enter administrator username"
-                  className="w-full rounded-xl border border-[#1e1e3a] bg-[#030308]/90 px-4 py-3 text-sm text-[#f1f5f9] placeholder:text-[#334155] outline-none transition duration-200 focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/20"
+                  className="w-full rounded-xl border border-[#1e1e3a] bg-[#030308]/90 px-4 py-3 text-sm text-[#f1f5f9] placeholder:text-[#334155] outline-none transition duration-200 focus:border-[#94a3b8] focus:ring-2 focus:ring-[#94a3b8]/20"
                 />
               </div>
             </div>
@@ -123,10 +118,10 @@ export default function AdminLoginPage() {
             <div>
               <label
                 htmlFor="password"
-                className="mb-2 flex items-center justify-between text-[10px] font-black tracking-widest uppercase text-[#64748b]"
+                className="mb-2 flex items-center justify-between text-[12px] font-black tracking-widest uppercase text-[#64748b]"
               >
                 <span>PASSWORD</span>
-                <span className="text-[9px] text-[#475569]">SECURE</span>
+                <span className="text-[11px] text-[#475569]">SECURE</span>
               </label>
 
               <div className="relative">
@@ -138,13 +133,13 @@ export default function AdminLoginPage() {
                   autoComplete="current-password"
                   required
                   placeholder="Enter administrator password"
-                  className="w-full rounded-xl border border-[#1e1e3a] bg-[#030308]/90 px-4 py-3 pr-11 text-sm text-[#f1f5f9] placeholder:text-[#334155] outline-none transition duration-200 focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/20"
+                  className="w-full rounded-xl border border-[#1e1e3a] bg-[#030308]/90 px-4 py-3 pr-11 text-sm text-[#f1f5f9] placeholder:text-[#334155] outline-none transition duration-200 focus:border-[#94a3b8] focus:ring-2 focus:ring-[#94a3b8]/20"
                 />
 
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#475569] hover:text-[#94a3b8] transition p-1"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-bold text-[#475569] hover:text-[#94a3b8] transition p-1"
                   tabIndex={-1}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
@@ -155,8 +150,8 @@ export default function AdminLoginPage() {
 
             {/* Error Message */}
             {error && (
-              <div className="flex items-center gap-3 rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55]/10 p-3.5 text-xs font-bold text-[#ff4d6a] animate-in fade-in slide-in-from-top-1 duration-200">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#ff2d55]/20 text-[11px] font-black text-[#ff2d55]">
+              <div className="flex items-center gap-3 rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55]/10 p-3.5 text-sm font-bold text-[#ff4d6a] animate-in fade-in slide-in-from-top-1 duration-200">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#ff2d55]/20 text-[13px] font-black text-[#ff2d55]">
                   !
                 </span>
                 <span>{error}</span>
@@ -167,7 +162,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#ff2d55] via-[#ff4d6a] to-[#7c3aed] py-3.5 text-xs font-black tracking-widest uppercase text-white shadow-[0_4px_20px_rgba(255,45,85,0.35)] transition-all duration-200 hover:shadow-[0_4px_28px_rgba(255,45,85,0.55)] hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+              className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#ff2d55] via-[#ff4d6a] to-[#94a3b8] py-3.5 text-sm font-black tracking-widest uppercase text-white shadow-[0_4px_20px_rgba(255,45,85,0.35)] transition-all duration-200 hover:shadow-[0_4px_28px_rgba(255,45,85,0.55)] hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? (
                 <>
@@ -207,7 +202,7 @@ export default function AdminLoginPage() {
           <div className="border-t border-[#1e1e3a] bg-[#030308]/50 px-6 py-4 text-center">
             <Link
               href="/tournament"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#64748b] transition hover:text-[#22d3ee]"
+              className="inline-flex items-center gap-1.5 text-sm font-bold text-[#64748b] transition hover:text-[#f1f5f9]"
             >
               <span>←</span>
               <span>RETURN TO TOURNAMENT HUB</span>
@@ -216,7 +211,7 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Security badge at bottom */}
-        <div className="mt-6 text-center text-[10px] text-[#475569]">
+        <div className="mt-6 text-center text-[12px] text-[#475569]">
           VALORANT ESPORTS CONTROL SYSTEM • CLOUD SYNC ACTIVE
         </div>
       </div>

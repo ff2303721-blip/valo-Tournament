@@ -60,13 +60,13 @@ export function TournamentBrand({ compact = false }: { compact?: boolean }) {
 
   return (
     <div>
-      <div className="text-[9px] font-black uppercase tracking-[0.35em] text-[#ff2d55]">
+      <div className="text-[11px] font-black uppercase tracking-[0.35em] text-[#ff2d55]">
         {settings.tagline || DEFAULT_SETTINGS.tagline}
       </div>
       <div
         className="mt-1 text-xl font-black uppercase tracking-tight sm:text-2xl"
         style={{
-          background: "linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 40%, #9d63ff 100%)",
+          background: "linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 40%, #94a3b8 100%)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           backgroundClip: "text",

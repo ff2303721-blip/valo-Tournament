@@ -192,11 +192,11 @@ function TeamSlot({
               className="h-full w-full object-cover"
             />
           ) : team ? (
-            <span className="text-[10px] font-black text-[#7c3aed]">
+            <span className="text-[12px] font-black text-[#94a3b8]">
               {team.tag.slice(0, 3).toUpperCase()}
             </span>
           ) : (
-            <span className="text-xs font-black text-[#334155]">
+            <span className="text-sm font-black text-[#334155]">
               ?
             </span>
           )}
@@ -211,7 +211,7 @@ function TeamSlot({
             {team?.name ?? "TBD"}
           </div>
 
-          <div className="mt-1 text-[9px] font-black uppercase tracking-[0.18em] text-[#22d3ee]/60">
+          <div className="mt-1 text-[11px] font-black uppercase tracking-[0.18em] text-[#f1f5f9]/60">
             {team ? `Seed #${team.seed}` : label}
           </div>
         </div>
@@ -253,9 +253,9 @@ function PlayoffCard({
 }) {
   const accentClasses = {
     cyan: {
-      border: "border-[#06b6d4]/30",
-      title: "text-[#22d3ee]",
-      glow: "bg-[#06b6d4]/[0.03]",
+      border: "border-[#94a3b8]/30",
+      title: "text-[#f1f5f9]",
+      glow: "bg-[#94a3b8]/[0.03]",
     },
     red: {
       border: "border-[#ff2d55]/30",
@@ -283,21 +283,21 @@ function PlayoffCard({
       <div className="border-b border-[#1e1e3a] px-5 py-4">
         <div className="flex items-center justify-between gap-4">
           <div
-            className={`text-xs font-black uppercase tracking-[0.16em] ${styles.title}`}
+            className={`text-sm font-black uppercase tracking-[0.16em] ${styles.title}`}
           >
             {title}
           </div>
 
-          <div className="text-[9px] font-black uppercase tracking-[0.15em] text-[#334155]">
+          <div className="text-[11px] font-black uppercase tracking-[0.15em] text-[#334155]">
             {match?.status ?? "Waiting"}
           </div>
         </div>
 
-        <div className="mt-2 text-[9px] font-black uppercase tracking-[0.12em] text-[#334155]">
+        <div className="mt-2 text-[11px] font-black uppercase tracking-[0.12em] text-[#334155]">
           {subtitle}
         </div>
 
-        <p className="mt-3 text-[10px] leading-5 text-[#64748b]">
+        <p className="mt-3 text-[12px] leading-5 text-[#64748b]">
           {description}
         </p>
       </div>
@@ -315,7 +315,7 @@ function PlayoffCard({
       />
 
       {match && (
-        <div className="border-t border-[#1e1e3a] px-5 py-3 text-[9px] font-black uppercase tracking-[0.15em] text-[#334155]">
+        <div className="border-t border-[#1e1e3a] px-5 py-3 text-[11px] font-black uppercase tracking-[0.15em] text-[#334155]">
           BO{match.bestOf} • {match.map || "Map TBD"}
         </div>
       )}
@@ -569,15 +569,15 @@ export default function TournamentBracketPage() {
     <div className="min-h-screen text-[#f1f5f9]">
       {/* Ambient glow blobs */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/[0.06] blur-[120px]" />
+        <div className="absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-[#94a3b8]/[0.06] blur-[120px]" />
         <div className="absolute top-1/3 -right-40 h-[500px] w-[500px] rounded-full bg-[#ff2d55]/[0.05] blur-[100px]" />
-        <div className="absolute bottom-0 left-1/3 h-[400px] w-[400px] rounded-full bg-[#06b6d4]/[0.04] blur-[100px]" />
+        <div className="absolute bottom-0 left-1/3 h-[400px] w-[400px] rounded-full bg-[#94a3b8]/[0.04] blur-[100px]" />
       </div>
 
       <TournamentNav />
 
       <main className="relative text-[#f1f5f9]">
-        <div className="mx-auto max-w-[1500px] px-5 py-8 md:px-8 lg:px-10">
+        <div className="mx-auto max-w-[1680px] px-5 py-8 md:px-8 lg:px-10">
 
           {/* HEADER */}
           <header className="mb-8 border-b border-[#1e1e3a] pb-7">
@@ -585,7 +585,7 @@ export default function TournamentBracketPage() {
               <div>
                 <div className="mb-3 flex items-center gap-3">
                   <span className="h-2 w-2 rounded-full bg-[#ff2d55] shadow-[0_0_14px_rgba(255,45,85,0.8)]" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ff4d6a]">
+                  <span className="text-[12px] font-black uppercase tracking-[0.3em] text-[#ff4d6a]">
                     Phase 2
                   </span>
                 </div>
@@ -606,7 +606,7 @@ export default function TournamentBracketPage() {
           <section className="mb-8 rounded-xl border border-[#1e1e3a] bg-[#0c0c18]">
             <div className="flex flex-col border-b border-[#1e1e3a] px-5 py-5 md:flex-row md:items-center md:justify-between md:px-7">
               <div className="flex items-center gap-4">
-                <div className="rounded-lg bg-[#ff2d55] px-4 py-3 text-xs font-black uppercase tracking-wide text-white">
+                <div className="rounded-lg bg-[#ff2d55] px-4 py-3 text-sm font-black uppercase tracking-wide text-white">
                   Phase 2
                 </div>
 
@@ -615,28 +615,28 @@ export default function TournamentBracketPage() {
                     Playoffs &amp; Grand Final
                   </div>
 
-                  <div className="mt-1 text-[9px] font-black uppercase tracking-[0.18em] text-[#334155]">
+                  <div className="mt-1 text-[11px] font-black uppercase tracking-[0.18em] text-[#334155]">
                     IPL System
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4 text-[9px] font-black uppercase tracking-[0.22em] text-[#334155] md:mt-0">
+              <div className="mt-4 text-[11px] font-black uppercase tracking-[0.22em] text-[#334155] md:mt-0">
                 Rank → Qualify → Conquer
               </div>
             </div>
 
             <div className="grid gap-4 p-5 md:grid-cols-2 md:p-8 lg:grid-cols-4">
-              <div className="rounded-xl border border-[#06b6d4]/30 bg-[#06b6d4]/[0.03] p-5">
-                <div className="text-sm font-black uppercase text-[#22d3ee]">
+              <div className="rounded-xl border border-[#94a3b8]/30 bg-[#94a3b8]/[0.03] p-5">
+                <div className="text-sm font-black uppercase text-[#f1f5f9]">
                   Qualifier 1
                 </div>
 
-                <div className="mt-2 text-[9px] font-black uppercase tracking-[0.15em] text-[#334155]">
+                <div className="mt-2 text-[11px] font-black uppercase tracking-[0.15em] text-[#334155]">
                   Rank #1 vs Rank #2
                 </div>
 
-                <p className="mt-5 text-[10px] leading-5 text-[#64748b]">
+                <p className="mt-5 text-[12px] leading-5 text-[#64748b]">
                   Winner advances directly to the Grand Final.
                 </p>
               </div>
@@ -646,11 +646,11 @@ export default function TournamentBracketPage() {
                   Eliminator
                 </div>
 
-                <div className="mt-2 text-[9px] font-black uppercase tracking-[0.15em] text-[#334155]">
+                <div className="mt-2 text-[11px] font-black uppercase tracking-[0.15em] text-[#334155]">
                   Rank #3 vs Rank #4
                 </div>
 
-                <p className="mt-5 text-[10px] leading-5 text-[#64748b]">
+                <p className="mt-5 text-[12px] leading-5 text-[#64748b]">
                   Loser is eliminated and finishes 4th.
                 </p>
               </div>
@@ -660,11 +660,11 @@ export default function TournamentBracketPage() {
                   Qualifier 2
                 </div>
 
-                <div className="mt-2 text-[9px] font-black uppercase tracking-[0.15em] text-[#334155]">
+                <div className="mt-2 text-[11px] font-black uppercase tracking-[0.15em] text-[#334155]">
                   Loser Q1 vs Winner Eliminator
                 </div>
 
-                <p className="mt-5 text-[10px] leading-5 text-[#64748b]">
+                <p className="mt-5 text-[12px] leading-5 text-[#64748b]">
                   Winner advances to the Grand Final.
                 </p>
               </div>
@@ -674,11 +674,11 @@ export default function TournamentBracketPage() {
                   Grand Final
                 </div>
 
-                <div className="mt-2 text-[9px] font-black uppercase tracking-[0.15em] text-[#334155]">
+                <div className="mt-2 text-[11px] font-black uppercase tracking-[0.15em] text-[#334155]">
                   Winner Q1 vs Winner Q2
                 </div>
 
-                <p className="mt-5 text-[10px] leading-5 text-[#64748b]">
+                <p className="mt-5 text-[12px] leading-5 text-[#64748b]">
                   Best of 3 decides the tournament champion.
                 </p>
               </div>
@@ -687,7 +687,7 @@ export default function TournamentBracketPage() {
             <div className="flex justify-center pb-8">
               <a
                 href="#playoff-bracket"
-                className="rounded-lg border border-[#06b6d4]/30 bg-[#06b6d4]/[0.05] px-7 py-3 text-[10px] font-black uppercase tracking-[0.16em] text-[#22d3ee] transition hover:bg-[#06b6d4]/[0.10]"
+                className="rounded-lg border border-[#94a3b8]/30 bg-[#94a3b8]/[0.05] px-7 py-3 text-[12px] font-black uppercase tracking-[0.16em] text-[#f1f5f9] transition hover:bg-[#94a3b8]/[0.10]"
               >
                 Open Playoff Bracket →
               </a>
@@ -701,7 +701,7 @@ export default function TournamentBracketPage() {
           >
             <div className="mb-8 flex flex-col gap-3 border-b border-[#1e1e3a] pb-6 md:flex-row md:items-center md:justify-between">
               <div>
-                <div className="text-[10px] font-black uppercase tracking-[0.22em] text-[#334155]">
+                <div className="text-[12px] font-black uppercase tracking-[0.22em] text-[#334155]">
                   Playoff Stage
                 </div>
 
@@ -710,22 +710,22 @@ export default function TournamentBracketPage() {
                 </h2>
               </div>
 
-              <div className="rounded-lg border border-[#1e1e3a] bg-[#030308] px-4 py-2 text-[10px] font-black uppercase tracking-[0.15em] text-[#64748b]">
+              <div className="rounded-lg border border-[#1e1e3a] bg-[#030308] px-4 py-2 text-[12px] font-black uppercase tracking-[0.15em] text-[#64748b]">
                 4 Team Bracket
               </div>
             </div>
 
             {!groupStageComplete && (
               <div className="mb-6 rounded-xl border border-[#f59e0b]/20 bg-[#f59e0b]/5 px-5 py-4">
-                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#fbbf24]/70">
+                <div className="text-[12px] font-black uppercase tracking-[0.18em] text-[#fbbf24]/70">
                   Phase 2 Not Started
                 </div>
 
-                <div className="mt-2 text-xs font-black uppercase text-[#f1f5f9]/60">
+                <div className="mt-2 text-sm font-black uppercase text-[#f1f5f9]/60">
                   Complete the Group Stage to determine playoff rankings.
                 </div>
 
-                <div className="mt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[#64748b]">
+                <div className="mt-2 text-[12px] font-bold uppercase tracking-[0.12em] text-[#64748b]">
                   Group Stage: {completedGroupMatches.length} /{" "}
                   {REQUIRED_GROUP_MATCHES} completed
                 </div>
@@ -784,8 +784,8 @@ export default function TournamentBracketPage() {
 
             {/* RESULT PILLS */}
             <div className="mt-8 grid gap-4 md:grid-cols-4">
-              <div className="rounded-xl border border-[#06b6d4]/20 bg-[#06b6d4]/[0.03] px-4 py-4">
-                <div className="text-[9px] font-black uppercase tracking-[0.15em] text-[#22d3ee]/60">
+              <div className="rounded-xl border border-[#94a3b8]/20 bg-[#94a3b8]/[0.03] px-4 py-4">
+                <div className="text-[11px] font-black uppercase tracking-[0.15em] text-[#f1f5f9]/60">
                   Qualifier 1 Winner
                 </div>
 
@@ -795,7 +795,7 @@ export default function TournamentBracketPage() {
               </div>
 
               <div className="rounded-xl border border-[#ff2d55]/20 bg-[#ff2d55]/[0.03] px-4 py-4">
-                <div className="text-[9px] font-black uppercase tracking-[0.15em] text-[#ff4d6a]/60">
+                <div className="text-[11px] font-black uppercase tracking-[0.15em] text-[#ff4d6a]/60">
                   Eliminator Loser
                 </div>
 
@@ -805,7 +805,7 @@ export default function TournamentBracketPage() {
               </div>
 
               <div className="rounded-xl border border-[#f59e0b]/20 bg-[#f59e0b]/[0.03] px-4 py-4">
-                <div className="text-[9px] font-black uppercase tracking-[0.15em] text-[#fbbf24]/60">
+                <div className="text-[11px] font-black uppercase tracking-[0.15em] text-[#fbbf24]/60">
                   Qualifier 2 Winner
                 </div>
 
@@ -816,7 +816,7 @@ export default function TournamentBracketPage() {
 
               {/* Champion box: gold border + gold text */}
               <div className="rounded-xl border border-[#f59e0b]/60 bg-[#f59e0b]/[0.06] px-4 py-4">
-                <div className="text-[9px] font-black uppercase tracking-[0.15em] text-[#fbbf24]/80">
+                <div className="text-[11px] font-black uppercase tracking-[0.15em] text-[#fbbf24]/80">
                   Champion
                 </div>
 
@@ -829,63 +829,63 @@ export default function TournamentBracketPage() {
 
           {/* QUALIFICATION FLOW */}
           <section className="mt-8 rounded-xl border border-[#1e1e3a] bg-[#0c0c18] p-5 md:p-6">
-            <div className="text-[10px] font-black uppercase tracking-[0.22em] text-[#334155]">
+            <div className="text-[12px] font-black uppercase tracking-[0.22em] text-[#334155]">
               Qualification Flow
             </div>
 
             <div className="mt-5 grid gap-3 md:grid-cols-4">
               <div className="rounded-xl border border-[#1e1e3a] bg-[#030308] p-4">
-                <div className="text-xs font-black uppercase text-[#22d3ee]">
+                <div className="text-sm font-black uppercase text-[#f1f5f9]">
                   01
                 </div>
 
-                <div className="mt-2 text-xs font-black uppercase text-[#f1f5f9]">
+                <div className="mt-2 text-sm font-black uppercase text-[#f1f5f9]">
                   Qualifier 1
                 </div>
 
-                <p className="mt-2 text-[10px] leading-5 text-[#64748b]">
+                <p className="mt-2 text-[12px] leading-5 text-[#64748b]">
                   #1 vs #2. Winner gets a direct Grand Final berth.
                 </p>
               </div>
 
               <div className="rounded-xl border border-[#1e1e3a] bg-[#030308] p-4">
-                <div className="text-xs font-black uppercase text-[#ff4d6a]">
+                <div className="text-sm font-black uppercase text-[#ff4d6a]">
                   02
                 </div>
 
-                <div className="mt-2 text-xs font-black uppercase text-[#f1f5f9]">
+                <div className="mt-2 text-sm font-black uppercase text-[#f1f5f9]">
                   Eliminator
                 </div>
 
-                <p className="mt-2 text-[10px] leading-5 text-[#64748b]">
+                <p className="mt-2 text-[12px] leading-5 text-[#64748b]">
                   #3 vs #4. Loser is eliminated from the tournament.
                 </p>
               </div>
 
               <div className="rounded-xl border border-[#1e1e3a] bg-[#030308] p-4">
-                <div className="text-xs font-black uppercase text-[#fbbf24]">
+                <div className="text-sm font-black uppercase text-[#fbbf24]">
                   03
                 </div>
 
-                <div className="mt-2 text-xs font-black uppercase text-[#f1f5f9]">
+                <div className="mt-2 text-sm font-black uppercase text-[#f1f5f9]">
                   Qualifier 2
                 </div>
 
-                <p className="mt-2 text-[10px] leading-5 text-[#64748b]">
+                <p className="mt-2 text-[12px] leading-5 text-[#64748b]">
                   Loser Q1 faces the Eliminator winner.
                 </p>
               </div>
 
               <div className="rounded-xl border border-[#1e1e3a] bg-[#030308] p-4">
-                <div className="text-xs font-black uppercase text-[#34d399]">
+                <div className="text-sm font-black uppercase text-[#34d399]">
                   04
                 </div>
 
-                <div className="mt-2 text-xs font-black uppercase text-[#f1f5f9]">
+                <div className="mt-2 text-sm font-black uppercase text-[#f1f5f9]">
                   Grand Final
                 </div>
 
-                <p className="mt-2 text-[10px] leading-5 text-[#64748b]">
+                <p className="mt-2 text-[12px] leading-5 text-[#64748b]">
                   Winner Q1 faces Winner Q2 for the championship.
                 </p>
               </div>
@@ -895,7 +895,7 @@ export default function TournamentBracketPage() {
           {/* REGISTERED TEAMS */}
           <section className="mt-8">
             <div className="mb-4">
-              <div className="text-[10px] font-black uppercase tracking-[0.22em] text-[#334155]">
+              <div className="text-[12px] font-black uppercase tracking-[0.22em] text-[#334155]">
                 Registered Teams
               </div>
 
@@ -912,7 +912,7 @@ export default function TournamentBracketPage() {
                   <Link
                     key={team.id}
                     href={`/tournament/teams/${team.id}`}
-                    className="group rounded-xl border border-[#1e1e3a] bg-[#0c0c18] p-4 transition hover:border-[#06b6d4]/30 hover:bg-[#131326]"
+                    className="group rounded-xl border border-[#1e1e3a] bg-[#0c0c18] p-4 transition hover:border-[#94a3b8]/30 hover:bg-[#131326]"
                   >
                     <div className="flex items-center gap-4">
                       {team.logo ? (
@@ -925,17 +925,17 @@ export default function TournamentBracketPage() {
                           className="h-12 w-12 rounded-xl object-cover"
                         />
                       ) : (
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#1e1e3a] bg-[#030308] text-xs font-black text-[#7c3aed]">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#1e1e3a] bg-[#030308] text-sm font-black text-[#94a3b8]">
                           {team.tag.slice(0, 3).toUpperCase()}
                         </div>
                       )}
 
                       <div className="min-w-0">
-                        <div className="text-[9px] font-black uppercase tracking-[0.15em] text-[#334155]">
+                        <div className="text-[11px] font-black uppercase tracking-[0.15em] text-[#334155]">
                           Registered Team
                         </div>
 
-                        <div className="mt-1 truncate text-sm font-black uppercase text-[#f1f5f9] group-hover:text-[#22d3ee]">
+                        <div className="mt-1 truncate text-sm font-black uppercase text-[#f1f5f9] group-hover:text-[#f1f5f9]">
                           {team.name}
                         </div>
                       </div>

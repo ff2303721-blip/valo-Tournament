@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { getAllGames, getGameDefinition } from "@/lib/games/registry";
+import { TOURNAMENT_STATUS_LIST } from "@/lib/tournament-status";
+import type { TournamentStatusId } from "@/lib/types";
 
 type Settings = {
   tournamentName: string;
@@ -11,7 +13,7 @@ type Settings = {
   prizePool: string;
   startDate: string;
   endDate: string;
-  tournamentStatus: "Upcoming" | "Live" | "Completed";
+  tournamentStatus: TournamentStatusId;
   announcement: string;
   logoUrl: string;
   bannerUrl: string;
@@ -107,7 +109,7 @@ const EMPTY_SETTINGS: Settings = {
   prizePool: "",
   startDate: "",
   endDate: "",
-  tournamentStatus: "Upcoming",
+  tournamentStatus: "upcoming",
   announcement: "",
   logoUrl: "",
   bannerUrl: "",
@@ -173,7 +175,7 @@ export default function TournamentSettingsPage() {
           prizePool: data.prizePool ?? "",
           startDate: toDateInput(data.startDate),
           endDate: toDateInput(data.endDate),
-          tournamentStatus: data.tournamentStatus ?? "Upcoming",
+          tournamentStatus: data.tournamentStatus ?? "upcoming",
           announcement: data.announcement ?? "",
           logoUrl: data.logoUrl ?? "",
           bannerUrl: data.bannerUrl ?? "",
@@ -241,7 +243,7 @@ export default function TournamentSettingsPage() {
         prizePool: data.prizePool ?? "",
         startDate: toDateInput(data.startDate),
         endDate: toDateInput(data.endDate),
-        tournamentStatus: data.tournamentStatus ?? "Upcoming",
+        tournamentStatus: data.tournamentStatus ?? "upcoming",
         announcement: data.announcement ?? "",
         logoUrl: data.logoUrl ?? "",
         bannerUrl: data.bannerUrl ?? "",
@@ -271,15 +273,15 @@ export default function TournamentSettingsPage() {
   }
 
   const inputClass =
-    "mt-2.5 w-full rounded-xl border border-[#1e1e3a] bg-[#080812]/90 px-4 py-3.5 text-sm font-semibold text-[#f1f5f9] outline-none transition placeholder:text-[#475569] focus:border-[#7c3aed] focus:shadow-[0_0_15px_rgba(124,58,237,0.2)] disabled:opacity-50";
+    "mt-2.5 w-full rounded-xl border border-[#1e1e3a] bg-[#080812]/90 px-4 py-3.5 text-sm font-semibold text-[#f1f5f9] outline-none transition placeholder:text-[#475569] focus:border-[#94a3b8] focus:shadow-[0_0_15px_rgba(148,163,184,0.2)] disabled:opacity-50";
 
   return (
     <div className="relative min-h-screen text-[#f1f5f9] pb-20">
       {/* ── Ambient Neon Glow Orbs ────────────────────────────────────────── */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/12 blur-[180px]" />
+        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#94a3b8]/12 blur-[180px]" />
         <div className="absolute top-1/3 -right-40 h-[500px] w-[500px] rounded-full bg-[#ff2d55]/10 blur-[160px]" />
-        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#06b6d4]/8 blur-[160px]" />
+        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#94a3b8]/8 blur-[160px]" />
       </div>
 
       {/* ── Modern Command Header ─────────────────────────────────────────── */}
@@ -298,16 +300,16 @@ export default function TournamentSettingsPage() {
               <div className="flex items-center gap-2">
                 <h1 className="text-base font-black tracking-tight sm:text-lg text-white">
                   TOURNAMENT{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-[#9d63ff]">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-[#94a3b8]">
                     // SETTINGS
                   </span>
                 </h1>
-                <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[9px] font-mono font-bold tracking-wider text-amber-300">
+                <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-mono font-bold tracking-wider text-amber-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
                   CONFIGURATION
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[12px] text-slate-400">
                 Identity, Multi-Game Discipline & Schedule Customization
               </p>
             </div>
@@ -316,34 +318,34 @@ export default function TournamentSettingsPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Link
               href="/admin"
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-[11px] font-bold tracking-wider text-slate-300 backdrop-blur-xl transition hover:border-amber-500/40 hover:bg-amber-500/10 hover:text-amber-300 hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-[13px] font-bold tracking-wider text-slate-300 backdrop-blur-xl transition hover:border-amber-500/40 hover:bg-amber-500/10 hover:text-amber-300 hover:scale-[1.02]"
             >
               <span>← ADMIN HUB</span>
             </Link>
 
             <Link
               href="/matches"
-              className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-gradient-to-r from-rose-600/25 to-rose-600/15 px-4 py-1.5 text-[11px] font-bold tracking-wider text-rose-300 backdrop-blur-xl transition hover:border-rose-400 hover:bg-rose-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(244,63,94,0.3)] hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-gradient-to-r from-rose-600/25 to-rose-600/15 px-4 py-1.5 text-[13px] font-bold tracking-wider text-rose-300 backdrop-blur-xl transition hover:border-rose-400 hover:bg-rose-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(244,63,94,0.3)] hover:scale-[1.02]"
             >
               <span>MATCH CENTRE</span>
-              <span className="text-xs">↗</span>
+              <span className="text-sm">↗</span>
             </Link>
 
             <Link
               href="/teams"
-              className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/40 bg-gradient-to-r from-purple-600/25 to-purple-600/15 px-4 py-1.5 text-[11px] font-bold tracking-wider text-purple-300 backdrop-blur-xl transition hover:border-purple-400 hover:bg-purple-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/40 bg-gradient-to-r from-purple-600/25 to-purple-600/15 px-4 py-1.5 text-[13px] font-bold tracking-wider text-purple-300 backdrop-blur-xl transition hover:border-purple-400 hover:bg-purple-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:scale-[1.02]"
             >
               <span>TEAMS & ROSTERS</span>
-              <span className="text-xs">↗</span>
+              <span className="text-sm">↗</span>
             </Link>
 
             <Link
               href="/tournament"
               target="_blank"
-              className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/40 bg-cyan-500/10 px-4 py-1.5 text-[11px] font-bold tracking-wider text-cyan-300 backdrop-blur-xl transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/40 bg-cyan-500/10 px-4 py-1.5 text-[13px] font-bold tracking-wider text-cyan-300 backdrop-blur-xl transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:shadow-[0_0_15px_rgba(148,163,184,0.3)] hover:scale-[1.02]"
             >
               <span>PUBLIC SITE</span>
-              <span className="text-xs">↗</span>
+              <span className="text-sm">↗</span>
             </Link>
           </div>
         </div>
@@ -353,36 +355,36 @@ export default function TournamentSettingsPage() {
       <div className="relative z-10 mx-auto max-w-5xl px-4 pt-8 sm:px-8">
         {error && (
           <div className="mb-6 flex items-center gap-3 rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55]/10 p-4 text-sm font-semibold text-[#ff4d6a] shadow-[0_0_20px_rgba(255,45,85,0.15)]">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#ff2d55]/20 text-xs font-black">!</span>
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#ff2d55]/20 text-sm font-black">!</span>
             <span>{error}</span>
           </div>
         )}
 
         {message && (
           <div className="mb-6 flex items-center gap-3 rounded-xl border border-[#10b981]/40 bg-[#10b981]/10 p-4 text-sm font-semibold text-[#34d399] shadow-[0_0_20px_rgba(16,185,129,0.15)]">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#10b981]/20 text-xs font-black">✓</span>
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#10b981]/20 text-sm font-black">✓</span>
             <span>{message}</span>
           </div>
         )}
 
         <form onSubmit={saveSettings} className="space-y-6">
           {/* Section 0: Tournament Game & Discipline */}
-          <section className="relative overflow-hidden rounded-2xl border border-[#7c3aed]/50 bg-[#0c0c18]/90 p-6 backdrop-blur-xl transition hover:border-[#7c3aed] hover:shadow-[0_0_40px_rgba(124,58,237,0.12)] sm:p-8">
+          <section className="relative overflow-hidden rounded-2xl border border-[#94a3b8]/50 bg-[#0c0c18]/90 p-6 backdrop-blur-xl transition hover:border-[#94a3b8] hover:shadow-[0_0_40px_rgba(148,163,184,0.12)] sm:p-8">
             <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#a78bfa]">
+                <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#f1f5f9]">
                   TOURNAMENT DISCIPLINE
                 </p>
                 <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
                   Active Esports Game
                 </h2>
               </div>
-              <span className="rounded-full border border-[#7c3aed]/40 bg-[#7c3aed]/15 px-3 py-1 text-[9px] font-black text-[#a78bfa]">
+              <span className="rounded-full border border-[#94a3b8]/40 bg-[#94a3b8]/15 px-3 py-1 text-[11px] font-black text-[#f1f5f9]">
                 MULTI-GAME ENGINE
               </span>
             </div>
 
-            <p className="mt-3 text-xs text-[#94a3b8]">
+            <p className="mt-3 text-sm text-[#94a3b8]">
               Select the esports discipline for this tournament. Wallpapers, official map pools, scoring format, and leaderboard statistics adapt automatically.
             </p>
 
@@ -396,12 +398,12 @@ export default function TournamentSettingsPage() {
                     onClick={() => update("gameId", g.id)}
                     className={`relative flex flex-col items-start rounded-xl border p-4 text-left transition ${
                       isSelected
-                        ? "border-[#7c3aed] bg-[#7c3aed]/15 shadow-[0_0_20px_rgba(124,58,237,0.25)]"
-                        : "border-[#1e1e3a] bg-[#080812] hover:border-[#7c3aed]/50 hover:bg-[#0c0c18]"
+                        ? "border-[#94a3b8] bg-[#94a3b8]/15 shadow-[0_0_20px_rgba(148,163,184,0.25)]"
+                        : "border-[#1e1e3a] bg-[#080812] hover:border-[#94a3b8]/50 hover:bg-[#0c0c18]"
                     }`}
                   >
                     {isSelected && (
-                      <span className="absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#7c3aed] text-[9px] font-black text-white">
+                      <span className="absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#94a3b8] text-[11px] font-black text-white">
                         ✓
                       </span>
                     )}
@@ -409,7 +411,7 @@ export default function TournamentSettingsPage() {
                     <span className="mt-2 text-sm font-black uppercase tracking-tight text-white">
                       {g.name}
                     </span>
-                    <span className="mt-0.5 text-[10px] font-semibold text-[#64748b]">
+                    <span className="mt-0.5 text-[12px] font-semibold text-[#64748b]">
                       {g.scoringType.toUpperCase()} • {g.defaultTeamSize}v{g.defaultTeamSize}
                     </span>
                   </button>
@@ -426,29 +428,29 @@ export default function TournamentSettingsPage() {
                     <div className="flex items-center gap-2">
                       <span className="text-xl">{activeGame.icon}</span>
                       <div>
-                        <span className="text-xs font-black uppercase text-white">{activeGame.name}</span>
-                        <p className="text-[10px] text-[#64748b]">{activeGame.tagline}</p>
+                        <span className="text-sm font-black uppercase text-white">{activeGame.name}</span>
+                        <p className="text-[12px] text-[#64748b]">{activeGame.tagline}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="rounded bg-[#1e1e3a] px-2 py-0.5 text-[9px] font-bold uppercase text-[#94a3b8]">
+                      <span className="rounded bg-[#1e1e3a] px-2 py-0.5 text-[11px] font-bold uppercase text-[#94a3b8]">
                         Scoring: {activeGame.scoreLabel}
                       </span>
-                      <span className="rounded bg-[#7c3aed]/20 px-2 py-0.5 text-[9px] font-bold uppercase text-[#a78bfa]">
+                      <span className="rounded bg-[#94a3b8]/20 px-2 py-0.5 text-[11px] font-bold uppercase text-[#f1f5f9]">
                         Team: {activeGame.defaultTeamSize}v{activeGame.defaultTeamSize}
                       </span>
                     </div>
                   </div>
 
                   <div className="mt-3">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                    <span className="text-[12px] font-black uppercase tracking-wider text-[#64748b]">
                       Official Map Rotation ({activeGame.maps.length} Maps):
                     </span>
                     <div className="mt-1.5 flex flex-wrap gap-1.5">
                       {activeGame.maps.map((m) => (
                         <span
                           key={m.id}
-                          className="rounded border border-[#1e1e3a] bg-[#0c0c18] px-2 py-0.5 text-[10px] font-bold text-[#f1f5f9]"
+                          className="rounded border border-[#1e1e3a] bg-[#0c0c18] px-2 py-0.5 text-[12px] font-bold text-[#f1f5f9]"
                         >
                           🗺️ {m.name}
                         </span>
@@ -459,7 +461,7 @@ export default function TournamentSettingsPage() {
                   {settings.gameId === "custom" && (
                     <div className="mt-4 grid gap-4 sm:grid-cols-2 border-t border-[#1e1e3a] pt-3">
                       <div>
-                        <label className="text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                        <label className="text-[12px] font-black uppercase tracking-wider text-[#64748b]">
                           Custom Game Name
                         </label>
                         <input
@@ -471,7 +473,7 @@ export default function TournamentSettingsPage() {
                         />
                       </div>
                       <div>
-                        <label className="text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                        <label className="text-[12px] font-black uppercase tracking-wider text-[#64748b]">
                           Custom Maps (comma-separated)
                         </label>
                         <input
@@ -498,17 +500,17 @@ export default function TournamentSettingsPage() {
           </section>
 
           {/* Section 1: Public Identity */}
-          <section className="relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#06b6d4]/40 hover:shadow-[0_0_35px_rgba(6,182,212,0.06)] sm:p-8">
+          <section className="relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#94a3b8]/40 hover:shadow-[0_0_35px_rgba(148,163,184,0.06)] sm:p-8">
             <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#06b6d4]">
+                <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
                   PUBLIC IDENTITY
                 </p>
                 <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[#f1f5f9]">
                   Tournament Branding
                 </h2>
               </div>
-              <span className="rounded-full border border-[#06b6d4]/30 bg-[#06b6d4]/10 px-3 py-1 text-[9px] font-black text-[#22d3ee]">
+              <span className="rounded-full border border-[#94a3b8]/30 bg-[#94a3b8]/10 px-3 py-1 text-[11px] font-black text-[#f1f5f9]">
                 IDENTITY
               </span>
             </div>
@@ -516,10 +518,10 @@ export default function TournamentSettingsPage() {
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="tournamentName" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+                  <label htmlFor="tournamentName" className="text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
                     Tournament Name *
                   </label>
-                  <span className="text-[10px] font-bold text-[#475569]">
+                  <span className="text-[12px] font-bold text-[#475569]">
                     {settings.tournamentName.length}/100
                   </span>
                 </div>
@@ -537,10 +539,10 @@ export default function TournamentSettingsPage() {
 
               <div className="sm:col-span-2">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="tagline" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+                  <label htmlFor="tagline" className="text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
                     Tagline
                   </label>
-                  <span className="text-[10px] font-bold text-[#475569]">
+                  <span className="text-[12px] font-bold text-[#475569]">
                     {settings.tagline.length}/160
                   </span>
                 </div>
@@ -557,7 +559,7 @@ export default function TournamentSettingsPage() {
               </div>
 
               <div>
-                <label htmlFor="organizerName" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+                <label htmlFor="organizerName" className="text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
                   Organizer Name
                 </label>
                 <input
@@ -573,7 +575,7 @@ export default function TournamentSettingsPage() {
               </div>
 
               <div>
-                <label htmlFor="prizePool" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+                <label htmlFor="prizePool" className="text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
                   Prize Pool
                 </label>
                 <input
@@ -591,17 +593,17 @@ export default function TournamentSettingsPage() {
           </section>
 
           {/* Section 2: Tournament Schedule */}
-          <section className="relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#7c3aed]/40 hover:shadow-[0_0_35px_rgba(124,58,237,0.06)] sm:p-8">
+          <section className="relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#94a3b8]/40 hover:shadow-[0_0_35px_rgba(148,163,184,0.06)] sm:p-8">
             <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#a78bfa]">
+                <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#f1f5f9]">
                   SCHEDULE & LIFECYCLE
                 </p>
                 <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[#f1f5f9]">
                   Dates & Tournament Status
                 </h2>
               </div>
-              <span className="rounded-full border border-[#7c3aed]/30 bg-[#7c3aed]/10 px-3 py-1 text-[9px] font-black text-[#a78bfa]">
+              <span className="rounded-full border border-[#94a3b8]/30 bg-[#94a3b8]/10 px-3 py-1 text-[11px] font-black text-[#f1f5f9]">
                 SCHEDULE
               </span>
             </div>
@@ -609,7 +611,7 @@ export default function TournamentSettingsPage() {
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
               {/* Start Date & Time */}
               <div className="rounded-xl border border-[#1e1e3a] bg-[#080812]/50 p-4">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+                <label className="text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
                   Start Date & Time
                 </label>
 
@@ -679,15 +681,15 @@ export default function TournamentSettingsPage() {
                   </select>
                 </div>
 
-                <p className="mt-2.5 flex items-center gap-1.5 text-[10px] font-bold text-[#64748b]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#06b6d4]" />
+                <p className="mt-2.5 flex items-center gap-1.5 text-[12px] font-bold text-[#64748b]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#94a3b8]" />
                   <span>Preview: {formatDatePreview(startDateTime)}</span>
                 </p>
               </div>
 
               {/* End Date & Time */}
               <div className="rounded-xl border border-[#1e1e3a] bg-[#080812]/50 p-4">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+                <label className="text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
                   End Date & Time
                 </label>
 
@@ -757,15 +759,15 @@ export default function TournamentSettingsPage() {
                   </select>
                 </div>
 
-                <p className="mt-2.5 flex items-center gap-1.5 text-[10px] font-bold text-[#64748b]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#7c3aed]" />
+                <p className="mt-2.5 flex items-center gap-1.5 text-[12px] font-bold text-[#64748b]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#94a3b8]" />
                   <span>Preview: {formatDatePreview(endDateTime)}</span>
                 </p>
               </div>
 
               {/* Tournament Status Dropdown */}
               <div className="sm:col-span-2">
-                <label htmlFor="tournamentStatus" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+                <label htmlFor="tournamentStatus" className="text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
                   Tournament Status Badge
                 </label>
                 <select
@@ -780,9 +782,11 @@ export default function TournamentSettingsPage() {
                   disabled={loading || saving}
                   className={inputClass}
                 >
-                  <option value="Upcoming" className="bg-[#0c0c18]">Upcoming (Scheduled / Registration Open)</option>
-                  <option value="Live" className="bg-[#0c0c18]">Live (Tournament In Progress)</option>
-                  <option value="Completed" className="bg-[#0c0c18]">Completed (Champion Crowned)</option>
+                  {TOURNAMENT_STATUS_LIST.map((status) => (
+                    <option key={status.id} value={status.id} className="bg-[#0c0c18]">
+                      {status.sublabel ? `${status.label} (${status.sublabel})` : status.label}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -792,24 +796,24 @@ export default function TournamentSettingsPage() {
           <section className="relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#f59e0b]/40 hover:shadow-[0_0_35px_rgba(245,158,11,0.06)] sm:p-8">
             <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#f59e0b]">
+                <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#f59e0b]">
                   BROADCAST TICKER
                 </p>
                 <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[#f1f5f9]">
                   Public Announcement
                 </h2>
               </div>
-              <span className="rounded-full border border-[#f59e0b]/30 bg-[#f59e0b]/10 px-3 py-1 text-[9px] font-black text-[#fbbf24]">
+              <span className="rounded-full border border-[#f59e0b]/30 bg-[#f59e0b]/10 px-3 py-1 text-[11px] font-black text-[#fbbf24]">
                 BROADCAST
               </span>
             </div>
 
             <div className="mt-6">
               <div className="flex items-center justify-between">
-                <label htmlFor="announcement" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+                <label htmlFor="announcement" className="text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
                   Banner Message (Displayed on public overview)
                 </label>
-                <span className="text-[10px] font-bold text-[#475569]">
+                <span className="text-[12px] font-bold text-[#475569]">
                   {settings.announcement.length}/500
                 </span>
               </div>
@@ -830,21 +834,21 @@ export default function TournamentSettingsPage() {
           <section className="relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#ff2d55]/40 hover:shadow-[0_0_35px_rgba(255,45,85,0.06)] sm:p-8">
             <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
+                <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
                   ASSETS & MEDIA
                 </p>
                 <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[#f1f5f9]">
                   Logo & Header Banner
                 </h2>
               </div>
-              <span className="rounded-full border border-[#ff2d55]/30 bg-[#ff2d55]/10 px-3 py-1 text-[9px] font-black text-[#ff4d6a]">
+              <span className="rounded-full border border-[#ff2d55]/30 bg-[#ff2d55]/10 px-3 py-1 text-[11px] font-black text-[#ff4d6a]">
                 MEDIA
               </span>
             </div>
 
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
               <div>
-                <label htmlFor="logoUrl" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+                <label htmlFor="logoUrl" className="text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
                   Tournament Logo URL
                 </label>
                 <input
@@ -859,7 +863,7 @@ export default function TournamentSettingsPage() {
               </div>
 
               <div>
-                <label htmlFor="bannerUrl" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+                <label htmlFor="bannerUrl" className="text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
                   Tournament Banner URL
                 </label>
                 <input
@@ -877,35 +881,35 @@ export default function TournamentSettingsPage() {
 
           {/* Section 5: Riot Games & HenrikDev API Automation (Valorant Only) */}
           {(settings.gameId || "valorant") === "valorant" && (
-            <section className="relative overflow-hidden rounded-2xl border border-[#06b6d4]/40 bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#06b6d4]/60 hover:shadow-[0_0_35px_rgba(6,182,212,0.12)] sm:p-8">
+            <section className="relative overflow-hidden rounded-2xl border border-[#94a3b8]/40 bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#94a3b8]/60 hover:shadow-[0_0_35px_rgba(148,163,184,0.12)] sm:p-8">
               <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#06b6d4]">
+                  <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
                     RIOT API AUTOMATION
                   </p>
                   <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[#f1f5f9]">
                     Direct Match Result Ingestion
                   </h2>
                 </div>
-                <span className="rounded-full border border-[#06b6d4]/30 bg-[#06b6d4]/10 px-3 py-1 text-[9px] font-black text-[#22d3ee]">
+                <span className="rounded-full border border-[#94a3b8]/30 bg-[#94a3b8]/10 px-3 py-1 text-[11px] font-black text-[#f1f5f9]">
                   HENRIKDEV API
                 </span>
               </div>
 
-              <p className="mt-4 text-xs text-[#94a3b8] leading-relaxed">
+              <p className="mt-4 text-sm text-[#94a3b8] leading-relaxed">
                 Connect the free HenrikDev Valorant API to enable 1-click automatic match score and player stat extraction from Riot servers right as custom games conclude.
               </p>
 
               <div className="mt-6 grid gap-6 sm:grid-cols-2">
                 <div>
                   <div className="flex items-center justify-between">
-                    <label htmlFor="henrikApiKey" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+                    <label htmlFor="henrikApiKey" className="text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
                       HenrikDev API Key
                     </label>
                     <button
                       type="button"
                       onClick={() => setShowApiKey(!showApiKey)}
-                      className="text-[9px] font-bold text-[#06b6d4] hover:underline"
+                      className="text-[11px] font-bold text-[#94a3b8] hover:underline"
                     >
                       {showApiKey ? "Hide Key" : "Show Key"}
                     </button>
@@ -919,13 +923,13 @@ export default function TournamentSettingsPage() {
                     placeholder="HDEV-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     className={inputClass}
                   />
-                  <p className="mt-2 text-[10px] text-[#64748b]">
+                  <p className="mt-2 text-[12px] text-[#64748b]">
                     Get your free API key at{" "}
                     <a
                       href="https://api.henrikdev.xyz/dashboard/"
                       target="_blank"
                       rel="noreferrer"
-                      className="font-bold text-[#22d3ee] underline hover:text-white"
+                      className="font-bold text-[#f1f5f9] underline hover:text-white"
                     >
                       api.henrikdev.xyz/dashboard ↗
                     </a>
@@ -933,7 +937,7 @@ export default function TournamentSettingsPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="valorantRegion" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+                  <label htmlFor="valorantRegion" className="text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
                     Default Valorant Server Region
                   </label>
                   <select
@@ -950,7 +954,7 @@ export default function TournamentSettingsPage() {
                     <option value="latam" className="bg-[#0c0c18]">LATAM — Latin America</option>
                     <option value="br" className="bg-[#0c0c18]">BR — Brazil</option>
                   </select>
-                  <p className="mt-2 text-[10px] text-[#64748b]">
+                  <p className="mt-2 text-[12px] text-[#64748b]">
                     India / Mumbai matches are located in the <strong className="text-white">AP</strong> cluster.
                   </p>
                 </div>
@@ -962,7 +966,7 @@ export default function TournamentSettingsPage() {
           <div className="flex flex-col gap-4 rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
             <Link
               href="/admin"
-              className="text-center text-xs font-black uppercase tracking-widest text-[#64748b] transition hover:text-[#f1f5f9]"
+              className="text-center text-sm font-black uppercase tracking-widest text-[#64748b] transition hover:text-[#f1f5f9]"
             >
               ← Cancel & Discard
             </Link>
@@ -970,7 +974,7 @@ export default function TournamentSettingsPage() {
             <button
               type="submit"
               disabled={loading || saving || !settings.tournamentName.trim()}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#06b6d4]/40 bg-gradient-to-r from-[#06b6d4] to-[#7c3aed] px-8 py-3.5 text-xs font-black uppercase tracking-widest text-white shadow-[0_0_25px_rgba(6,182,212,0.3)] transition hover:opacity-95 hover:shadow-[0_0_35px_rgba(124,58,237,0.4)] disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#94a3b8]/40 bg-gradient-to-r from-[#94a3b8] to-[#94a3b8] px-8 py-3.5 text-sm font-black uppercase tracking-widest text-white shadow-[0_0_25px_rgba(148,163,184,0.3)] transition hover:opacity-95 hover:shadow-[0_0_35px_rgba(148,163,184,0.4)] disabled:cursor-not-allowed disabled:opacity-40"
             >
               {saving ? (
                 <>

@@ -548,37 +548,37 @@ export default function TeamsAdminPage() {
     <main className="relative min-h-screen text-[#f1f5f9] pb-16">
       {/* ── Ambient Neon Glow Orbs ────────────────────────────────────────── */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/12 blur-[180px]" />
-        <div className="absolute top-1/3 -right-40 h-[500px] w-[500px] rounded-full bg-[#06b6d4]/10 blur-[160px]" />
+        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#94a3b8]/12 blur-[180px]" />
+        <div className="absolute top-1/3 -right-40 h-[500px] w-[500px] rounded-full bg-[#94a3b8]/10 blur-[160px]" />
         <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#ff2d55]/8 blur-[160px]" />
       </div>
 
       {/* ── Modern Command Header ─────────────────────────────────────────── */}
       <header className="sticky top-0 z-40 border-b border-white/[0.08] bg-[#030308]/85 px-4 py-3 backdrop-blur-2xl sm:px-6 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
+        <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3.5">
             <Link
               href="/admin"
               className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.08] to-white/[0.02] text-sm font-black text-cyan-400 shadow-inner transition hover:scale-105 hover:border-cyan-500/40 hover:bg-cyan-500/10 hover:text-cyan-300"
               title="Return to Admin Hub"
             >
-              <span className="drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]">←</span>
+              <span className="drop-shadow-[0_0_8px_rgba(148,163,184,0.4)]">←</span>
             </Link>
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-base font-black tracking-tight sm:text-lg text-white">
                   TEAMS & ROSTERS{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#06b6d4] to-[#9d63ff]">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#94a3b8] to-[#94a3b8]">
                     // MANAGEMENT
                   </span>
                 </h1>
-                <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-0.5 text-[9px] font-mono font-bold tracking-wider text-cyan-300">
+                <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-mono font-bold tracking-wider text-cyan-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
                   {teams.length} REGISTERED
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[12px] text-slate-400">
                 Roster Builder • Seed Configuration • Database Sync
               </p>
             </div>
@@ -587,53 +587,53 @@ export default function TeamsAdminPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Link
               href="/admin"
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-[11px] font-bold tracking-wider text-slate-300 backdrop-blur-xl transition hover:border-cyan-500/40 hover:bg-cyan-500/10 hover:text-cyan-300 hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-[13px] font-bold tracking-wider text-slate-300 backdrop-blur-xl transition hover:border-cyan-500/40 hover:bg-cyan-500/10 hover:text-cyan-300 hover:scale-[1.02]"
             >
               <span>← ADMIN HUB</span>
             </Link>
 
             <Link
               href="/matches"
-              className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-gradient-to-r from-rose-600/25 to-rose-600/15 px-4 py-1.5 text-[11px] font-bold tracking-wider text-rose-300 backdrop-blur-xl transition hover:border-rose-400 hover:bg-rose-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(244,63,94,0.3)] hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-gradient-to-r from-rose-600/25 to-rose-600/15 px-4 py-1.5 text-[13px] font-bold tracking-wider text-rose-300 backdrop-blur-xl transition hover:border-rose-400 hover:bg-rose-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(244,63,94,0.3)] hover:scale-[1.02]"
             >
               <span>MATCH CENTRE</span>
-              <span className="text-xs">↗</span>
+              <span className="text-sm">↗</span>
             </Link>
 
             <Link
               href="/admin/settings"
-              className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-gradient-to-r from-amber-600/25 to-amber-600/15 px-4 py-1.5 text-[11px] font-bold tracking-wider text-amber-300 backdrop-blur-xl transition hover:border-amber-400 hover:bg-amber-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-gradient-to-r from-amber-600/25 to-amber-600/15 px-4 py-1.5 text-[13px] font-bold tracking-wider text-amber-300 backdrop-blur-xl transition hover:border-amber-400 hover:bg-amber-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:scale-[1.02]"
             >
               <span>SETTINGS</span>
-              <span className="text-xs">⚙</span>
+              <span className="text-sm">⚙</span>
             </Link>
 
             <Link
               href="/tournament"
               target="_blank"
-              className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/40 bg-cyan-500/10 px-4 py-1.5 text-[11px] font-bold tracking-wider text-cyan-300 backdrop-blur-xl transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/40 bg-cyan-500/10 px-4 py-1.5 text-[13px] font-bold tracking-wider text-cyan-300 backdrop-blur-xl transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:shadow-[0_0_15px_rgba(148,163,184,0.3)] hover:scale-[1.02]"
             >
               <span>PUBLIC SITE</span>
-              <span className="text-xs">↗</span>
+              <span className="text-sm">↗</span>
             </Link>
           </div>
         </div>
       </header>
 
       {/* ── Main Content Container ───────────────────────────────────────── */}
-      <div className="relative z-10 mx-auto max-w-6xl px-4 py-5 sm:px-6 space-y-5">
+      <div className="relative z-10 mx-auto max-w-[1440px] px-4 py-5 sm:px-6 space-y-5">
         {/* Error notification */}
         {error && (
-          <div className="flex items-center gap-2.5 rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55]/10 p-3 text-xs font-bold text-[#ff4d6a]">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#ff2d55]/20 text-[10px] font-black">!</span>
+          <div className="flex items-center gap-2.5 rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55]/10 p-3 text-sm font-bold text-[#ff4d6a]">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#ff2d55]/20 text-[12px] font-black">!</span>
             <span>{error}</span>
           </div>
         )}
 
         {/* Success notification */}
         {notice && (
-          <div className="flex items-center gap-2.5 rounded-xl border border-[#10b981]/40 bg-[#10b981]/10 p-3 text-xs font-bold text-[#34d399]">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#10b981]/20 text-[10px] font-black">✓</span>
+          <div className="flex items-center gap-2.5 rounded-xl border border-[#10b981]/40 bg-[#10b981]/10 p-3 text-sm font-bold text-[#34d399]">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#10b981]/20 text-[12px] font-black">✓</span>
             <span>{notice}</span>
           </div>
         )}
@@ -643,8 +643,8 @@ export default function TeamsAdminPage() {
           {/* Form Header with Minimize / Expand toggle */}
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1e1e3a] pb-3">
             <div>
-              <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.25em] text-[#06b6d4]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#06b6d4] animate-pulse" />
+              <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#94a3b8] animate-pulse" />
                 {editingId ? "MODIFYING RECORD" : "TEAM REGISTRATION DECK"}
               </div>
 
@@ -658,7 +658,7 @@ export default function TeamsAdminPage() {
                 <button
                   type="button"
                   onClick={startCreate}
-                  className="rounded-lg border border-[#ff2d55]/40 bg-[#ff2d55]/10 px-3 py-1 text-[10px] font-black tracking-widest text-[#ff4d6a] transition hover:bg-[#ff2d55]/20"
+                  className="rounded-lg border border-[#ff2d55]/40 bg-[#ff2d55]/10 px-3 py-1 text-[12px] font-black tracking-widest text-[#ff4d6a] transition hover:bg-[#ff2d55]/20"
                 >
                   CANCEL EDIT ✕
                 </button>
@@ -667,7 +667,7 @@ export default function TeamsAdminPage() {
               <button
                 type="button"
                 onClick={() => setIsFormOpen((prev) => !prev)}
-                className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-3 py-1 text-[10px] font-black tracking-widest text-[#94a3b8] transition hover:text-white"
+                className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-3 py-1 text-[12px] font-black tracking-widest text-[#94a3b8] transition hover:text-white"
               >
                 {isFormOpen ? "− COLLAPSE FORM" : "+ OPEN BUILDER"}
               </button>
@@ -680,14 +680,14 @@ export default function TeamsAdminPage() {
               <div className="grid gap-5 lg:grid-cols-[1fr_1.15fr]">
                 {/* ── Left Column: Team Identity & Config ────────────── */}
                 <div className="space-y-3 rounded-xl border border-[#1e1e3a] bg-[#080812]/50 p-4">
-                  <div className="text-[9px] font-black uppercase tracking-[0.2em] text-[#06b6d4] border-b border-[#1e1e3a] pb-1.5">
+                  <div className="text-[11px] font-black uppercase tracking-[0.2em] text-[#94a3b8] border-b border-[#1e1e3a] pb-1.5">
                     1. FRANCHISE IDENTITY
                   </div>
 
                   {/* Team Name & Tag */}
                   <div className="grid grid-cols-[1fr_95px] gap-2.5">
                     <div>
-                      <label className="mb-1 block text-[9px] font-black uppercase tracking-wider text-[#64748b]">
+                      <label className="mb-1 block text-[11px] font-black uppercase tracking-wider text-[#64748b]">
                         TEAM NAME *
                       </label>
                       <input
@@ -700,12 +700,12 @@ export default function TeamsAdminPage() {
                           }))
                         }
                         placeholder="e.g. Sentinels"
-                        className="w-full rounded-lg border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-xs text-white placeholder:text-[#334155] outline-none transition focus:border-[#7c3aed]"
+                        className="w-full rounded-lg border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-sm text-white placeholder:text-[#334155] outline-none transition focus:border-[#94a3b8]"
                       />
                     </div>
 
                     <div>
-                      <label className="mb-1 block text-[9px] font-black uppercase tracking-wider text-[#64748b]">
+                      <label className="mb-1 block text-[11px] font-black uppercase tracking-wider text-[#64748b]">
                         TAG (3-5) *
                       </label>
                       <input
@@ -713,7 +713,7 @@ export default function TeamsAdminPage() {
                         onChange={(e) => setForm((curr) => ({ ...curr, tag: e.target.value.toUpperCase() }))}
                         placeholder="SEN"
                         maxLength={5}
-                        className="w-full rounded-lg border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-xs font-black uppercase text-white placeholder:text-[#334155] outline-none transition focus:border-[#7c3aed]"
+                        className="w-full rounded-lg border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-sm font-black uppercase text-white placeholder:text-[#334155] outline-none transition focus:border-[#94a3b8]"
                       />
                     </div>
                   </div>
@@ -721,7 +721,7 @@ export default function TeamsAdminPage() {
                   {/* Team ID & Seed Number */}
                   <div className="grid grid-cols-[1fr_80px] gap-2.5">
                     <div>
-                      <label className="mb-1 block text-[9px] font-black uppercase tracking-wider text-[#64748b]">
+                      <label className="mb-1 block text-[11px] font-black uppercase tracking-wider text-[#64748b]">
                         SLUG ID
                       </label>
                       <input
@@ -729,12 +729,12 @@ export default function TeamsAdminPage() {
                         onChange={(e) => setForm((curr) => ({ ...curr, id: e.target.value }))}
                         disabled={Boolean(editingId)}
                         placeholder="sentinels"
-                        className="w-full rounded-lg border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-xs text-[#94a3b8] outline-none disabled:opacity-50"
+                        className="w-full rounded-lg border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-sm text-[#94a3b8] outline-none disabled:opacity-50"
                       />
                     </div>
 
                     <div>
-                      <label className="mb-1 block text-[9px] font-black uppercase tracking-wider text-[#64748b]">
+                      <label className="mb-1 block text-[11px] font-black uppercase tracking-wider text-[#64748b]">
                         SEED #
                       </label>
                       <input
@@ -742,28 +742,28 @@ export default function TeamsAdminPage() {
                         min="1"
                         value={form.seed}
                         onChange={(e) => setForm((curr) => ({ ...curr, seed: Number(e.target.value) }))}
-                        className="w-full rounded-lg border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-xs font-bold text-white outline-none focus:border-[#7c3aed]"
+                        className="w-full rounded-lg border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-sm font-bold text-white outline-none focus:border-[#94a3b8]"
                       />
                     </div>
                   </div>
 
                   {/* Captain & Rank */}
                   <div>
-                    <label className="mb-1 block text-[9px] font-black uppercase tracking-wider text-[#64748b]">
+                    <label className="mb-1 block text-[11px] font-black uppercase tracking-wider text-[#64748b]">
                       CAPTAIN / IN-GAME LEAD & RANK
                     </label>
                     <input
                       value={form.captainRank ?? ""}
                       onChange={(e) => setForm((curr) => ({ ...curr, captainRank: e.target.value }))}
                       placeholder="e.g. TenZ — Radiant"
-                      className="w-full rounded-lg border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-xs text-white placeholder:text-[#334155] outline-none focus:border-[#7c3aed]"
+                      className="w-full rounded-lg border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-sm text-white placeholder:text-[#334155] outline-none focus:border-[#94a3b8]"
                     />
                   </div>
 
                   {/* Standings Wins / Losses */}
                   <div className="grid grid-cols-2 gap-2.5">
                     <div>
-                      <label className="mb-1 block text-[9px] font-black uppercase tracking-wider text-[#64748b]">
+                      <label className="mb-1 block text-[11px] font-black uppercase tracking-wider text-[#64748b]">
                         WINS (STANDINGS)
                       </label>
                       <input
@@ -771,12 +771,12 @@ export default function TeamsAdminPage() {
                         min="0"
                         value={form.wins}
                         onChange={(e) => setForm((curr) => ({ ...curr, wins: Number(e.target.value) }))}
-                        className="w-full rounded-lg border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-xs font-black text-[#34d399] outline-none focus:border-[#10b981]"
+                        className="w-full rounded-lg border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-sm font-black text-[#34d399] outline-none focus:border-[#10b981]"
                       />
                     </div>
 
                     <div>
-                      <label className="mb-1 block text-[9px] font-black uppercase tracking-wider text-[#64748b]">
+                      <label className="mb-1 block text-[11px] font-black uppercase tracking-wider text-[#64748b]">
                         LOSSES (STANDINGS)
                       </label>
                       <input
@@ -784,7 +784,7 @@ export default function TeamsAdminPage() {
                         min="0"
                         value={form.losses}
                         onChange={(e) => setForm((curr) => ({ ...curr, losses: Number(e.target.value) }))}
-                        className="w-full rounded-lg border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-xs font-black text-[#ff4d6a] outline-none focus:border-[#ff2d55]"
+                        className="w-full rounded-lg border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-sm font-black text-[#ff4d6a] outline-none focus:border-[#ff2d55]"
                       />
                     </div>
                   </div>
@@ -799,25 +799,25 @@ export default function TeamsAdminPage() {
                           width={38}
                           height={38}
                           unoptimized
-                          className="h-9 w-9 rounded-lg border border-[#7c3aed]/50 bg-[#0c0c18] object-contain p-1"
+                          className="h-9 w-9 rounded-lg border border-[#94a3b8]/50 bg-[#0c0c18] object-contain p-1"
                         />
                       ) : (
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-dashed border-[#1e1e3a] bg-[#0c0c18] text-xs">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-dashed border-[#1e1e3a] bg-[#0c0c18] text-sm">
                           🛡️
                         </div>
                       )}
                       <div>
-                        <p className="text-[10px] font-black uppercase tracking-wider text-white">
+                        <p className="text-[12px] font-black uppercase tracking-wider text-white">
                           TEAM LOGO
                         </p>
-                        <p className="text-[9px] text-[#64748b]">
+                        <p className="text-[11px] text-[#64748b]">
                           {form.logo ? "Logo attached" : "PNG / JPG < 2MB"}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <label className="cursor-pointer rounded-lg border border-[#06b6d4]/40 bg-[#06b6d4]/10 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-[#22d3ee] hover:bg-[#06b6d4]/20">
+                      <label className="cursor-pointer rounded-lg border border-[#94a3b8]/40 bg-[#94a3b8]/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-[#f1f5f9] hover:bg-[#94a3b8]/20">
                         <span>{form.logo ? "CHANGE" : "UPLOAD"} ↑</span>
                         <input
                           type="file"
@@ -831,7 +831,7 @@ export default function TeamsAdminPage() {
                         <button
                           type="button"
                           onClick={() => setForm((curr) => ({ ...curr, logo: "" }))}
-                          className="rounded-lg border border-[#ff2d55]/30 bg-[#ff2d55]/10 px-2 py-1.5 text-[9px] font-black text-[#ff4d6a] hover:bg-[#ff2d55]/20"
+                          className="rounded-lg border border-[#ff2d55]/30 bg-[#ff2d55]/10 px-2 py-1.5 text-[11px] font-black text-[#ff4d6a] hover:bg-[#ff2d55]/20"
                         >
                           ✕
                         </button>
@@ -845,10 +845,10 @@ export default function TeamsAdminPage() {
                   <div>
                     <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-1.5">
                       <div className="flex items-center gap-2">
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#7c3aed]">
+                        <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#94a3b8]">
                           2. ROSTER LINEUP ({form.players.length} PLAYERS)
                         </span>
-                        <span className="rounded border border-[#06b6d4]/40 bg-[#06b6d4]/10 px-1.5 py-0.5 text-[8px] font-black uppercase text-[#22d3ee]">
+                        <span className="rounded border border-[#94a3b8]/40 bg-[#94a3b8]/10 px-1.5 py-0.5 text-[10px] font-black uppercase text-[#f1f5f9]">
                           ⚡ RIOT ID (#TAG) SUPPORT
                         </span>
                       </div>
@@ -856,7 +856,7 @@ export default function TeamsAdminPage() {
                       <button
                         type="button"
                         onClick={addPlayer}
-                        className="inline-flex items-center gap-1 rounded-md border border-[#7c3aed]/40 bg-[#7c3aed]/10 px-2 py-0.5 text-[9px] font-black text-[#a78bfa] hover:bg-[#7c3aed]/20"
+                        className="inline-flex items-center gap-1 rounded-md border border-[#94a3b8]/40 bg-[#94a3b8]/10 px-2 py-0.5 text-[11px] font-black text-[#f1f5f9] hover:bg-[#94a3b8]/20"
                       >
                         + ADD PLAYER
                       </button>
@@ -869,9 +869,9 @@ export default function TeamsAdminPage() {
                         return (
                           <div
                             key={player.id}
-                            className="flex items-center gap-2 rounded-lg border border-[#1e1e3a] bg-[#0c0c18] px-2.5 py-1.5 transition hover:border-[#7c3aed]/40"
+                            className="flex items-center gap-2 rounded-lg border border-[#1e1e3a] bg-[#0c0c18] px-2.5 py-1.5 transition hover:border-[#94a3b8]/40"
                           >
-                            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-[#030308] text-[9px] font-black text-[#7c3aed]">
+                            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-[#030308] text-[11px] font-black text-[#94a3b8]">
                               P{index + 1}
                             </span>
 
@@ -880,12 +880,12 @@ export default function TeamsAdminPage() {
                               value={ign}
                               onChange={(e) => updatePlayerIgn(index, e.target.value)}
                               placeholder={`Player ${index + 1} IGN`}
-                              className="flex-1 min-w-[110px] rounded border border-[#1e1e3a] bg-[#030308] px-2.5 py-1 text-xs text-white placeholder:text-[#334155] outline-none focus:border-[#7c3aed]"
+                              className="flex-1 min-w-[110px] rounded border border-[#1e1e3a] bg-[#030308] px-2.5 py-1 text-sm text-white placeholder:text-[#334155] outline-none focus:border-[#94a3b8]"
                             />
 
                             {/* Dedicated Riot #TAG field */}
                             <div className="relative w-24 shrink-0">
-                              <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-[11px] font-black text-[#06b6d4]">
+                              <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-[13px] font-black text-[#94a3b8]">
                                 #
                               </span>
                               <input
@@ -893,7 +893,7 @@ export default function TeamsAdminPage() {
                                 onChange={(e) => updatePlayerTag(index, e.target.value)}
                                 placeholder="TAG"
                                 maxLength={6}
-                                className="w-full rounded border border-[#06b6d4]/40 bg-[#030308] pl-5 pr-1.5 py-1 text-xs font-black uppercase text-[#22d3ee] placeholder:text-[#334155] outline-none focus:border-[#06b6d4]"
+                                className="w-full rounded border border-[#94a3b8]/40 bg-[#030308] pl-5 pr-1.5 py-1 text-sm font-black uppercase text-[#f1f5f9] placeholder:text-[#334155] outline-none focus:border-[#94a3b8]"
                                 title="Riot ID Tag (e.g. VAL, 001, IND)"
                               />
                             </div>
@@ -903,13 +903,13 @@ export default function TeamsAdminPage() {
                               value={player.role ?? ""}
                               onChange={(e) => updatePlayer(index, "role", e.target.value)}
                               placeholder="Role (Duelist...)"
-                              className="w-28 shrink-0 rounded border border-[#1e1e3a] bg-[#030308] px-2.5 py-1 text-xs text-white placeholder:text-[#334155] outline-none focus:border-[#7c3aed]"
+                              className="w-28 shrink-0 rounded border border-[#1e1e3a] bg-[#030308] px-2.5 py-1 text-sm text-white placeholder:text-[#334155] outline-none focus:border-[#94a3b8]"
                             />
 
                             <button
                               type="button"
                               onClick={() => removePlayer(index)}
-                              className="shrink-0 rounded p-1 text-[10px] font-black text-[#ff4d6a] hover:bg-[#ff2d55]/20"
+                              className="shrink-0 rounded p-1 text-[12px] font-black text-[#ff4d6a] hover:bg-[#ff2d55]/20"
                               title="Remove player"
                             >
                               ✕
@@ -925,7 +925,7 @@ export default function TeamsAdminPage() {
                     <button
                       type="submit"
                       disabled={saving}
-                      className="flex-1 rounded-xl bg-gradient-to-r from-[#06b6d4] to-[#7c3aed] py-2.5 text-xs font-black uppercase tracking-wider text-white shadow-[0_0_15px_rgba(6,182,212,0.3)] transition hover:opacity-95 disabled:opacity-50"
+                      className="flex-1 rounded-xl bg-gradient-to-r from-[#94a3b8] to-[#94a3b8] py-2.5 text-sm font-black uppercase tracking-wider text-white shadow-[0_0_15px_rgba(148,163,184,0.3)] transition hover:opacity-95 disabled:opacity-50"
                     >
                       {saving ? "SAVING..." : editingId ? "UPDATE TEAM DATA" : "REGISTER TEAM →"}
                     </button>
@@ -933,7 +933,7 @@ export default function TeamsAdminPage() {
                     <button
                       type="button"
                       onClick={startCreate}
-                      className="rounded-xl border border-[#1e1e3a] bg-[#030308] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-[#64748b] hover:text-white"
+                      className="rounded-xl border border-[#1e1e3a] bg-[#030308] px-4 py-2.5 text-sm font-black uppercase tracking-wider text-[#64748b] hover:text-white"
                     >
                       RESET
                     </button>
@@ -949,7 +949,7 @@ export default function TeamsAdminPage() {
           {/* Deck Header */}
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1e1e3a] p-4 sm:p-5">
             <div>
-              <div className="text-[9px] font-black uppercase tracking-[0.25em] text-[#64748b]">
+              <div className="text-[11px] font-black uppercase tracking-[0.25em] text-[#64748b]">
                 DATABASE REPOSITORY
               </div>
               <h2 className="mt-0.5 text-lg font-black tracking-tight text-white">
@@ -963,10 +963,10 @@ export default function TeamsAdminPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search teams or players..."
-                className="w-48 rounded-xl border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-xs text-white placeholder:text-[#334155] outline-none transition focus:border-[#7c3aed]"
+                className="w-48 rounded-xl border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-sm text-white placeholder:text-[#334155] outline-none transition focus:border-[#94a3b8]"
               />
 
-              <label className="cursor-pointer inline-flex items-center gap-1 rounded-xl border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-[9px] font-black tracking-widest text-[#94a3b8] hover:border-[#06b6d4]/50 hover:text-[#22d3ee]">
+              <label className="cursor-pointer inline-flex items-center gap-1 rounded-xl border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-[11px] font-black tracking-widest text-[#94a3b8] hover:border-[#94a3b8]/50 hover:text-[#f1f5f9]">
                 <span>IMPORT CSV</span>
                 <span>↑</span>
                 <input
@@ -980,7 +980,7 @@ export default function TeamsAdminPage() {
               <button
                 type="button"
                 onClick={exportCsv}
-                className="inline-flex items-center gap-1 rounded-xl border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-[9px] font-black tracking-widest text-[#94a3b8] hover:border-[#f59e0b]/50 hover:text-[#fbbf24]"
+                className="inline-flex items-center gap-1 rounded-xl border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-[11px] font-black tracking-widest text-[#94a3b8] hover:border-[#f59e0b]/50 hover:text-[#fbbf24]"
               >
                 <span>EXPORT CSV</span>
                 <span>↓</span>
@@ -989,7 +989,7 @@ export default function TeamsAdminPage() {
               <button
                 type="button"
                 onClick={() => loadTeams(true)}
-                className="inline-flex items-center gap-1 rounded-xl border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-[9px] font-black tracking-widest text-[#94a3b8] hover:border-[#10b981]/50 hover:text-[#34d399]"
+                className="inline-flex items-center gap-1 rounded-xl border border-[#1e1e3a] bg-[#030308] px-3 py-1.5 text-[11px] font-black tracking-widest text-[#94a3b8] hover:border-[#10b981]/50 hover:text-[#34d399]"
               >
                 <span>REFRESH</span>
                 <span>⟳</span>
@@ -999,13 +999,13 @@ export default function TeamsAdminPage() {
 
           {/* Teams Grid */}
           {loading ? (
-            <div className="p-10 text-center text-xs font-bold text-[#64748b]">
+            <div className="p-10 text-center text-sm font-bold text-[#64748b]">
               Loading teams from database...
             </div>
           ) : filteredTeams.length === 0 ? (
             <div className="p-10 text-center">
               <div className="text-base font-black text-white">No teams registered yet</div>
-              <p className="mt-1 text-xs text-[#64748b]">
+              <p className="mt-1 text-sm text-[#64748b]">
                 Use the registration deck above or import from CSV to populate tournament teams.
               </p>
             </div>
@@ -1014,13 +1014,13 @@ export default function TeamsAdminPage() {
               {filteredTeams.map((team) => (
                 <article
                   key={team.id}
-                  className="group relative overflow-hidden rounded-xl border border-[#1e1e3a] bg-[#030308]/70 p-4 transition-all hover:border-[#7c3aed]/50 hover:shadow-[0_0_20px_rgba(124,58,237,0.12)]"
+                  className="group relative overflow-hidden rounded-xl border border-[#1e1e3a] bg-[#030308]/70 p-4 transition-all hover:border-[#94a3b8]/50 hover:shadow-[0_0_20px_rgba(148,163,184,0.12)]"
                 >
                   {/* Team Header */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">
                       {/* Logo Avatar */}
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#1e1e3a] bg-[#0c0c18] p-1.5 group-hover:border-[#7c3aed]/40">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#1e1e3a] bg-[#0c0c18] p-1.5 group-hover:border-[#94a3b8]/40">
                         {team.logo ? (
                           <Image
                             src={team.logo}
@@ -1031,29 +1031,29 @@ export default function TeamsAdminPage() {
                             className="h-full w-full object-contain"
                           />
                         ) : (
-                          <span className="text-xs font-black text-[#7c3aed]">
+                          <span className="text-sm font-black text-[#94a3b8]">
                             {team.tag.slice(0, 3).toUpperCase()}
                           </span>
                         )}
                       </div>
 
                       <div className="min-w-0">
-                        <div className="inline-flex items-center gap-1 rounded border border-[#06b6d4]/30 bg-[#06b6d4]/10 px-2 py-0.5 text-[8px] font-black text-[#22d3ee] mb-0.5">
+                        <div className="inline-flex items-center gap-1 rounded border border-[#94a3b8]/30 bg-[#94a3b8]/10 px-2 py-0.5 text-[10px] font-black text-[#f1f5f9] mb-0.5">
                           SEED #{team.seed}
                         </div>
 
-                        <h3 className="truncate text-base font-black text-white group-hover:text-[#22d3ee] transition-colors">
+                        <h3 className="truncate text-base font-black text-white group-hover:text-[#f1f5f9] transition-colors">
                           {team.name}
                         </h3>
 
-                        <div className="text-[10px] font-bold text-[#64748b]">
+                        <div className="text-[12px] font-bold text-[#64748b]">
                           {team.tag} • {team.captainRank || "Rank unassigned"}
                         </div>
                       </div>
                     </div>
 
                     {/* Win / Loss pill */}
-                    <div className="flex items-center gap-1.5 rounded-lg border border-[#1e1e3a] bg-[#0c0c18] px-2.5 py-1 text-xs font-black">
+                    <div className="flex items-center gap-1.5 rounded-lg border border-[#1e1e3a] bg-[#0c0c18] px-2.5 py-1 text-sm font-black">
                       <span className="text-[#34d399]">{team.wins}W</span>
                       <span className="text-[#334155]">-</span>
                       <span className="text-[#ff4d6a]">{team.losses}L</span>
@@ -1062,7 +1062,7 @@ export default function TeamsAdminPage() {
 
                   {/* Roster Chips */}
                   <div className="mt-3.5 border-t border-[#1e1e3a] pt-3">
-                    <div className="mb-2.5 flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-[#64748b]">
+                    <div className="mb-2.5 flex items-center justify-between text-[11px] font-black uppercase tracking-widest text-[#64748b]">
                       <span>ROSTER LINEUP</span>
                       <span>{team.players.length} PLAYERS</span>
                     </div>
@@ -1081,14 +1081,14 @@ export default function TeamsAdminPage() {
                         return (
                           <div
                             key={player.id || idx}
-                            className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs transition ${
+                            className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-sm transition ${
                               isCaptain
                                 ? "border-[#f59e0b]/50 bg-[#f59e0b]/10 text-[#fbbf24] shadow-[0_0_12px_rgba(245,158,11,0.15)]"
                                 : "border-[#1e1e3a] bg-[#0c0c18] text-[#f1f5f9] hover:border-[#2e2e5a]"
                             }`}
                           >
                             <span
-                              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-[8px] font-black ${
+                              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-[10px] font-black ${
                                 isCaptain
                                   ? "bg-[#f59e0b]/20 text-[#f59e0b]"
                                   : "bg-[#030308] text-[#64748b]"
@@ -1097,16 +1097,16 @@ export default function TeamsAdminPage() {
                               {idx + 1}
                             </span>
 
-                            <span className="font-bold text-[11px] tracking-tight uppercase">
+                            <span className="font-bold text-[13px] tracking-tight uppercase">
                               {player.name}
                             </span>
 
                             {isCaptain ? (
-                              <span className="rounded bg-[#f59e0b]/20 px-1 py-0.5 text-[8px] font-black uppercase text-[#fbbf24]">
+                              <span className="rounded bg-[#f59e0b]/20 px-1 py-0.5 text-[10px] font-black uppercase text-[#fbbf24]">
                                 ★ CPT
                               </span>
                             ) : player.role ? (
-                              <span className="rounded bg-[#1e1e3a] px-1 py-0.5 text-[8px] font-black uppercase text-[#9d63ff]">
+                              <span className="rounded bg-[#1e1e3a] px-1 py-0.5 text-[10px] font-black uppercase text-[#94a3b8]">
                                 {player.role}
                               </span>
                             ) : null}
@@ -1121,7 +1121,7 @@ export default function TeamsAdminPage() {
                     <button
                       type="button"
                       onClick={() => startEdit(team)}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#06b6d4]/40 bg-[#06b6d4]/10 py-1.5 text-xs font-black tracking-widest text-[#22d3ee] transition hover:bg-[#06b6d4]/20 hover:shadow-[0_0_12px_rgba(6,182,212,0.15)]"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#94a3b8]/40 bg-[#94a3b8]/10 py-1.5 text-sm font-black tracking-widest text-[#f1f5f9] transition hover:bg-[#94a3b8]/20 hover:shadow-[0_0_12px_rgba(148,163,184,0.15)]"
                     >
                       <span>✎ EDIT ROSTER</span>
                     </button>
@@ -1129,7 +1129,7 @@ export default function TeamsAdminPage() {
                     <button
                       type="button"
                       onClick={() => deleteTeam(team)}
-                      className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#ff2d55]/30 bg-[#ff2d55]/8 px-4 py-1.5 text-xs font-black tracking-widest text-[#ff4d6a] transition hover:bg-[#ff2d55]/20"
+                      className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#ff2d55]/30 bg-[#ff2d55]/8 px-4 py-1.5 text-sm font-black tracking-widest text-[#ff4d6a] transition hover:bg-[#ff2d55]/20"
                     >
                       <span>🗑 DELETE</span>
                     </button>

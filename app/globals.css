@@ -14,8 +14,8 @@
   /* Accents */
   --crimson:  #ff2d55;
   --crimson2: #ff4d6a;
-  --violet:   #7c3aed;
-  --violet2:  #9d63ff;
+  --violet:   #6d5ef8;
+  --violet2:  #8d7bf9;
   --gold:     #f59e0b;
   --gold2:    #fbbf24;
   --cyan:     #06b6d4;
@@ -64,7 +64,7 @@ button, select { cursor: pointer; }
 }
 .glass-card:hover {
   border-color: var(--border-bright);
-  box-shadow: 0 0 24px rgba(124, 58, 237, 0.12);
+  box-shadow: 0 0 24px rgba(109, 94, 248, 0.12);
 }
 
 /* ─── Dashboard helpers ───────────────────────────────────────────────────── */
@@ -98,7 +98,7 @@ button, select { cursor: pointer; }
 
 /* ─── Glow utilities ──────────────────────────────────────────────────────── */
 .glow-crimson { box-shadow: 0 0 20px rgba(255, 45, 85, 0.25); }
-.glow-violet  { box-shadow: 0 0 20px rgba(124, 58, 237, 0.25); }
+.glow-violet  { box-shadow: 0 0 20px rgba(109, 94, 248, 0.25); }
 .glow-cyan    { box-shadow: 0 0 20px rgba(6, 182, 212, 0.20); }
 .glow-gold    { box-shadow: 0 0 20px rgba(245, 158, 11, 0.20); }
 
@@ -136,8 +136,8 @@ button, select { cursor: pointer; }
   isolation: isolate;
   background-image:
     linear-gradient(
-      rgba(3, 6, 13, 0.74),
-      rgba(3, 6, 13, 0.90)
+      rgba(3, 6, 13, 0.86),
+      rgba(3, 6, 13, 0.95)
     ),
     var(--valorant-background);
   background-size: cover;
@@ -150,8 +150,8 @@ button, select { cursor: pointer; }
 body > * {
   background-image:
     linear-gradient(
-      rgba(3, 6, 13, 0.70),
-      rgba(3, 6, 13, 0.90)
+      rgba(3, 6, 13, 0.84),
+      rgba(3, 6, 13, 0.95)
     ),
     var(--valorant-background) !important;
   background-size: cover !important;

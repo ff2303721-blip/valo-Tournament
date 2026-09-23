@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useMemo } from "react";
 import type { FrontPageProps } from "./types";
+import { getTournamentStatusMeta } from "@/lib/tournament-status";
 
 export function Cs2FrontPage({
   settings,
@@ -28,15 +29,17 @@ export function Cs2FrontPage({
           {/* Left: Tournament Identity */}
           <div>
             <div className="flex flex-wrap items-center gap-2.5">
-              <span className="rounded-full border border-[#3b82f6]/50 bg-[#3b82f6]/15 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-[#60a5fa] shadow-[0_0_15px_rgba(59,130,246,0.25)]">
+              <span className="rounded-full border border-[#3b82f6]/50 bg-[#3b82f6]/15 px-3 py-1 text-[12px] font-black uppercase tracking-widest text-[#60a5fa] shadow-[0_0_15px_rgba(59,130,246,0.25)]">
                 💣 VALVE PREMIER CS2
               </span>
-              <span className="rounded-full border border-[#eab308]/50 bg-[#eab308]/15 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-[#fde047]">
+              <span className="rounded-full border border-[#eab308]/50 bg-[#eab308]/15 px-3 py-1 text-[12px] font-black uppercase tracking-widest text-[#fde047]">
                 MR12 REGULATION + OT
               </span>
               {settings?.tournamentStatus && (
-                <span className="rounded-full border border-[#10b981]/40 bg-[#10b981]/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-[#34d399]">
-                  ● {settings.tournamentStatus.toUpperCase()}
+                <span
+                  className={`rounded-full border px-3 py-1 text-[12px] font-black uppercase tracking-widest ${getTournamentStatusMeta(settings.tournamentStatus).badgeClass}`}
+                >
+                  ● {getTournamentStatusMeta(settings.tournamentStatus).display}
                 </span>
               )}
             </div>
@@ -49,7 +52,7 @@ export function Cs2FrontPage({
               {settings?.tagline || "DEFUSE • RETAKE • BECOME MAJOR CHAMPIONS"}
             </p>
 
-            <div className="mt-6 flex flex-wrap items-center gap-6 text-xs text-[#94a3b8] border-t border-[#1e293b] pt-5">
+            <div className="mt-6 flex flex-wrap items-center gap-6 text-sm text-[#94a3b8] border-t border-[#1e293b] pt-5">
               <div className="flex items-center gap-2">
                 <span className="text-[#3b82f6]">📅</span>
                 <span>
@@ -77,7 +80,7 @@ export function Cs2FrontPage({
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <Link
                 href="/tournament/matches"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#3b82f6]/50 bg-[#3b82f6]/20 px-5 py-2.5 text-xs font-black uppercase tracking-wider text-[#bfdbfe] transition hover:bg-[#3b82f6]/35 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#3b82f6]/50 bg-[#3b82f6]/20 px-5 py-2.5 text-sm font-black uppercase tracking-wider text-[#bfdbfe] transition hover:bg-[#3b82f6]/35 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]"
               >
                 <span>MATCH CENTER</span>
                 <span>↗</span>
@@ -85,7 +88,7 @@ export function Cs2FrontPage({
 
               <Link
                 href="/tournament/bracket"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#eab308]/40 bg-[#eab308]/15 px-5 py-2.5 text-xs font-black uppercase tracking-wider text-[#fef08a] transition hover:bg-[#eab308]/25 hover:shadow-[0_0_20px_rgba(234,179,8,0.25)]"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#eab308]/40 bg-[#eab308]/15 px-5 py-2.5 text-sm font-black uppercase tracking-wider text-[#fef08a] transition hover:bg-[#eab308]/25 hover:shadow-[0_0_20px_rgba(234,179,8,0.25)]"
               >
                 <span>MAJOR BRACKET</span>
                 <span>↗</span>
@@ -93,7 +96,7 @@ export function Cs2FrontPage({
 
               <Link
                 href="/tournament/players"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#1e293b] bg-[#0c0a09] px-5 py-2.5 text-xs font-black uppercase tracking-wider text-[#f1f5f9] transition hover:border-[#3b82f6]/50"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#1e293b] bg-[#0c0a09] px-5 py-2.5 text-sm font-black uppercase tracking-wider text-[#f1f5f9] transition hover:border-[#3b82f6]/50"
               >
                 <span>HLTV 2.0 STATS</span>
                 <span>↗</span>
@@ -106,11 +109,11 @@ export function Cs2FrontPage({
             <div className="flex items-center justify-between border-b border-[#1e293b] pb-3">
               <div className="flex items-center gap-2">
                 <span className="text-xl">🏆</span>
-                <span className="text-xs font-black uppercase tracking-widest text-[#60a5fa]">
+                <span className="text-sm font-black uppercase tracking-widest text-[#60a5fa]">
                   MAJOR PRIZE POOL ({settings?.prizePool ? `₹${settings.prizePool}` : "₹6,000"})
                 </span>
               </div>
-              <span className="rounded-full border border-[#3b82f6]/40 bg-[#3b82f6]/15 px-2.5 py-0.5 text-[9px] font-black uppercase text-[#60a5fa]">
+              <span className="rounded-full border border-[#3b82f6]/40 bg-[#3b82f6]/15 px-2.5 py-0.5 text-[11px] font-black uppercase text-[#60a5fa]">
                 OFFICIAL TROPHY
               </span>
             </div>
@@ -118,26 +121,26 @@ export function Cs2FrontPage({
             <div className="mt-4 grid grid-cols-3 gap-2 text-center">
               <div className="rounded-xl border border-[#eab308]/50 bg-[#eab308]/10 p-3.5 shadow-[0_0_15px_rgba(234,179,8,0.15)]">
                 <span className="text-2xl">🏆</span>
-                <span className="block text-[9px] font-black uppercase text-[#fde047] mt-1">CHAMPIONS</span>
+                <span className="block text-[11px] font-black uppercase text-[#fde047] mt-1">CHAMPIONS</span>
                 <span className="text-sm font-black text-white">₹3,000</span>
-                <span className="block text-[8px] font-bold text-[#94a3b8] mt-0.5">Major Trophy</span>
+                <span className="block text-[10px] font-bold text-[#94a3b8] mt-0.5">Major Trophy</span>
               </div>
               <div className="rounded-xl border border-[#94a3b8]/40 bg-[#94a3b8]/10 p-3.5">
                 <span className="text-2xl">🥈</span>
-                <span className="block text-[9px] font-black uppercase text-[#cbd5e1] mt-1">FINALIST</span>
+                <span className="block text-[11px] font-black uppercase text-[#cbd5e1] mt-1">FINALIST</span>
                 <span className="text-sm font-black text-white">₹1,800</span>
-                <span className="block text-[8px] font-bold text-[#94a3b8] mt-0.5">Silver Medal</span>
+                <span className="block text-[10px] font-bold text-[#94a3b8] mt-0.5">Silver Medal</span>
               </div>
               <div className="rounded-xl border border-[#3b82f6]/40 bg-[#3b82f6]/10 p-3.5">
                 <span className="text-2xl">🌟</span>
-                <span className="block text-[9px] font-black uppercase text-[#93c5fd] mt-1">MAJOR MVP</span>
+                <span className="block text-[11px] font-black uppercase text-[#93c5fd] mt-1">MAJOR MVP</span>
                 <span className="text-sm font-black text-white">₹1,200</span>
-                <span className="block text-[8px] font-bold text-[#94a3b8] mt-0.5">HLTV Rating</span>
+                <span className="block text-[10px] font-bold text-[#94a3b8] mt-0.5">HLTV Rating</span>
               </div>
             </div>
 
             <div className="mt-4 rounded-xl border border-[#1e293b] bg-[#080812]/80 p-3 text-center">
-              <p className="text-[10px] font-bold text-[#94a3b8]">
+              <p className="text-[12px] font-bold text-[#94a3b8]">
                 Valve Active Duty Pool • BO1 Group Fixtures • BO3 Grand Final Decider
               </p>
             </div>
@@ -149,14 +152,14 @@ export function Cs2FrontPage({
       <section className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl">
         <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4 mb-5">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#3b82f6]">
+            <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#3b82f6]">
               VALVE OFFICIAL POOL
             </p>
             <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
               Active Duty Map Pool Veto ({game.maps.length} Maps)
             </h2>
           </div>
-          <span className="rounded-full border border-[#3b82f6]/30 bg-[#3b82f6]/10 px-3 py-1 text-[9px] font-black text-[#60a5fa]">
+          <span className="rounded-full border border-[#3b82f6]/30 bg-[#3b82f6]/10 px-3 py-1 text-[11px] font-black text-[#60a5fa]">
             ACTIVE DUTY
           </span>
         </div>
@@ -168,10 +171,10 @@ export function Cs2FrontPage({
               className="rounded-xl border border-[#1e1e3a] bg-[#080812] p-3 text-center transition hover:border-[#3b82f6]/60 group"
             >
               <span className="text-xl">🗺️</span>
-              <h4 className="mt-2 text-xs font-black uppercase text-white tracking-wider">
+              <h4 className="mt-2 text-sm font-black uppercase text-white tracking-wider">
                 {mapItem.name}
               </h4>
-              <span className="mt-1 inline-block rounded bg-[#1e1e3a] px-1.5 py-0.5 text-[8px] font-bold text-[#64748b] group-hover:text-[#60a5fa]">
+              <span className="mt-1 inline-block rounded bg-[#1e1e3a] px-1.5 py-0.5 text-[10px] font-bold text-[#64748b] group-hover:text-[#60a5fa]">
                 COMPETITIVE
               </span>
             </div>
@@ -183,7 +186,7 @@ export function Cs2FrontPage({
       <section className="overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 backdrop-blur-xl">
         <div className="flex items-center justify-between border-b border-[#1e1e3a] p-6">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#3b82f6]">
+            <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#3b82f6]">
               MAJOR STANDINGS
             </p>
             <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
@@ -195,7 +198,7 @@ export function Cs2FrontPage({
         <div className="overflow-x-auto">
           <table className="w-full min-w-[650px] text-left border-collapse">
             <thead>
-              <tr className="border-b border-[#1e1e3a] bg-[#080812] text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+              <tr className="border-b border-[#1e1e3a] bg-[#080812] text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
                 <th className="px-5 py-4 text-center w-16">#</th>
                 <th className="px-5 py-4">TEAM</th>
                 <th className="px-4 py-4 text-center">PLAYED</th>

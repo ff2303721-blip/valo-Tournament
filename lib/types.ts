@@ -4,6 +4,14 @@ export type MatchStatus =
   | "Completed"
   | "Cancelled";
 
+export type TournamentStatusId =
+  | "registration_open"
+  | "upcoming"
+  | "ongoing_group_stage"
+  | "ongoing_playoffs"
+  | "ongoing_grand_finals"
+  | "concluded";
+
 export type PlayerStat = {
   playerId: string;
   playerName: string;
@@ -60,7 +68,7 @@ export type TournamentSettings = {
   prizePool: string;
   startDate: string | null;
   endDate: string | null;
-  tournamentStatus: "Upcoming" | "Live" | "Completed";
+  tournamentStatus: TournamentStatusId;
   announcement: string;
   logoUrl: string;
   bannerUrl: string;

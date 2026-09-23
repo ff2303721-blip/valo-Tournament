@@ -169,21 +169,21 @@ export default function TournamentDashboard() {
     <main className="relative min-h-screen text-[#f1f5f9] pb-24">
       {/* ── Ambient Neon Glow Orbs ────────────────────────────────────────── */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/12 blur-[180px]" />
+        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#94a3b8]/12 blur-[180px]" />
         <div className="absolute top-1/3 -right-40 h-[500px] w-[500px] rounded-full bg-[#ff2d55]/10 blur-[160px]" />
-        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#06b6d4]/8 blur-[160px]" />
+        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#94a3b8]/8 blur-[160px]" />
       </div>
 
       <TournamentNav />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 pt-6 sm:px-8 space-y-8">
+      <div className="relative z-10 mx-auto max-w-[1680px] px-4 pt-6 sm:px-8 space-y-8">
         {/* Error banner */}
         {error && (
           <div className="rounded-2xl border border-[#ff2d55]/40 bg-[#ff2d55]/10 p-4 backdrop-blur-xl">
             <div className="font-black text-[#ff4d6a]">
               Unable to load tournament telemetry
             </div>
-            <div className="mt-1 text-xs text-[#ff6080]">{error}</div>
+            <div className="mt-1 text-sm text-[#ff6080]">{error}</div>
           </div>
         )}
 

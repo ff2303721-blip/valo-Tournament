@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { verifyAdminSessionToken, ADMIN_SESSION_COOKIE } from "@/lib/admin-session";
 
-const SESSION_COOKIE = "valorant_admin_session";
+const SESSION_COOKIE = ADMIN_SESSION_COOKIE;
 
 const PROTECTED_ROUTES = [
   "/admin",
@@ -31,7 +32,7 @@ export function proxy(request: NextRequest) {
 
   const session = request.cookies.get(SESSION_COOKIE);
 
-  if (session?.value === "authenticated") {
+  if (verifyAdminSessionToken(session?.value)) {
     return NextResponse.next();
   }
 

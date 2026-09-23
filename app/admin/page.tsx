@@ -8,6 +8,7 @@ import type { Match, Team, TournamentSettings } from "@/lib/types";
 import { defaultSettings } from "@/lib/api";
 import { StatusBadge } from "@/app/tournament/components/ui/status-badge";
 import { getGameDefinition } from "@/lib/games/registry";
+import { getTournamentStatusMeta } from "@/lib/tournament-status";
 
 export default function AdminHubPage() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function AdminHubPage() {
   const [fixtureFilter, setFixtureFilter] = useState<"all" | "pending" | "completed">("all");
 
   const game = useMemo(() => getGameDefinition(settings?.gameId), [settings?.gameId]);
+  const statusMeta = getTournamentStatusMeta(settings?.tournamentStatus);
 
   useEffect(() => {
     let active = true;
@@ -87,9 +89,9 @@ export default function AdminHubPage() {
     <div className="relative min-h-screen text-[#f1f5f9] pb-16">
       {/* ── Ambient Neon Glow Orbs ────────────────────────────────────────── */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/12 blur-[180px]" />
+        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#94a3b8]/12 blur-[180px]" />
         <div className="absolute top-1/4 -right-40 h-[500px] w-[500px] rounded-full bg-[#ff2d55]/10 blur-[160px]" />
-        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#06b6d4]/8 blur-[160px]" />
+        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#94a3b8]/8 blur-[160px]" />
       </div>
 
       {/* ── Modern Command Header ─────────────────────────────────────────── */}
@@ -107,16 +109,16 @@ export default function AdminHubPage() {
               <div className="flex items-center gap-2">
                 <h1 className="text-base font-black tracking-tight sm:text-lg text-white">
                   ADMIN HUB{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff2d55] to-[#9d63ff]">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff2d55] to-[#94a3b8]">
                     // COMMAND CENTER
                   </span>
                 </h1>
-                <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[9px] font-mono font-bold tracking-wider text-emerald-400">
+                <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-mono font-bold tracking-wider text-emerald-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   SYSTEM ACTIVE
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[12px] text-slate-400">
                 {game.name} Operations Hub • Cloud Synchronization
               </p>
             </div>
@@ -127,40 +129,40 @@ export default function AdminHubPage() {
             <Link
               href="/tournament"
               target="_blank"
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-[11px] font-bold tracking-wider text-slate-300 backdrop-blur-xl transition hover:border-cyan-500/40 hover:bg-cyan-500/10 hover:text-cyan-300 hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-[13px] font-bold tracking-wider text-slate-300 backdrop-blur-xl transition hover:border-cyan-500/40 hover:bg-cyan-500/10 hover:text-cyan-300 hover:scale-[1.02]"
             >
               <span>PUBLIC SITE</span>
-              <span className="text-xs">↗</span>
+              <span className="text-sm">↗</span>
             </Link>
 
             <Link
               href="/matches"
-              className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-gradient-to-r from-rose-600/25 to-rose-600/15 px-4 py-1.5 text-[11px] font-bold tracking-wider text-rose-300 backdrop-blur-xl transition hover:border-rose-400 hover:bg-rose-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(244,63,94,0.3)] hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-gradient-to-r from-rose-600/25 to-rose-600/15 px-4 py-1.5 text-[13px] font-bold tracking-wider text-rose-300 backdrop-blur-xl transition hover:border-rose-400 hover:bg-rose-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(244,63,94,0.3)] hover:scale-[1.02]"
             >
               <span>MATCH CENTRE</span>
-              <span className="text-xs">↗</span>
+              <span className="text-sm">↗</span>
             </Link>
 
             <Link
               href="/teams"
-              className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/40 bg-gradient-to-r from-purple-600/25 to-purple-600/15 px-4 py-1.5 text-[11px] font-bold tracking-wider text-purple-300 backdrop-blur-xl transition hover:border-purple-400 hover:bg-purple-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/40 bg-gradient-to-r from-purple-600/25 to-purple-600/15 px-4 py-1.5 text-[13px] font-bold tracking-wider text-purple-300 backdrop-blur-xl transition hover:border-purple-400 hover:bg-purple-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:scale-[1.02]"
             >
               <span>TEAMS & ROSTERS</span>
-              <span className="text-xs">↗</span>
+              <span className="text-sm">↗</span>
             </Link>
 
             <Link
               href="/admin/settings"
-              className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-gradient-to-r from-amber-600/25 to-amber-600/15 px-4 py-1.5 text-[11px] font-bold tracking-wider text-amber-300 backdrop-blur-xl transition hover:border-amber-400 hover:bg-amber-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-gradient-to-r from-amber-600/25 to-amber-600/15 px-4 py-1.5 text-[13px] font-bold tracking-wider text-amber-300 backdrop-blur-xl transition hover:border-amber-400 hover:bg-amber-600/35 hover:text-white hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:scale-[1.02]"
             >
               <span>SETTINGS</span>
-              <span className="text-xs">⚙</span>
+              <span className="text-sm">⚙</span>
             </Link>
 
             <button
               onClick={handleLogout}
               disabled={loggingOut}
-              className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/25 bg-rose-500/5 px-4 py-1.5 text-[11px] font-bold tracking-wider text-rose-400 transition hover:bg-rose-500/20 hover:text-rose-300 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/25 bg-rose-500/5 px-4 py-1.5 text-[13px] font-bold tracking-wider text-rose-400 transition hover:bg-rose-500/20 hover:text-rose-300 disabled:opacity-50"
             >
               {loggingOut ? "LOGGING OUT…" : "LOGOUT"}
             </button>
@@ -178,11 +180,11 @@ export default function AdminHubPage() {
               label: "REGISTERED TEAMS",
               value: loading ? "…" : teams.length,
               sub: `${totalPlayers} players registered`,
-              accentColor: "text-[#22d3ee]",
-              glowColor: "rgba(6,182,212,0.15)",
-              border: "border-[#06b6d4]/25 hover:border-[#06b6d4]/60",
+              accentColor: "text-[#f1f5f9]",
+              glowColor: "rgba(148,163,184,0.15)",
+              border: "border-[#94a3b8]/25 hover:border-[#94a3b8]/60",
               tag: "ROSTERS",
-              tagClass: "text-[#06b6d4] bg-[#06b6d4]/10 border-[#06b6d4]/20",
+              tagClass: "text-[#94a3b8] bg-[#94a3b8]/10 border-[#94a3b8]/20",
             },
             {
               label: "COMPLETED MATCHES",
@@ -225,10 +227,10 @@ export default function AdminHubPage() {
               }}
             >
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+                <span className="text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
                   {card.label}
                 </span>
-                <span className={`rounded-md border px-2 py-0.5 text-[9px] font-black tracking-widest ${card.tagClass}`}>
+                <span className={`rounded-md border px-2 py-0.5 text-[11px] font-black tracking-widest ${card.tagClass}`}>
                   {card.tag}
                 </span>
               </div>
@@ -237,7 +239,7 @@ export default function AdminHubPage() {
                 {card.value}
               </div>
 
-              <div className="mt-2 truncate text-xs text-[#64748b]">
+              <div className="mt-2 truncate text-sm text-[#64748b]">
                 {card.sub}
               </div>
 
@@ -245,7 +247,7 @@ export default function AdminHubPage() {
               <div
                 className="absolute bottom-0 inset-x-0 h-[2px] opacity-40 transition-opacity duration-300 group-hover:opacity-100"
                 style={{
-                  background: `linear-gradient(90deg, transparent, ${card.accentColor.includes("22d3ee") ? "#06b6d4" : card.accentColor.includes("34d399") ? "#10b981" : card.accentColor.includes("ff4d6a") ? "#ff2d55" : "#f59e0b"}, transparent)`,
+                  background: `linear-gradient(90deg, transparent, ${card.accentColor.includes("22d3ee") ? "#94a3b8" : card.accentColor.includes("34d399") ? "#10b981" : card.accentColor.includes("ff4d6a") ? "#ff2d55" : "#f59e0b"}, transparent)`,
                 }}
               />
             </div>
@@ -257,18 +259,19 @@ export default function AdminHubPage() {
           <div className="grid gap-6 p-6 sm:grid-cols-3 sm:items-center">
             {/* Status box */}
             <div className="sm:border-r sm:border-[#1e1e3a] sm:pr-6">
-              <div className="text-[9px] font-black uppercase tracking-[0.25em] text-[#64748b]">
+              <div className="text-[11px] font-black uppercase tracking-[0.25em] text-[#64748b]">
                 TOURNAMENT STATUS
               </div>
               <div className="mt-2 flex items-center gap-3">
-                <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#ff2d55]/20 border border-[#ff2d55]/50">
-                  <span className="h-2 w-2 rounded-full bg-[#ff2d55] animate-ping" />
+                <span className={`flex h-3.5 w-3.5 items-center justify-center rounded-full border ${statusMeta.badgeClass}`}>
+                  <span className={`h-2 w-2 rounded-full ${statusMeta.dotClass} ${statusMeta.isLive ? "animate-ping" : ""}`} />
                 </span>
                 <span className="text-2xl font-black uppercase tracking-tight text-white">
-                  {settings.tournamentStatus || "UPCOMING"}
+                  {statusMeta.label}
+                  {statusMeta.sublabel ? ` · ${statusMeta.sublabel}` : ""}
                 </span>
               </div>
-              <div className="mt-1 text-[11px] text-[#64748b]">
+              <div className="mt-1 text-[13px] text-[#64748b]">
                 {settings.tournamentName}
               </div>
             </div>
@@ -277,12 +280,12 @@ export default function AdminHubPage() {
             <div className="sm:col-span-2 flex flex-col justify-between gap-3">
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#f59e0b]">
+                  <span className="text-[11px] font-black uppercase tracking-[0.25em] text-[#f59e0b]">
                     BROADCAST ANNOUNCEMENT
                   </span>
                   <Link
                     href="/admin/settings"
-                    className="inline-flex items-center gap-1 text-[10px] font-black tracking-widest text-[#7c3aed] transition hover:text-[#9d63ff]"
+                    className="inline-flex items-center gap-1 text-[12px] font-black tracking-widest text-[#94a3b8] transition hover:text-[#94a3b8]"
                   >
                     <span>EDIT</span>
                     <span>⚙</span>
@@ -293,7 +296,7 @@ export default function AdminHubPage() {
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 text-[10px] text-[#64748b]">
+              <div className="flex flex-wrap items-center gap-4 text-[12px] text-[#64748b]">
                 <span>Tagline: <strong className="text-[#94a3b8]">{settings.tagline || "—"}</strong></span>
                 <span>•</span>
                 <span>Organizer: <strong className="text-[#94a3b8]">{settings.organizerName || "—"}</strong></span>
@@ -309,14 +312,14 @@ export default function AdminHubPage() {
             <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl shadow-[0_10px_35px_rgba(0,0,0,0.6)]">
               <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
                 <div>
-                  <h2 className="text-[10px] font-black uppercase tracking-[0.25em] text-[#64748b]">
+                  <h2 className="text-[12px] font-black uppercase tracking-[0.25em] text-[#64748b]">
                     OPERATIONS
                   </h2>
                   <div className="text-base font-black text-white">
                     Quick Actions
                   </div>
                 </div>
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#7c3aed]/30 bg-[#7c3aed]/10 text-xs font-black text-[#9d63ff]">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#94a3b8]/30 bg-[#94a3b8]/10 text-sm font-black text-[#94a3b8]">
                   ⚡
                 </span>
               </div>
@@ -338,8 +341,8 @@ export default function AdminHubPage() {
                     title: "Manage Teams & Rosters",
                     desc: "Configure 6-man team lineups, captains, and seeds.",
                     badge: "TEAMS",
-                    hoverBorder: "hover:border-[#06b6d4]/60 hover:bg-[#06b6d4]/5",
-                    arrowColor: "text-[#22d3ee]",
+                    hoverBorder: "hover:border-[#94a3b8]/60 hover:bg-[#94a3b8]/5",
+                    arrowColor: "text-[#f1f5f9]",
                   },
                   {
                     href: "/admin/settings",
@@ -375,7 +378,7 @@ export default function AdminHubPage() {
                             {action.title}
                           </span>
                         </div>
-                        <p className="mt-0.5 text-[11px] text-[#64748b] leading-tight">
+                        <p className="mt-0.5 text-[13px] text-[#64748b] leading-tight">
                           {action.desc}
                         </p>
                       </div>
@@ -395,7 +398,7 @@ export default function AdminHubPage() {
             {/* Control Deck Header */}
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#1e1e3a] px-6 py-4">
               <div>
-                <h2 className="text-[10px] font-black uppercase tracking-[0.25em] text-[#64748b]">
+                <h2 className="text-[12px] font-black uppercase tracking-[0.25em] text-[#64748b]">
                   MATCH CONTROL DECK
                 </h2>
                 <div className="text-base font-black text-white">
@@ -410,7 +413,7 @@ export default function AdminHubPage() {
                     <button
                       key={tab}
                       onClick={() => setFixtureFilter(tab)}
-                      className={`rounded-lg px-3 py-1 text-[10px] font-black uppercase tracking-widest transition ${
+                      className={`rounded-lg px-3 py-1 text-[12px] font-black uppercase tracking-widest transition ${
                         fixtureFilter === tab
                           ? "bg-[#ff2d55]/15 text-[#ff4d6a] border border-[#ff2d55]/30 shadow-[0_0_10px_rgba(255,45,85,0.2)]"
                           : "text-[#64748b] hover:text-[#f1f5f9]"
@@ -423,7 +426,7 @@ export default function AdminHubPage() {
 
                 <Link
                   href="/matches"
-                  className="rounded-xl border border-[#1e1e3a] bg-[#030308] px-3.5 py-1.5 text-[10px] font-black tracking-widest text-[#94a3b8] transition hover:border-[#7c3aed]/50 hover:text-[#9d63ff]"
+                  className="rounded-xl border border-[#1e1e3a] bg-[#030308] px-3.5 py-1.5 text-[12px] font-black tracking-widest text-[#94a3b8] transition hover:border-[#94a3b8]/50 hover:text-[#94a3b8]"
                 >
                   FULL CENTER →
                 </Link>
@@ -440,7 +443,7 @@ export default function AdminHubPage() {
                   <div className="text-sm font-bold text-[#64748b]">
                     {loading ? "Loading fixture control deck…" : "No fixtures found for selected filter."}
                   </div>
-                  <p className="mt-1 text-xs text-[#334155]">
+                  <p className="mt-1 text-sm text-[#334155]">
                     Switch tabs or add new fixtures in Match Manager.
                   </p>
                 </div>
@@ -459,7 +462,7 @@ export default function AdminHubPage() {
                       {/* Left: Match Number & Teams */}
                       <div className="flex items-center gap-4">
                         {/* Match Slot Badge */}
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#1e1e3a] bg-[#030308] text-xs font-black text-[#94a3b8] group-hover:border-[#7c3aed]/40 group-hover:text-[#9d63ff]">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#1e1e3a] bg-[#030308] text-sm font-black text-[#94a3b8] group-hover:border-[#94a3b8]/40 group-hover:text-[#94a3b8]">
                           M{String(match.matchNumber).padStart(2, "0")}
                         </div>
 
@@ -479,7 +482,7 @@ export default function AdminHubPage() {
                                     className="h-full w-full object-contain"
                                   />
                                 ) : (
-                                  <span className="text-[8px] font-black text-[#7c3aed]">
+                                  <span className="text-[10px] font-black text-[#94a3b8]">
                                     {t1?.tag?.slice(0, 3) || "TBD"}
                                   </span>
                                 )}
@@ -489,7 +492,7 @@ export default function AdminHubPage() {
                               </span>
                             </div>
 
-                            <span className="text-xs font-black text-[#475569]">VS</span>
+                            <span className="text-sm font-black text-[#475569]">VS</span>
 
                             {/* Team 2 */}
                             <div className="flex items-center gap-2">
@@ -504,7 +507,7 @@ export default function AdminHubPage() {
                                     className="h-full w-full object-contain"
                                   />
                                 ) : (
-                                  <span className="text-[8px] font-black text-[#7c3aed]">
+                                  <span className="text-[10px] font-black text-[#94a3b8]">
                                     {t2?.tag?.slice(0, 3) || "TBD"}
                                   </span>
                                 )}
@@ -516,10 +519,10 @@ export default function AdminHubPage() {
                           </div>
 
                           {/* Stage, Map, Format meta tags */}
-                          <div className="mt-1.5 flex items-center gap-2 text-[10px] text-[#64748b]">
+                          <div className="mt-1.5 flex items-center gap-2 text-[12px] text-[#64748b]">
                             <span className="font-semibold text-[#94a3b8]">{match.stage}</span>
                             <span>•</span>
-                            <span className="rounded bg-[#1e1e3a]/50 px-1.5 py-0.2 text-[#22d3ee] font-bold">
+                            <span className="rounded bg-[#1e1e3a]/50 px-1.5 py-0.2 text-[#f1f5f9] font-bold">
                               {match.map || "MAP TBD"}
                             </span>
                             <span>•</span>
@@ -542,7 +545,7 @@ export default function AdminHubPage() {
 
                         <Link
                           href={`/matches/${match.id}`}
-                          className={`rounded-xl px-3.5 py-2 text-[10px] font-black tracking-widest transition-all ${
+                          className={`rounded-xl px-3.5 py-2 text-[12px] font-black tracking-widest transition-all ${
                             isCompleted
                               ? "border border-[#1e1e3a] bg-[#0c0c18] text-[#94a3b8] hover:border-[#2e2e5a] hover:text-white"
                               : "border border-[#ff2d55]/40 bg-[#ff2d55]/10 text-[#ff4d6a] hover:bg-[#ff2d55]/20 hover:shadow-[0_0_15px_rgba(255,45,85,0.25)]"

@@ -122,23 +122,23 @@ function getStageColor(
 
   if (match.matchNumber >= 13) {
     return {
-      border: "border-[#7c3aed]/40",
-      bg: "bg-[#7c3aed]/10",
-      text: "text-[#9d63ff]",
+      border: "border-[#94a3b8]/40",
+      bg: "bg-[#94a3b8]/10",
+      text: "text-[#94a3b8]",
     };
   }
 
   return {
-    border: "border-[#06b6d4]/30",
-    bg: "bg-[#06b6d4]/10",
-    text: "text-[#22d3ee]",
+    border: "border-[#94a3b8]/30",
+    bg: "bg-[#94a3b8]/10",
+    text: "text-[#f1f5f9]",
   };
 }
 
 function getAccentBar(match: Match) {
   if (match.matchNumber === 16) return "bg-[#f59e0b]";
-  if (match.matchNumber >= 13) return "bg-[#7c3aed]";
-  return "bg-[#06b6d4]";
+  if (match.matchNumber >= 13) return "bg-[#94a3b8]";
+  return "bg-[#94a3b8]";
 }
 
 function sortMatches(
@@ -333,8 +333,8 @@ export default function FixturesPage() {
       {/* Ambient background glows */}
       <div className="pointer-events-none fixed inset-0 z-0">
         <div className="absolute left-[-10%] top-[-15%] h-[520px] w-[520px] rounded-full bg-[#ff2d55]/10 blur-[150px]" />
-        <div className="absolute right-[-10%] top-[5%] h-[460px] w-[460px] rounded-full bg-[#7c3aed]/12 blur-[150px]" />
-        <div className="absolute bottom-[-15%] left-[30%] h-[460px] w-[460px] rounded-full bg-[#06b6d4]/8 blur-[150px]" />
+        <div className="absolute right-[-10%] top-[5%] h-[460px] w-[460px] rounded-full bg-[#94a3b8]/12 blur-[150px]" />
+        <div className="absolute bottom-[-15%] left-[30%] h-[460px] w-[460px] rounded-full bg-[#94a3b8]/8 blur-[150px]" />
       </div>
 
       <TournamentNav />
@@ -342,8 +342,8 @@ export default function FixturesPage() {
       <main className="relative z-10 text-white">
         {/* Page header */}
         <header className="border-b border-[#1e1e3a] bg-[#0c0c18]/95 backdrop-blur-xl">
-          <div className="mx-auto max-w-7xl px-6 py-8">
-            <div className="text-[10px] font-black tracking-[0.3em] text-[#ff2d55]">
+          <div className="mx-auto max-w-[1680px] px-6 py-8">
+            <div className="text-[12px] font-black tracking-[0.3em] text-[#ff2d55]">
               TOURNAMENT SCHEDULE
             </div>
             <h1 className="mt-2 text-3xl font-black uppercase text-[#f1f5f9] md:text-4xl">
@@ -355,7 +355,7 @@ export default function FixturesPage() {
           </div>
         </header>
 
-        <div className="relative mx-auto max-w-7xl px-6 py-8">
+        <div className="relative mx-auto max-w-[1680px] px-6 py-8">
           {error && (
             <div className="mb-6 rounded-xl border border-[#ff2d55]/50 bg-[#ff2d55]/10 p-5">
               <div className="font-black text-[#ff4d6a]">
@@ -375,8 +375,8 @@ export default function FixturesPage() {
             <>
               {/* Stats cards */}
               <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <div className="rounded-xl border border-[#06b6d4]/30 bg-[#0c0c18] p-5">
-                  <div className="text-[10px] font-black tracking-[0.2em] text-[#22d3ee]">
+                <div className="rounded-xl border border-[#94a3b8]/30 bg-[#0c0c18] p-5">
+                  <div className="text-[12px] font-black tracking-[0.2em] text-[#f1f5f9]">
                     TOTAL FIXTURES
                   </div>
                   <div className="mt-2 text-4xl font-black text-[#f1f5f9]">
@@ -385,7 +385,7 @@ export default function FixturesPage() {
                 </div>
 
                 <div className="rounded-xl border border-[#10b981]/30 bg-[#0c0c18] p-5">
-                  <div className="text-[10px] font-black tracking-[0.2em] text-[#34d399]">
+                  <div className="text-[12px] font-black tracking-[0.2em] text-[#34d399]">
                     COMPLETED
                   </div>
                   <div className="mt-2 text-4xl font-black text-[#f1f5f9]">
@@ -394,7 +394,7 @@ export default function FixturesPage() {
                 </div>
 
                 <div className="rounded-xl border border-[#ff2d55]/40 bg-[#0c0c18] p-5">
-                  <div className="text-[10px] font-black tracking-[0.2em] text-[#ff4d6a]">
+                  <div className="text-[12px] font-black tracking-[0.2em] text-[#ff4d6a]">
                     LIVE
                   </div>
                   <div className="mt-2 text-4xl font-black text-[#ff4d6a]">
@@ -402,8 +402,8 @@ export default function FixturesPage() {
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-[#7c3aed]/40 bg-[#0c0c18] p-5">
-                  <div className="text-[10px] font-black tracking-[0.2em] text-[#9d63ff]">
+                <div className="rounded-xl border border-[#94a3b8]/40 bg-[#0c0c18] p-5">
+                  <div className="text-[12px] font-black tracking-[0.2em] text-[#94a3b8]">
                     SCHEDULED
                   </div>
                   <div className="mt-2 text-4xl font-black text-[#f1f5f9]">
@@ -415,7 +415,7 @@ export default function FixturesPage() {
               {/* Fixtures list */}
               <section className="mt-6 overflow-hidden rounded-xl border border-[#1e1e3a] bg-[#0c0c18]">
                 <div className="border-b border-[#1e1e3a] p-6">
-                  <div className="text-[10px] font-black tracking-[0.2em] text-[#ff2d55]">
+                  <div className="text-[12px] font-black tracking-[0.2em] text-[#ff2d55]">
                     TOURNAMENT SCHEDULE
                   </div>
 
@@ -445,7 +445,7 @@ export default function FixturesPage() {
                                   item as FixtureFilter,
                                 )
                               }
-                              className={`rounded-lg border px-4 py-2 text-[9px] font-black tracking-wider transition ${
+                              className={`rounded-lg border px-4 py-2 text-[11px] font-black tracking-wider transition ${
                                 active
                                   ? "border-[#ff2d55]/60 bg-[#ff2d55]/10 text-[#ff4d6a]"
                                   : "border-[#1e1e3a] bg-[#131326] text-[#64748b] hover:border-[#2e2e5a] hover:text-[#f1f5f9]"
@@ -467,7 +467,7 @@ export default function FixturesPage() {
                       <div className="text-sm font-black text-[#f1f5f9]">
                         No fixtures available
                       </div>
-                      <div className="mt-2 text-xs text-[#475569]">
+                      <div className="mt-2 text-sm text-[#475569]">
                         Matches will appear here once they are created.
                       </div>
                     </div>
@@ -509,7 +509,7 @@ export default function FixturesPage() {
                             href={`/tournament/matches/${encodeURIComponent(
                               match.id,
                             )}`}
-                            className="group relative overflow-hidden rounded-xl border border-[#1e1e3a] bg-[#0c0c18] transition hover:border-[#2e2e5a] hover:shadow-[0_0_30px_rgba(124,58,237,0.08)]"
+                            className="group relative overflow-hidden rounded-xl border border-[#1e1e3a] bg-[#0c0c18] transition hover:border-[#2e2e5a] hover:shadow-[0_0_30px_rgba(148,163,184,0.08)]"
                           >
                             {/* Stage accent bar */}
                             <div
@@ -520,12 +520,12 @@ export default function FixturesPage() {
                               {/* Match meta */}
                               <div>
                                 <div
-                                  className={`inline-flex rounded border px-2 py-1 text-[8px] font-black tracking-wider ${stageColor.border} ${stageColor.bg} ${stageColor.text}`}
+                                  className={`inline-flex rounded border px-2 py-1 text-[10px] font-black tracking-wider ${stageColor.border} ${stageColor.bg} ${stageColor.text}`}
                                 >
                                   {getStageLabel(match)}
                                 </div>
 
-                                <div className="mt-3 text-[10px] font-black tracking-[0.2em] text-[#475569]">
+                                <div className="mt-3 text-[12px] font-black tracking-[0.2em] text-[#475569]">
                                   MATCH{" "}
                                   {String(
                                     match.matchNumber,
@@ -535,13 +535,13 @@ export default function FixturesPage() {
                                   )}
                                 </div>
 
-                                <div className="mt-1 text-xs font-bold text-[#64748b]">
+                                <div className="mt-1 text-sm font-bold text-[#64748b]">
                                   {formatDate(
                                     match.scheduledAt,
                                   )}
                                 </div>
 
-                                <div className="mt-1 text-[10px] text-[#334155]">
+                                <div className="mt-1 text-[12px] text-[#334155]">
                                   {formatTime(
                                     match.scheduledAt,
                                   )}
@@ -567,7 +567,7 @@ export default function FixturesPage() {
                                         )}
                                       </div>
 
-                                      <div className="mt-1 text-[9px] font-bold text-[#475569]">
+                                      <div className="mt-1 text-[11px] font-bold text-[#475569]">
                                         {getTeamTag(
                                           teams,
                                           match.team1Id,
@@ -588,7 +588,7 @@ export default function FixturesPage() {
                                         className="h-10 w-10 rounded-lg border border-[#1e1e3a] object-cover"
                                       />
                                     ) : (
-                                      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#0c0c18] text-xs font-black text-[#22d3ee]">
+                                      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#0c0c18] text-sm font-black text-[#f1f5f9]">
                                         {getTeamTag(
                                           teams,
                                           match.team1Id,
@@ -611,12 +611,12 @@ export default function FixturesPage() {
                                         {match.team2Score}
                                       </div>
                                     ) : (
-                                      <div className="text-sm font-black text-[#22d3ee]">
+                                      <div className="text-sm font-black text-[#f1f5f9]">
                                         VS
                                       </div>
                                     )}
 
-                                    <div className="mt-1 text-[8px] font-black uppercase tracking-wider text-[#475569]">
+                                    <div className="mt-1 text-[10px] font-black uppercase tracking-wider text-[#475569]">
                                       BO
                                       {match.bestOf}
                                     </div>
@@ -637,7 +637,7 @@ export default function FixturesPage() {
                                         className="h-10 w-10 rounded-lg border border-[#1e1e3a] object-cover"
                                       />
                                     ) : (
-                                      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#0c0c18] text-xs font-black text-[#9d63ff]">
+                                      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#0c0c18] text-sm font-black text-[#94a3b8]">
                                         {getTeamTag(
                                           teams,
                                           match.team2Id,
@@ -661,7 +661,7 @@ export default function FixturesPage() {
                                         )}
                                       </div>
 
-                                      <div className="mt-1 text-[9px] font-bold text-[#475569]">
+                                      <div className="mt-1 text-[11px] font-bold text-[#475569]">
                                         {getTeamTag(
                                           teams,
                                           match.team2Id,
@@ -672,7 +672,7 @@ export default function FixturesPage() {
                                 </div>
 
                                 {/* Map & BO info chips */}
-                                <div className="mt-4 flex flex-wrap justify-center gap-2 text-[9px] font-bold text-[#475569]">
+                                <div className="mt-4 flex flex-wrap justify-center gap-2 text-[11px] font-bold text-[#475569]">
                                   <span className="rounded border border-[#1e1e3a] bg-[#131326] px-2 py-1">
                                     MAP:{" "}
                                     {match.map ||
@@ -701,8 +701,8 @@ export default function FixturesPage() {
 
               {/* Stage breakdown summary */}
               <section className="mt-6 grid gap-4 md:grid-cols-3">
-                <div className="rounded-xl border border-[#06b6d4]/25 bg-[#0c0c18] p-5">
-                  <div className="text-[9px] font-black tracking-[0.2em] text-[#22d3ee]">
+                <div className="rounded-xl border border-[#94a3b8]/25 bg-[#0c0c18] p-5">
+                  <div className="text-[11px] font-black tracking-[0.2em] text-[#f1f5f9]">
                     GROUP STAGE
                   </div>
 
@@ -710,13 +710,13 @@ export default function FixturesPage() {
                     {groupMatches.length}
                   </div>
 
-                  <div className="mt-1 text-xs text-[#475569]">
+                  <div className="mt-1 text-sm text-[#475569]">
                     Round-robin fixtures
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-[#7c3aed]/30 bg-[#0c0c18] p-5">
-                  <div className="text-[9px] font-black tracking-[0.2em] text-[#9d63ff]">
+                <div className="rounded-xl border border-[#94a3b8]/30 bg-[#0c0c18] p-5">
+                  <div className="text-[11px] font-black tracking-[0.2em] text-[#94a3b8]">
                     QUALIFIERS
                   </div>
 
@@ -724,13 +724,13 @@ export default function FixturesPage() {
                     {qualifierMatches.length}
                   </div>
 
-                  <div className="mt-1 text-xs text-[#475569]">
+                  <div className="mt-1 text-sm text-[#475569]">
                     Q1, Elimination and Q2
                   </div>
                 </div>
 
                 <div className="rounded-xl border border-[#f59e0b]/30 bg-[#0c0c18] p-5">
-                  <div className="text-[9px] font-black tracking-[0.2em] text-[#fbbf24]">
+                  <div className="text-[11px] font-black tracking-[0.2em] text-[#fbbf24]">
                     GRAND FINAL
                   </div>
 
@@ -738,7 +738,7 @@ export default function FixturesPage() {
                     {finalMatches.length}
                   </div>
 
-                  <div className="mt-1 text-xs text-[#475569]">
+                  <div className="mt-1 text-sm text-[#475569]">
                     Championship match
                   </div>
                 </div>
