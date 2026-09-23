@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { StatusBadge } from "../ui/status-badge";
-import { MatchCard } from "../ui/match-card";
 import { LiveStreamEmbed } from "../ui/live-stream-embed";
 import type { FrontPageProps } from "./types";
 import { getTournamentStatusMeta } from "@/lib/tournament-status";
@@ -18,28 +17,15 @@ export function ValorantFrontPage({
   const live = matches.filter((m) => m.status === "Live");
   const scheduled = matches.filter((m) => m.status === "Scheduled");
 
-  const nextMatch = [...scheduled].sort(
-    (a, b) =>
-      new Date(a.scheduledAt || "9999").getTime() -
-      new Date(b.scheduledAt || "9999").getTime(),
-  )[0];
-  const activeLive = live[0];
-
-  const nextMatchTeam1 = nextMatch
-    ? teams.find((t) => t.id === nextMatch.team1Id)
-    : null;
-  const nextMatchTeam2 = nextMatch
-    ? teams.find((t) => t.id === nextMatch.team2Id)
-    : null;
-
-  const featuredMatchId = (activeLive || nextMatch)?.id;
-  const upNextMatches = [...live, ...scheduled]
-    .filter((m) => m.id !== featuredMatchId)
-    .sort(
-      (a, b) =>
+  const upcomingMatches = [...live, ...scheduled]
+    .sort((a, b) => {
+      if (a.status === "Live" && b.status !== "Live") return -1;
+      if (b.status === "Live" && a.status !== "Live") return 1;
+      return (
         new Date(a.scheduledAt || "9999").getTime() -
-        new Date(b.scheduledAt || "9999").getTime(),
-    )
+        new Date(b.scheduledAt || "9999").getTime()
+      );
+    })
     .slice(0, 4);
 
   return (
@@ -188,130 +174,119 @@ export function ValorantFrontPage({
       <LiveStreamEmbed url={settings?.liveStreamUrl} />
 
       {/* ══════════════════════════════════════════════════════════════════
-          3. FEATURED CLASH
+          3. UPCOMING MATCHES
       ══════════════════════════════════════════════════════════════════ */}
-      {(activeLive || nextMatch) && (
-        <section className="relative overflow-hidden rounded-3xl border border-[#1e1e3a] bg-[#0c0c18]/90 p-6 sm:p-8 backdrop-blur-xl shadow-[0_0_40px_rgba(148,163,184,0.08)]">
-          <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-7 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 text-sm font-black text-white">
-                M{String((activeLive || nextMatch)!.matchNumber).padStart(2, "0")}
-              </span>
-              <span className="rounded-lg border border-[#2e2e5a]/40 bg-[#2e2e5a]/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-[#94a3b8]">
-                {(activeLive || nextMatch)!.stage}
-              </span>
-              <span className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-[#94a3b8]">
-                {(activeLive || nextMatch)!.map || "TBD"} • BO{(activeLive || nextMatch)!.bestOf}
-              </span>
-            </div>
+      {upcomingMatches.length > 0 && (
+        <div className="space-y-4">
+          {upcomingMatches.map((m) => {
+            const team1 = teams.find((t) => t.id === m.team1Id);
+            const team2 = teams.find((t) => t.id === m.team2Id);
 
-            <StatusBadge status={(activeLive || nextMatch)!.status} />
-          </div>
+            return (
+              <section
+                key={m.id}
+                className="relative overflow-hidden rounded-3xl border border-[#1e1e3a] bg-[#0c0c18]/90 p-6 sm:p-8 backdrop-blur-xl shadow-[0_0_40px_rgba(148,163,184,0.08)]"
+              >
+                <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex h-7 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 text-sm font-black text-white">
+                      M{String(m.matchNumber).padStart(2, "0")}
+                    </span>
+                    <span className="rounded-lg border border-[#2e2e5a]/40 bg-[#2e2e5a]/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-[#94a3b8]">
+                      {m.stage}
+                    </span>
+                    <span className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-[#94a3b8]">
+                      {m.map || "TBD"} • BO{m.bestOf}
+                    </span>
+                  </div>
 
-          <div className="mt-6 grid items-center gap-6 grid-cols-1 md:grid-cols-[1fr_auto_1fr]">
-            {/* Team 1 */}
-            <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] shadow-[0_0_20px_rgba(148,163,184,0.15)]">
-                {nextMatchTeam1?.logo ? (
-                  <Image
-                    src={nextMatchTeam1.logo}
-                    alt={nextMatchTeam1.name}
-                    width={56}
-                    height={56}
-                    unoptimized
-                    className="h-full w-full object-contain p-1"
-                  />
-                ) : (
-                  <span className="text-sm font-black text-[#94a3b8]">
-                    {(nextMatchTeam1?.tag ?? "TBD").slice(0, 3)}
+                  <StatusBadge status={m.status} />
+                </div>
+
+                <div className="mt-6 grid items-center gap-6 grid-cols-1 md:grid-cols-[1fr_auto_1fr]">
+                  {/* Team 1 */}
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] shadow-[0_0_20px_rgba(148,163,184,0.15)]">
+                      {team1?.logo ? (
+                        <Image
+                          src={team1.logo}
+                          alt={team1.name}
+                          width={56}
+                          height={56}
+                          unoptimized
+                          className="h-full w-full object-contain p-1"
+                        />
+                      ) : (
+                        <span className="text-sm font-black text-[#94a3b8]">
+                          {(team1?.tag ?? "TBD").slice(0, 3)}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="text-lg sm:text-xl font-black uppercase tracking-tight text-white">
+                        {team1?.name ?? "TBD"}
+                      </h4>
+                      <p className="mt-0.5 text-sm font-bold text-[#64748b]">
+                        [{team1?.tag ?? "TBD"}] • Seed #{team1?.seed ?? "—"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Center Hub */}
+                  <div className="flex flex-col items-center justify-center py-2 md:py-0 px-6">
+                    <div className="rounded-2xl border border-[#2e2e5a]/40 bg-[#2e2e5a]/15 px-5 py-2 text-sm font-black tracking-widest text-[#f1f5f9] shadow-[0_0_20px_rgba(148,163,184,0.25)]">
+                      VS
+                    </div>
+                    <span className="mt-2 text-sm font-black uppercase tracking-wider text-[#94a3b8]">
+                      {formatDate(m.scheduledAt)}
+                    </span>
+                  </div>
+
+                  {/* Team 2 */}
+                  <div className="flex items-center gap-4 md:flex-row-reverse md:text-right">
+                    <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] shadow-[0_0_20px_rgba(148,163,184,0.15)]">
+                      {team2?.logo ? (
+                        <Image
+                          src={team2.logo}
+                          alt={team2.name}
+                          width={56}
+                          height={56}
+                          unoptimized
+                          className="h-full w-full object-contain p-1"
+                        />
+                      ) : (
+                        <span className="text-sm font-black text-[#94a3b8]">
+                          {(team2?.tag ?? "TBD").slice(0, 3)}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="text-lg sm:text-xl font-black uppercase tracking-tight text-white">
+                        {team2?.name ?? "TBD"}
+                      </h4>
+                      <p className="mt-0.5 text-sm font-bold text-[#64748b]">
+                        [{team2?.tag ?? "TBD"}] • Seed #{team2?.seed ?? "—"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex items-center justify-between border-t border-[#1e1e3a] pt-4">
+                  <span className="text-sm text-[#64748b]">
+                    Featured Match Stream & Scoreboard Telemetry
                   </span>
-                )}
-              </div>
-              <div>
-                <h4 className="text-lg sm:text-xl font-black uppercase tracking-tight text-white">
-                  {nextMatchTeam1?.name ?? "TBD"}
-                </h4>
-                <p className="mt-0.5 text-sm font-bold text-[#64748b]">
-                  [{nextMatchTeam1?.tag ?? "TBD"}] • Seed #{nextMatchTeam1?.seed ?? "—"}
-                </p>
-              </div>
-            </div>
-
-            {/* Center Hub */}
-            <div className="flex flex-col items-center justify-center py-2 md:py-0 px-6">
-              <div className="rounded-2xl border border-[#2e2e5a]/40 bg-[#2e2e5a]/15 px-5 py-2 text-sm font-black tracking-widest text-[#f1f5f9] shadow-[0_0_20px_rgba(148,163,184,0.25)]">
-                VS
-              </div>
-              <span className="mt-2 text-sm font-black uppercase tracking-wider text-[#94a3b8]">
-                {formatDate((activeLive || nextMatch)!.scheduledAt)}
-              </span>
-            </div>
-
-            {/* Team 2 */}
-            <div className="flex items-center gap-4 md:flex-row-reverse md:text-right">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] shadow-[0_0_20px_rgba(148,163,184,0.15)]">
-                {nextMatchTeam2?.logo ? (
-                  <Image
-                    src={nextMatchTeam2.logo}
-                    alt={nextMatchTeam2.name}
-                    width={56}
-                    height={56}
-                    unoptimized
-                    className="h-full w-full object-contain p-1"
-                  />
-                ) : (
-                  <span className="text-sm font-black text-[#94a3b8]">
-                    {(nextMatchTeam2?.tag ?? "TBD").slice(0, 3)}
-                  </span>
-                )}
-              </div>
-              <div>
-                <h4 className="text-lg sm:text-xl font-black uppercase tracking-tight text-white">
-                  {nextMatchTeam2?.name ?? "TBD"}
-                </h4>
-                <p className="mt-0.5 text-sm font-bold text-[#64748b]">
-                  [{nextMatchTeam2?.tag ?? "TBD"}] • Seed #{nextMatchTeam2?.seed ?? "—"}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 flex items-center justify-between border-t border-[#1e1e3a] pt-4">
-            <span className="text-sm text-[#64748b]">
-              Featured Match Stream & Scoreboard Telemetry
-            </span>
-            <Link
-              href={`/tournament/matches/${encodeURIComponent((activeLive || nextMatch)!.id)}`}
-              className="inline-flex items-center gap-2 rounded-xl border border-[#2e2e5a]/40 bg-[#2e2e5a]/10 px-4 py-2 text-sm font-black uppercase tracking-wider text-[#94a3b8] transition hover:bg-[#2e2e5a]/20"
-            >
-              <span>OPEN MATCH TELEMETRY</span>
-              <span>→</span>
-            </Link>
-          </div>
-
-        </section>
-      )}
-
-      {/* Up Next — same big presentation as the featured match, stacked one after another */}
-      {upNextMatches.length > 0 && (
-        <section className="rounded-3xl border border-[#1e1e3a] bg-[#0c0c18]/90 p-6 sm:p-8 backdrop-blur-xl">
-          <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
-            <span className="text-[12px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
-              Up Next
-            </span>
-            <Link
-              href="/tournament/matches"
-              className="text-[11px] font-black uppercase tracking-wider text-[#64748b] hover:text-white transition"
-            >
-              View All Fixtures →
-            </Link>
-          </div>
-          <div className="mt-6 space-y-4">
-            {upNextMatches.map((m) => (
-              <MatchCard key={m.id} match={m} teams={teams} />
-            ))}
-          </div>
-        </section>
+                  <Link
+                    href={`/tournament/matches/${encodeURIComponent(m.id)}`}
+                    className="inline-flex items-center gap-2 rounded-xl border border-[#2e2e5a]/40 bg-[#2e2e5a]/10 px-4 py-2 text-sm font-black uppercase tracking-wider text-[#94a3b8] transition hover:bg-[#2e2e5a]/20"
+                  >
+                    <span>OPEN MATCH TELEMETRY</span>
+                    <span>→</span>
+                  </Link>
+                </div>
+              </section>
+            );
+          })}
+        </div>
       )}
 
       {/* ══════════════════════════════════════════════════════════════════
