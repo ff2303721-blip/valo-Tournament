@@ -240,7 +240,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
 
           <div className="flex items-center gap-3">
             <Link
-              href="/tournament/bracket"
+              href="/tournament/matches"
               className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/90 px-3.5 py-2 text-[12px] font-black uppercase tracking-widest text-[#94a3b8] transition hover:border-[#94a3b8]/50 hover:text-white"
             >
               BRACKET ↗

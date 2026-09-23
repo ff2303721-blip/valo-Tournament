@@ -87,7 +87,7 @@ export function Cs2FrontPage({
               </Link>
 
               <Link
-                href="/tournament/bracket"
+                href="/tournament/matches"
                 className="inline-flex items-center gap-2 rounded-xl border border-[#eab308]/40 bg-[#eab308]/15 px-5 py-2.5 text-sm font-black uppercase tracking-wider text-[#fef08a] transition hover:bg-[#eab308]/25 hover:shadow-[0_0_20px_rgba(234,179,8,0.25)]"
               >
                 <span>MAJOR BRACKET</span>

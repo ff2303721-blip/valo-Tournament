@@ -9,10 +9,9 @@ import { getTournamentStatusMeta } from "@/lib/tournament-status";
 
 const NAV_LINKS = [
   { href: "/tournament",          label: "OVERVIEW" },
-  { href: "/tournament/bracket",  label: "BRACKET" },
   { href: "/tournament/matches",  label: "MATCHES" },
   { href: "/tournament/teams",    label: "TEAMS" },
-  { href: "/tournament/players",  label: "LEADERBOARD" },
+  { href: "/tournament/players",  label: "PLAYERS" },
 ];
 
 let cachedNavSettings: { status?: string; gameId?: string; logoUrl?: string } | null = null;

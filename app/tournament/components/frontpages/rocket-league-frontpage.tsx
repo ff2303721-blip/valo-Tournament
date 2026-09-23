@@ -85,7 +85,7 @@ export function RocketLeagueFrontPage({
               </Link>
 
               <Link
-                href="/tournament/bracket"
+                href="/tournament/matches"
                 className="inline-flex items-center gap-2 rounded-xl border border-[#f97316]/50 bg-[#f97316]/20 px-5 py-2.5 text-sm font-black uppercase tracking-wider text-[#fed7aa] transition hover:bg-[#f97316]/35 hover:shadow-[0_0_20px_rgba(249,115,22,0.3)]"
               >
                 <span>PLAYOFF BRACKET</span>

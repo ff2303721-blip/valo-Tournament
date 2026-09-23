@@ -93,15 +93,6 @@ function findPlayerRow(rows: Map<string, PlayerRow>, stat: PlayerStat) {
   return undefined;
 }
 
-function getInitials(name: string) {
-  const clean = name.split("#")[0].trim();
-  const parts = clean.split(/\s+/);
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
-  }
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
-
 export default function PlayerStatisticsPage() {
   const [teams, setTeams] = useState<Team[]>(defaultTeams);
   const [matches, setMatches] = useState<Match[]>(defaultMatches);
@@ -288,7 +279,6 @@ export default function PlayerStatisticsPage() {
   }, [playerRows, teamFilter, search, sortBy, sortDir]);
 
   const totalPlayers = teams.reduce((t, team) => t + team.players.length, 0);
-  const totalMvpAwards = playerRows.reduce((t, r) => t + r.mvp, 0);
 
   function toggleSort(field: SortField) {
     if (sortBy === field) {
@@ -356,7 +346,7 @@ export default function PlayerStatisticsPage() {
         </header>
 
         {/* ── High-Impact Metric Cards ─────────────────────────────────────── */}
-        <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="mt-8 grid gap-4 sm:grid-cols-3">
           <div className="relative overflow-hidden rounded-2xl border border-[#94a3b8]/25 bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#94a3b8]/50 hover:shadow-[0_0_25px_rgba(148,163,184,0.15)]">
             <div className="flex items-center justify-between">
               <span className="text-[12px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
@@ -370,7 +360,7 @@ export default function PlayerStatisticsPage() {
               {totalPlayers}
             </div>
             <p className="mt-1 text-[13px] font-bold text-[#64748b]">
-              Registered across 4 Franchise Rosters
+              Registered across {teams.length} Franchise Rosters
             </p>
           </div>
 
@@ -394,35 +384,29 @@ export default function PlayerStatisticsPage() {
           <div className="relative overflow-hidden rounded-2xl border border-[#f59e0b]/25 bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#f59e0b]/50 hover:shadow-[0_0_25px_rgba(245,158,11,0.15)]">
             <div className="flex items-center justify-between">
               <span className="text-[12px] font-black uppercase tracking-[0.25em] text-[#f59e0b]">
-                HONORS AWARDED
+                CURRENT BEST PLAYER
               </span>
               <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#f59e0b]/30 bg-[#f59e0b]/10 text-sm text-[#fbbf24]">
                 🌟
               </span>
             </div>
-            <div className="mt-4 text-4xl font-black text-[#fbbf24]">
-              {totalMvpAwards}
-            </div>
-            <p className="mt-1 text-[13px] font-bold text-[#64748b]">
-              Official Match MVP Accolades
-            </p>
-          </div>
-
-          <div className="relative overflow-hidden rounded-2xl border border-[#94a3b8]/25 bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#94a3b8]/50 hover:shadow-[0_0_25px_rgba(148,163,184,0.15)]">
-            <div className="flex items-center justify-between">
-              <span className="text-[12px] font-black uppercase tracking-[0.25em] text-[#f1f5f9]">
-                FRANCHISES
-              </span>
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#94a3b8]/30 bg-[#94a3b8]/10 text-sm text-[#c084fc]">
-                🛡️
-              </span>
-            </div>
-            <div className="mt-4 text-4xl font-black text-[#c084fc]">
-              {teams.length}
-            </div>
-            <p className="mt-1 text-[13px] font-bold text-[#64748b]">
-              Active Competitive Teams in Tournament
-            </p>
+            {acsLeader ? (
+              <>
+                <div className="mt-4 truncate text-2xl font-black uppercase text-[#fbbf24]">
+                  {parseRiotName(acsLeader.player.name).ign}
+                </div>
+                <p className="mt-1 truncate text-[13px] font-bold text-[#64748b]">
+                  {acsLeader.team.name} · Avg {Math.round(acsLeader.acsMatches > 0 ? acsLeader.acsTotal / acsLeader.acsMatches : 0)} {game.statColumns[0]?.label || "ACS"}
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="mt-4 text-2xl font-black uppercase text-[#fbbf24]">TBD</div>
+                <p className="mt-1 text-[13px] font-bold text-[#64748b]">
+                  Leaderboard updates after matches are played
+                </p>
+              </>
+            )}
           </div>
         </section>
 
@@ -785,9 +769,6 @@ export default function PlayerStatisticsPage() {
                         {/* PLAYER DETAILS */}
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#1e1e3a] bg-[#080812] text-sm font-black text-[#94a3b8] group-hover:border-[#94a3b8]/50 transition">
-                              {getInitials(row.player.name)}
-                            </div>
                             <div>
                               <div className="flex items-center gap-2">
                                 <span className="font-black uppercase tracking-tight text-white group-hover:text-[#f1f5f9] transition-colors">
@@ -815,20 +796,24 @@ export default function PlayerStatisticsPage() {
                         <td className="px-4 py-4">
                           <Link
                             href={`/tournament/teams/${row.team.id}`}
-                            className="inline-flex items-center gap-2 rounded-lg px-2 py-1 transition hover:bg-[#1e1e3a]/30"
+                            className="flex flex-col items-center gap-1.5 rounded-lg px-2 py-1 text-center transition hover:bg-[#1e1e3a]/30"
                           >
-                            {row.team.logo ? (
-                              <div className="relative h-5 w-5 shrink-0 overflow-hidden rounded-md border border-[#1e1e3a] bg-[#080812]">
+                            <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#1e1e3a] bg-[#080812]">
+                              {row.team.logo ? (
                                 <Image
                                   src={row.team.logo}
                                   alt={row.team.name}
                                   fill
-                                  className="object-contain p-0.5"
+                                  className="object-contain p-1"
                                 />
-                              </div>
-                            ) : null}
-                            <span className="rounded bg-[#94a3b8]/10 border border-[#94a3b8]/30 px-1.5 py-0.5 text-[11px] font-black text-[#f1f5f9]">
-                              [{row.team.tag}]
+                              ) : (
+                                <span className="text-[11px] font-black text-[#94a3b8]">
+                                  {row.team.tag.slice(0, 3)}
+                                </span>
+                              )}
+                            </div>
+                            <span className="max-w-[90px] truncate text-[11px] font-bold uppercase text-[#94a3b8]">
+                              {row.team.name}
                             </span>
                           </Link>
                         </td>

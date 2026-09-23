@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { TournamentNav } from "../components/tournament-nav";
+import { PlayoffBracket } from "../components/ui/playoff-bracket";
 import { matches as defaultMatches } from "@/app/data/matches";
 import { teams as defaultTeams } from "@/app/data/teams";
 import type { Match, Team, MatchStatus } from "@/lib/types";
@@ -395,6 +396,11 @@ export default function PublicMatchesPage() {
             {error}
           </div>
         )}
+
+        {/* Playoff Bracket */}
+        <div className="mb-6">
+          <PlayoffBracket teams={teams} matches={matches} />
+        </div>
 
         {/* High-Efficiency Controls & Filter Bar */}
         <section className="mb-6 rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/90 p-3 sm:p-4 backdrop-blur-xl">
