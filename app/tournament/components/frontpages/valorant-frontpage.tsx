@@ -177,16 +177,13 @@ export function ValorantFrontPage({
           3. UPCOMING MATCHES
       ══════════════════════════════════════════════════════════════════ */}
       {upcomingMatches.length > 0 && (
-        <div className="space-y-4">
+        <section className="relative overflow-hidden rounded-3xl border border-[#1e1e3a] bg-[#0c0c18]/90 backdrop-blur-xl shadow-[0_0_40px_rgba(148,163,184,0.08)] divide-y divide-[#1e1e3a]">
           {upcomingMatches.map((m) => {
             const team1 = teams.find((t) => t.id === m.team1Id);
             const team2 = teams.find((t) => t.id === m.team2Id);
 
             return (
-              <section
-                key={m.id}
-                className="relative overflow-hidden rounded-3xl border border-[#1e1e3a] bg-[#0c0c18]/90 p-6 sm:p-8 backdrop-blur-xl shadow-[0_0_40px_rgba(148,163,184,0.08)]"
-              >
+              <div key={m.id} className="p-6 sm:p-8">
                 <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
                   <div className="flex items-center gap-2.5">
                     <span className="flex h-7 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 text-sm font-black text-white">
@@ -283,10 +280,10 @@ export function ValorantFrontPage({
                     <span>→</span>
                   </Link>
                 </div>
-              </section>
+              </div>
             );
           })}
-        </div>
+        </section>
       )}
 
       {/* ══════════════════════════════════════════════════════════════════
