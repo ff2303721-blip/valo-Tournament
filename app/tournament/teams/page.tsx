@@ -291,8 +291,21 @@ export default function PublicTeamsPage() {
                       )}
 
                       {/* Roster Grid */}
-                      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 xl:grid-cols-4">
-                        {team.players.slice(0, 6).map((player, i) => {
+                      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+                        {[...team.players]
+                          .sort((a, b) => {
+                            const isCaptainName = (name: string) =>
+                              (captainClean &&
+                                name &&
+                                (captainClean.includes(name.toLowerCase()) ||
+                                  name.toLowerCase().includes(captainClean))) ||
+                              false;
+                            const aCaptain = isCaptainName(a.name) || (a.role ? /captain|igl/i.test(a.role) : false);
+                            const bCaptain = isCaptainName(b.name) || (b.role ? /captain|igl/i.test(b.role) : false);
+                            return aCaptain === bCaptain ? 0 : aCaptain ? -1 : 1;
+                          })
+                          .slice(0, 6)
+                          .map((player, i) => {
                           const isCaptain =
                             (
                               captainClean &&
@@ -304,36 +317,17 @@ export default function PublicTeamsPage() {
                           return (
                             <div
                               key={player.id || i}
-                              className={`flex items-center justify-between rounded-lg border px-2.5 py-1.5 text-sm transition ${
-                                isCaptain
-                                  ? "border-[#f59e0b]/50 bg-[#f59e0b]/10 text-[#fbbf24] shadow-[0_0_12px_rgba(245,158,11,0.12)]"
-                                  : "border-[#1e1e3a] bg-[#030308]/90 text-[#94a3b8] group-hover:border-[#2e2e5a]"
-                              }`}
+                              className="flex items-center justify-between rounded-lg border border-[#1e1e3a] bg-[#030308]/90 px-2.5 py-1.5 text-sm text-[#94a3b8] transition group-hover:border-[#2e2e5a]"
                             >
                               <div className="flex items-center gap-1.5 min-w-0">
-                                <span
-                                  className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-[10px] font-black ${
-                                    isCaptain
-                                      ? "bg-[#f59e0b]/20 text-[#f59e0b]"
-                                      : "bg-[#0c0c18] text-[#475569]"
-                                  }`}
-                                >
+                                <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded bg-[#0c0c18] text-[10px] font-black text-[#475569]">
                                   {i + 1}
                                 </span>
-                                <span
-                                  className={`truncate text-[13px] font-bold uppercase tracking-tight ${
-                                    isCaptain ? "text-[#fbbf24]" : "text-[#f1f5f9]"
-                                  }`}
-                                >
+                                <span className="truncate text-[13px] font-bold uppercase tracking-tight text-[#f1f5f9]">
+                                  {isCaptain && <span className="mr-1 text-[#f59e0b]">★</span>}
                                   {player.name}
                                 </span>
                               </div>
-
-                              {isCaptain && (
-                                <span className="ml-1 shrink-0 rounded bg-[#f59e0b]/25 px-1 py-0.5 text-[10px] font-black uppercase text-[#fbbf24]">
-                                  ★ CPT
-                                </span>
-                              )}
                             </div>
                           );
                         })}
