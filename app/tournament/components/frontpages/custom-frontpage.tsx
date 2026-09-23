@@ -96,7 +96,7 @@ export function CustomFrontPage({
             {/* Quick Action Navigation */}
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <Link
-                href="/tournament/bracket"
+                href="/tournament/matches"
                 className="inline-flex items-center gap-2 rounded-xl border border-[#a855f7]/50 bg-[#a855f7]/20 px-5 py-2.5 text-sm font-black uppercase tracking-wider text-[#f1f5f9] transition hover:bg-[#a855f7]/35 hover:shadow-[0_0_20px_rgba(168,85,247,0.3)]"
               >
                 <span>BRACKET</span>
