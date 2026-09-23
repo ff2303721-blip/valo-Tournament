@@ -26,7 +26,7 @@ export function ValorantFrontPage({
         new Date(b.scheduledAt || "9999").getTime()
       );
     })
-    .slice(0, 4);
+    .slice(0, 2);
 
   return (
     <div className="space-y-8">
@@ -89,33 +89,6 @@ export function ValorantFrontPage({
                   {settings?.organizerName || "XMD FAMILY"}
                 </span>
               </div>
-            </div>
-
-            {/* Quick Action Navigation */}
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Link
-                href="/tournament/bracket"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#ff2d55]/50 bg-[#ff2d55]/20 px-5 py-2.5 text-sm font-black uppercase tracking-wider text-[#ff8fa3] transition hover:bg-[#ff2d55]/35 hover:shadow-[0_0_20px_rgba(255,45,85,0.3)]"
-              >
-                <span>PLAYOFF BRACKET</span>
-                <span>↗</span>
-              </Link>
-
-              <Link
-                href="/tournament/matches"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#1e1e3a] bg-[#080812] px-5 py-2.5 text-sm font-black uppercase tracking-wider text-[#f1f5f9] transition hover:border-[#ff2d55]/50"
-              >
-                <span>MATCHES</span>
-                <span>↗</span>
-              </Link>
-
-              <Link
-                href="/tournament/teams"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#1e1e3a] bg-[#080812] px-5 py-2.5 text-sm font-black uppercase tracking-wider text-[#f1f5f9] transition hover:border-[#ff2d55]/50"
-              >
-                <span>TEAMS</span>
-                <span>↗</span>
-              </Link>
             </div>
           </div>
 
