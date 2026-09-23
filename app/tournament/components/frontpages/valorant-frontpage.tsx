@@ -45,6 +45,7 @@ export function ValorantFrontPage({
     (m) => m.stage === "Group Stage",
   ).length;
   const groupTotal = 12;
+  const groupStageComplete = groupCompleted === groupTotal;
   const progress = Math.min(
     100,
     Math.round((groupCompleted / groupTotal) * 100),
@@ -345,6 +346,14 @@ export function ValorantFrontPage({
         {/* Overall / Group Table */}
         {(standingsView === "overall" || standingsView === "group") && (
           <div className="overflow-x-auto">
+            {!groupStageComplete && (
+              <div className="flex items-center gap-2 border-b border-[#1e1e3a] bg-[#080812] px-6 py-3 text-[12px] font-bold text-[#64748b]">
+                <span>ℹ️</span>
+                <span>
+                  Live standings — playoff seeding locks in once all 12 Group Stage matches conclude.
+                </span>
+              </div>
+            )}
             <table className="w-full min-w-[700px] text-left">
               <thead>
                 <tr className="border-b border-[#1e1e3a] bg-[#080812] text-[13px] font-black uppercase tracking-widest text-[#94a3b8]">
@@ -359,8 +368,8 @@ export function ValorantFrontPage({
               </thead>
               <tbody className="divide-y divide-[#1e1e3a] text-base font-semibold">
                 {standings.map((s, i) => {
-                  const isUpperBracket = i < 2;
-                  const isLowerBracket = i >= 2 && i < 4;
+                  const isUpperBracket = groupStageComplete && i < 2;
+                  const isLowerBracket = groupStageComplete && i >= 2 && i < 4;
 
                   const rankStyle = isUpperBracket
                     ? "border-l-4 border-l-[#34d399]"
