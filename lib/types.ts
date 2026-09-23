@@ -72,6 +72,7 @@ export type TournamentSettings = {
   announcement: string;
   logoUrl: string;
   bannerUrl: string;
+  liveStreamUrl?: string;
   gameId?: string;
   gameCustomName?: string;
   gameCustomMaps?: string[];

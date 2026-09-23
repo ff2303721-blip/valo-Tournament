@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { StatusBadge } from "../ui/status-badge";
 import { MatchCard } from "../ui/match-card";
+import { LiveStreamEmbed } from "../ui/live-stream-embed";
 import type { FrontPageProps, StandingsView } from "./types";
 import type { Match } from "@/lib/types";
 import { getTournamentStatusMeta } from "@/lib/tournament-status";
@@ -64,8 +65,7 @@ export function ValorantFrontPage({
       (a, b) =>
         new Date(a.scheduledAt || "9999").getTime() -
         new Date(b.scheduledAt || "9999").getTime(),
-    )
-    .slice(0, 6);
+    );
 
   const STANDINGS_TABS: { id: StandingsView; label: string }[] = [
     { id: "overall", label: "OVERALL" },
@@ -215,7 +215,12 @@ export function ValorantFrontPage({
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          2. HIGH-IMPACT METRIC CARDS
+          2. LIVE BROADCAST EMBED
+      ══════════════════════════════════════════════════════════════════ */}
+      <LiveStreamEmbed url={settings?.liveStreamUrl} />
+
+      {/* ══════════════════════════════════════════════════════════════════
+          3. HIGH-IMPACT METRIC CARDS
       ══════════════════════════════════════════════════════════════════ */}
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Card 1: Registered Teams */}
@@ -301,235 +306,7 @@ export function ValorantFrontPage({
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          3. FEATURED CLASH + ROADMAP — SIDE BY SIDE ON WIDE SCREENS
-      ══════════════════════════════════════════════════════════════════ */}
-      <div className="grid gap-6 xl:grid-cols-[1.35fr_1fr] xl:items-start">
-      {(activeLive || nextMatch) && (
-        <section className="relative overflow-hidden rounded-3xl border border-[#1e1e3a] bg-[#0c0c18]/90 p-6 sm:p-8 backdrop-blur-xl shadow-[0_0_40px_rgba(148,163,184,0.08)]">
-          <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-7 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 text-sm font-black text-white">
-                M{String((activeLive || nextMatch)!.matchNumber).padStart(2, "0")}
-              </span>
-              <span className="rounded-lg border border-[#2e2e5a]/40 bg-[#2e2e5a]/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-[#94a3b8]">
-                {(activeLive || nextMatch)!.stage}
-              </span>
-              <span className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-[#94a3b8]">
-                {(activeLive || nextMatch)!.map || "TBD"} • BO{(activeLive || nextMatch)!.bestOf}
-              </span>
-            </div>
-
-            <StatusBadge status={(activeLive || nextMatch)!.status} />
-          </div>
-
-          <div className="mt-6 grid items-center gap-6 grid-cols-1 md:grid-cols-[1fr_auto_1fr]">
-            {/* Team 1 */}
-            <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] shadow-[0_0_20px_rgba(148,163,184,0.15)]">
-                {nextMatchTeam1?.logo ? (
-                  <Image
-                    src={nextMatchTeam1.logo}
-                    alt={nextMatchTeam1.name}
-                    width={56}
-                    height={56}
-                    unoptimized
-                    className="h-full w-full object-contain p-1"
-                  />
-                ) : (
-                  <span className="text-sm font-black text-[#94a3b8]">
-                    {(nextMatchTeam1?.tag ?? "TBD").slice(0, 3)}
-                  </span>
-                )}
-              </div>
-              <div>
-                <h4 className="text-lg sm:text-xl font-black uppercase tracking-tight text-white">
-                  {nextMatchTeam1?.name ?? "TBD"}
-                </h4>
-                <p className="mt-0.5 text-sm font-bold text-[#64748b]">
-                  [{nextMatchTeam1?.tag ?? "TBD"}] • Seed #{nextMatchTeam1?.seed ?? "—"}
-                </p>
-              </div>
-            </div>
-
-            {/* Center Hub */}
-            <div className="flex flex-col items-center justify-center py-2 md:py-0 px-6">
-              <div className="rounded-2xl border border-[#2e2e5a]/40 bg-[#2e2e5a]/15 px-5 py-2 text-sm font-black tracking-widest text-[#f1f5f9] shadow-[0_0_20px_rgba(148,163,184,0.25)]">
-                VS
-              </div>
-              <span className="mt-2 text-sm font-black uppercase tracking-wider text-[#94a3b8]">
-                {formatDate((activeLive || nextMatch)!.scheduledAt)}
-              </span>
-            </div>
-
-            {/* Team 2 */}
-            <div className="flex items-center gap-4 md:flex-row-reverse md:text-right">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] shadow-[0_0_20px_rgba(148,163,184,0.15)]">
-                {nextMatchTeam2?.logo ? (
-                  <Image
-                    src={nextMatchTeam2.logo}
-                    alt={nextMatchTeam2.name}
-                    width={56}
-                    height={56}
-                    unoptimized
-                    className="h-full w-full object-contain p-1"
-                  />
-                ) : (
-                  <span className="text-sm font-black text-[#94a3b8]">
-                    {(nextMatchTeam2?.tag ?? "TBD").slice(0, 3)}
-                  </span>
-                )}
-              </div>
-              <div>
-                <h4 className="text-lg sm:text-xl font-black uppercase tracking-tight text-white">
-                  {nextMatchTeam2?.name ?? "TBD"}
-                </h4>
-                <p className="mt-0.5 text-sm font-bold text-[#64748b]">
-                  [{nextMatchTeam2?.tag ?? "TBD"}] • Seed #{nextMatchTeam2?.seed ?? "—"}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 flex items-center justify-between border-t border-[#1e1e3a] pt-4">
-            <span className="text-sm text-[#64748b]">
-              Featured Match Stream & Scoreboard Telemetry
-            </span>
-            <Link
-              href={`/tournament/matches/${encodeURIComponent((activeLive || nextMatch)!.id)}`}
-              className="inline-flex items-center gap-2 rounded-xl border border-[#2e2e5a]/40 bg-[#2e2e5a]/10 px-4 py-2 text-sm font-black uppercase tracking-wider text-[#94a3b8] transition hover:bg-[#2e2e5a]/20"
-            >
-              <span>OPEN MATCH TELEMETRY</span>
-              <span>→</span>
-            </Link>
-          </div>
-
-          {/* Up Next — fills remaining space with the next few fixtures */}
-          {upNextMatches.length > 0 && (
-            <div className="mt-6 border-t border-[#1e1e3a] pt-6">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
-                  Up Next
-                </span>
-                <Link
-                  href="/tournament/matches"
-                  className="text-[11px] font-black uppercase tracking-wider text-[#64748b] hover:text-white transition"
-                >
-                  View All Fixtures →
-                </Link>
-              </div>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {upNextMatches.map((m) => (
-                  <MatchCard key={m.id} match={m} teams={teams} compact />
-                ))}
-              </div>
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* ══════════════════════════════════════════════════════════════════
-          4. TOURNAMENT MILESTONE ROADMAP
-      ══════════════════════════════════════════════════════════════════ */}
-      <section className="rounded-3xl border border-[#1e1e3a] bg-[#0c0c18]/90 p-6 sm:p-8 backdrop-blur-xl">
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#1e1e3a] pb-4">
-          <div>
-            <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#ff2d55]">
-              TOURNAMENT ARCHITECTURE
-            </p>
-            <h3 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
-              Progression Roadmap
-            </h3>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-black uppercase tracking-wider text-[#94a3b8]">
-              Group Stage: {groupCompleted}/12 Matches
-            </span>
-            <span className="rounded-full bg-[#2e2e5a]/20 px-2 py-0.5 text-[12px] font-black text-[#94a3b8]">
-              {progress}%
-            </span>
-          </div>
-        </div>
-
-        {/* 3-Stage Milestone Grid */}
-        <div className="mt-6 grid gap-4 sm:grid-cols-3 xl:grid-cols-1">
-          {/* Milestone 1: Group Stage */}
-          <div className="relative rounded-2xl border border-[#2e2e5a]/40 bg-[#080812] p-5 shadow-[0_0_25px_rgba(148,163,184,0.1)]">
-            <div className="flex items-center justify-between">
-              <span className="rounded bg-[#2e2e5a]/20 px-2 py-0.5 text-[11px] font-black uppercase text-[#94a3b8]">
-                PHASE 1
-              </span>
-              <span className="text-sm font-black text-[#34d399]">
-                {groupCompleted === 12 ? "COMPLETED" : "ACTIVE STAGE"}
-              </span>
-            </div>
-            <h4 className="mt-3 text-base font-black uppercase text-white">
-              Group Stage
-            </h4>
-            <p className="mt-1 text-sm text-[#64748b]">
-              12 Fixtures • Single Round-Robin. Top 2 advance to Qualifier 1; 3rd & 4th to Eliminator.
-            </p>
-            <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-[#1e1e3a]">
-              <div
-                className="h-full bg-gradient-to-r from-[#2e2e5a] to-[#34d399]"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Milestone 2: Double-Elimination Playoffs */}
-          <div className="relative rounded-2xl border border-[#2e2e5a]/30 bg-[#080812] p-5">
-            <div className="flex items-center justify-between">
-              <span className="rounded bg-[#2e2e5a]/20 px-2 py-0.5 text-[11px] font-black uppercase text-[#94a3b8]">
-                PHASE 2
-              </span>
-              <span className="text-sm font-black text-[#94a3b8]">
-                {groupCompleted === 12 ? "UNLOCKED" : "LOCKED"}
-              </span>
-            </div>
-            <h4 className="mt-3 text-base font-black uppercase text-white">
-              IPL Playoffs
-            </h4>
-            <p className="mt-1 text-sm text-[#64748b]">
-              3 Matches (Q1, Eliminator, Q2). Top seeds get two chances to qualify for the Grand Final.
-            </p>
-            <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-[#1e1e3a]">
-              <div
-                className="h-full bg-[#2e2e5a]"
-                style={{ width: groupCompleted === 12 ? "30%" : "0%" }}
-              />
-            </div>
-          </div>
-
-          {/* Milestone 3: Grand Final */}
-          <div className="relative rounded-2xl border border-[#f59e0b]/30 bg-[#080812] p-5">
-            <div className="flex items-center justify-between">
-              <span className="rounded bg-[#f59e0b]/20 px-2 py-0.5 text-[11px] font-black uppercase text-[#fbbf24]">
-                CHAMPIONSHIP
-              </span>
-              <span className="text-sm font-black text-[#fbbf24]">
-                OCT 23
-              </span>
-            </div>
-            <h4 className="mt-3 text-base font-black uppercase text-white">
-              Grand Final
-            </h4>
-            <p className="mt-1 text-sm text-[#64748b]">
-              The ultimate championship series. Winner claims the gold trophy & ₹6,000 prize pool.
-            </p>
-            <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-[#1e1e3a]">
-              <div
-                className="h-full bg-[#f59e0b]"
-                style={{ width: "0%" }}
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-      </div>
-
-      {/* ══════════════════════════════════════════════════════════════════
-          5. BROADCAST STANDINGS DECK
+          4. BROADCAST STANDINGS DECK
       ══════════════════════════════════════════════════════════════════ */}
       <section className="overflow-hidden rounded-3xl border border-[#1e1e3a] bg-[#0c0c18]/90 backdrop-blur-xl">
         <div className="border-b border-[#1e1e3a] p-6">
@@ -762,6 +539,234 @@ export function ValorantFrontPage({
           </div>
         )}
       </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          5. FEATURED CLASH + ROADMAP — SIDE BY SIDE ON WIDE SCREENS
+      ══════════════════════════════════════════════════════════════════ */}
+      <div className="grid gap-6 xl:grid-cols-[1.35fr_1fr] xl:items-start">
+      {(activeLive || nextMatch) && (
+        <section className="relative overflow-hidden rounded-3xl border border-[#1e1e3a] bg-[#0c0c18]/90 p-6 sm:p-8 backdrop-blur-xl shadow-[0_0_40px_rgba(148,163,184,0.08)]">
+          <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-7 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 text-sm font-black text-white">
+                M{String((activeLive || nextMatch)!.matchNumber).padStart(2, "0")}
+              </span>
+              <span className="rounded-lg border border-[#2e2e5a]/40 bg-[#2e2e5a]/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-[#94a3b8]">
+                {(activeLive || nextMatch)!.stage}
+              </span>
+              <span className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-[#94a3b8]">
+                {(activeLive || nextMatch)!.map || "TBD"} • BO{(activeLive || nextMatch)!.bestOf}
+              </span>
+            </div>
+
+            <StatusBadge status={(activeLive || nextMatch)!.status} />
+          </div>
+
+          <div className="mt-6 grid items-center gap-6 grid-cols-1 md:grid-cols-[1fr_auto_1fr]">
+            {/* Team 1 */}
+            <div className="flex items-center gap-4">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] shadow-[0_0_20px_rgba(148,163,184,0.15)]">
+                {nextMatchTeam1?.logo ? (
+                  <Image
+                    src={nextMatchTeam1.logo}
+                    alt={nextMatchTeam1.name}
+                    width={56}
+                    height={56}
+                    unoptimized
+                    className="h-full w-full object-contain p-1"
+                  />
+                ) : (
+                  <span className="text-sm font-black text-[#94a3b8]">
+                    {(nextMatchTeam1?.tag ?? "TBD").slice(0, 3)}
+                  </span>
+                )}
+              </div>
+              <div>
+                <h4 className="text-lg sm:text-xl font-black uppercase tracking-tight text-white">
+                  {nextMatchTeam1?.name ?? "TBD"}
+                </h4>
+                <p className="mt-0.5 text-sm font-bold text-[#64748b]">
+                  [{nextMatchTeam1?.tag ?? "TBD"}] • Seed #{nextMatchTeam1?.seed ?? "—"}
+                </p>
+              </div>
+            </div>
+
+            {/* Center Hub */}
+            <div className="flex flex-col items-center justify-center py-2 md:py-0 px-6">
+              <div className="rounded-2xl border border-[#2e2e5a]/40 bg-[#2e2e5a]/15 px-5 py-2 text-sm font-black tracking-widest text-[#f1f5f9] shadow-[0_0_20px_rgba(148,163,184,0.25)]">
+                VS
+              </div>
+              <span className="mt-2 text-sm font-black uppercase tracking-wider text-[#94a3b8]">
+                {formatDate((activeLive || nextMatch)!.scheduledAt)}
+              </span>
+            </div>
+
+            {/* Team 2 */}
+            <div className="flex items-center gap-4 md:flex-row-reverse md:text-right">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] shadow-[0_0_20px_rgba(148,163,184,0.15)]">
+                {nextMatchTeam2?.logo ? (
+                  <Image
+                    src={nextMatchTeam2.logo}
+                    alt={nextMatchTeam2.name}
+                    width={56}
+                    height={56}
+                    unoptimized
+                    className="h-full w-full object-contain p-1"
+                  />
+                ) : (
+                  <span className="text-sm font-black text-[#94a3b8]">
+                    {(nextMatchTeam2?.tag ?? "TBD").slice(0, 3)}
+                  </span>
+                )}
+              </div>
+              <div>
+                <h4 className="text-lg sm:text-xl font-black uppercase tracking-tight text-white">
+                  {nextMatchTeam2?.name ?? "TBD"}
+                </h4>
+                <p className="mt-0.5 text-sm font-bold text-[#64748b]">
+                  [{nextMatchTeam2?.tag ?? "TBD"}] • Seed #{nextMatchTeam2?.seed ?? "—"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 flex items-center justify-between border-t border-[#1e1e3a] pt-4">
+            <span className="text-sm text-[#64748b]">
+              Featured Match Stream & Scoreboard Telemetry
+            </span>
+            <Link
+              href={`/tournament/matches/${encodeURIComponent((activeLive || nextMatch)!.id)}`}
+              className="inline-flex items-center gap-2 rounded-xl border border-[#2e2e5a]/40 bg-[#2e2e5a]/10 px-4 py-2 text-sm font-black uppercase tracking-wider text-[#94a3b8] transition hover:bg-[#2e2e5a]/20"
+            >
+              <span>OPEN MATCH TELEMETRY</span>
+              <span>→</span>
+            </Link>
+          </div>
+
+          {/* Up Next — fills remaining space with the next few fixtures */}
+          {upNextMatches.length > 0 && (
+            <div className="mt-6 border-t border-[#1e1e3a] pt-6">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
+                  Up Next
+                </span>
+                <Link
+                  href="/tournament/matches"
+                  className="text-[11px] font-black uppercase tracking-wider text-[#64748b] hover:text-white transition"
+                >
+                  View All Fixtures →
+                </Link>
+              </div>
+              <div className="mt-4 grid max-h-[420px] gap-3 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3 auto-rows-min">
+                {upNextMatches.map((m) => (
+                  <MatchCard key={m.id} match={m} teams={teams} compact />
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════
+          5a. TOURNAMENT MILESTONE ROADMAP
+      ══════════════════════════════════════════════════════════════════ */}
+      <section className="rounded-3xl border border-[#1e1e3a] bg-[#0c0c18]/90 p-6 sm:p-8 backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#1e1e3a] pb-4">
+          <div>
+            <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#ff2d55]">
+              TOURNAMENT ARCHITECTURE
+            </p>
+            <h3 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
+              Progression Roadmap
+            </h3>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-black uppercase tracking-wider text-[#94a3b8]">
+              Group Stage: {groupCompleted}/12 Matches
+            </span>
+            <span className="rounded-full bg-[#2e2e5a]/20 px-2 py-0.5 text-[12px] font-black text-[#94a3b8]">
+              {progress}%
+            </span>
+          </div>
+        </div>
+
+        {/* 3-Stage Milestone Grid */}
+        <div className="mt-6 grid gap-4 sm:grid-cols-3 xl:grid-cols-1">
+          {/* Milestone 1: Group Stage */}
+          <div className="relative rounded-2xl border border-[#2e2e5a]/40 bg-[#080812] p-5 shadow-[0_0_25px_rgba(148,163,184,0.1)]">
+            <div className="flex items-center justify-between">
+              <span className="rounded bg-[#2e2e5a]/20 px-2 py-0.5 text-[11px] font-black uppercase text-[#94a3b8]">
+                GROUP STAGE
+              </span>
+              <span className="text-sm font-black text-[#34d399]">
+                {groupCompleted === 12 ? "COMPLETED" : "ACTIVE STAGE"}
+              </span>
+            </div>
+            <h4 className="mt-3 text-base font-black uppercase text-white">
+              Group Stage
+            </h4>
+            <p className="mt-1 text-sm text-[#64748b]">
+              12 Fixtures • Single Round-Robin. Top 2 advance to Qualifier 1; 3rd & 4th to Eliminator.
+            </p>
+            <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-[#1e1e3a]">
+              <div
+                className="h-full bg-gradient-to-r from-[#2e2e5a] to-[#34d399]"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Milestone 2: Double-Elimination Playoffs */}
+          <div className="relative rounded-2xl border border-[#2e2e5a]/30 bg-[#080812] p-5">
+            <div className="flex items-center justify-between">
+              <span className="rounded bg-[#2e2e5a]/20 px-2 py-0.5 text-[11px] font-black uppercase text-[#94a3b8]">
+                PLAYOFFS
+              </span>
+              <span className="text-sm font-black text-[#94a3b8]">
+                {groupCompleted === 12 ? "UNLOCKED" : "LOCKED"}
+              </span>
+            </div>
+            <h4 className="mt-3 text-base font-black uppercase text-white">
+              Playoffs
+            </h4>
+            <p className="mt-1 text-sm text-[#64748b]">
+              3 Matches (Q1, Eliminator, Q2). Top seeds get two chances to qualify for the Grand Final.
+            </p>
+            <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-[#1e1e3a]">
+              <div
+                className="h-full bg-[#2e2e5a]"
+                style={{ width: groupCompleted === 12 ? "30%" : "0%" }}
+              />
+            </div>
+          </div>
+
+          {/* Milestone 3: Grand Final */}
+          <div className="relative rounded-2xl border border-[#f59e0b]/30 bg-[#080812] p-5">
+            <div className="flex items-center justify-between">
+              <span className="rounded bg-[#f59e0b]/20 px-2 py-0.5 text-[11px] font-black uppercase text-[#fbbf24]">
+                CHAMPIONSHIP
+              </span>
+              <span className="text-sm font-black text-[#fbbf24]">
+                OCT 23
+              </span>
+            </div>
+            <h4 className="mt-3 text-base font-black uppercase text-white">
+              Grand Final
+            </h4>
+            <p className="mt-1 text-sm text-[#64748b]">
+              The ultimate championship series. Winner claims the gold trophy & ₹6,000 prize pool.
+            </p>
+            <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-[#1e1e3a]">
+              <div
+                className="h-full bg-[#f59e0b]"
+                style={{ width: "0%" }}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+      </div>
 
       {/* ══════════════════════════════════════════════════════════════════
           6. SPONSORS & OFFICIAL PARTNERS - MODERN 4-CARD DECK

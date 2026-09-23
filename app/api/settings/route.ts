@@ -83,23 +83,62 @@ const VALID_TOURNAMENT_STATUSES = [
   "concluded",
 ];
 
-function validateStatus(value: string) {
-  return VALID_TOURNAMENT_STATUSES.includes(value);
+/** Maps the old 3-value status column to the nearest new lifecycle status, for rows saved before the DB migration ran. */
+const LEGACY_STATUS_MAP: Record<string, string> = {
+  Upcoming: "upcoming",
+  Live: "ongoing_group_stage",
+  Completed: "concluded",
+};
+
+function normalizeStatus(value: string) {
+  if (VALID_TOURNAMENT_STATUSES.includes(value)) return value;
+  return LEGACY_STATUS_MAP[value] ?? "";
+}
+
+/** Reverse-maps a new lifecycle status to the old 3-value column, for DBs where the status migration hasn't run. */
+function toLegacyStatus(value: string) {
+  if (value === "concluded") return "Completed";
+  if (value.startsWith("ongoing_")) return "Live";
+  return "Upcoming";
+}
+
+/** Check-constraint violation from Postgres (the status migration may not be applied yet). */
+function isCheckConstraintError(error: { code?: string } | null) {
+  return error?.code === "23514";
+}
+
+const CORE_SETTINGS_COLUMNS =
+  "id,tournament_name,tagline,organizer_name,prize_pool,start_date,end_date,tournament_status,announcement,logo_url,banner_url,updated_at";
+
+/** Undefined-column error (the live_stream_url migration may not be applied yet). Postgres reports
+ *  this as 42703 on SELECT; PostgREST reports PGRST204 on INSERT/UPSERT when its schema cache
+ *  doesn't know the column. */
+function isUndefinedColumnError(error: { code?: string } | null) {
+  return error?.code === "42703" || error?.code === "PGRST204";
 }
 
 export async function GET() {
   try {
     const supabase = getPublicClient();
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("tournament_settings")
-      .select(
-        "id,tournament_name,tagline,organizer_name,prize_pool,start_date,end_date,tournament_status,announcement,logo_url,banner_url,updated_at",
-      )
+      .select(`${CORE_SETTINGS_COLUMNS},live_stream_url`)
       .eq("id", 1)
       .single();
 
-    if (error) {
+    let hasLiveStreamColumn = true;
+
+    if (error && isUndefinedColumnError(error)) {
+      hasLiveStreamColumn = false;
+      ({ data, error } = await supabase
+        .from("tournament_settings")
+        .select(CORE_SETTINGS_COLUMNS)
+        .eq("id", 1)
+        .single());
+    }
+
+    if (error || !data) {
       console.error("GET /api/settings error:", error);
       return NextResponse.json(
         { error: "Unable to load tournament settings." },
@@ -108,6 +147,9 @@ export async function GET() {
     }
 
     const gameConfig = readGameSettings();
+    const liveStreamUrl = hasLiveStreamColumn
+      ? ((data as { live_stream_url?: string }).live_stream_url ?? "")
+      : "";
 
     return NextResponse.json(
       {
@@ -118,10 +160,11 @@ export async function GET() {
         prizePool: data.prize_pool ?? "",
         startDate: data.start_date,
         endDate: data.end_date,
-        tournamentStatus: data.tournament_status ?? "upcoming",
+        tournamentStatus: normalizeStatus(data.tournament_status ?? "") || "upcoming",
         announcement: data.announcement ?? "",
         logoUrl: data.logo_url ?? "",
         bannerUrl: data.banner_url ?? "",
+        liveStreamUrl,
         gameId: gameConfig.gameId || "valorant",
         gameCustomName: gameConfig.gameCustomName || "",
         gameCustomMaps: gameConfig.gameCustomMaps || [],
@@ -155,11 +198,12 @@ export async function PUT(request: NextRequest) {
     const organizerName = cleanString(body.organizerName);
     const prizePool = cleanString(body.prizePool);
     const announcement = cleanString(body.announcement);
-    const tournamentStatus = cleanString(body.tournamentStatus);
+    const tournamentStatus = normalizeStatus(cleanString(body.tournamentStatus));
     const startDate = normalizeDate(body.startDate);
     const endDate = normalizeDate(body.endDate);
     const logoUrl = cleanString(body.logoUrl);
     const bannerUrl = cleanString(body.bannerUrl);
+    const liveStreamUrl = cleanString(body.liveStreamUrl);
 
     if (!tournamentName) {
       return NextResponse.json(
@@ -203,7 +247,17 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    if (!validateStatus(tournamentStatus)) {
+    if (
+      liveStreamUrl &&
+      !/^https:\/\/(www\.)?(youtube\.com|youtu\.be)\//i.test(liveStreamUrl)
+    ) {
+      return NextResponse.json(
+        { error: "Live stream link must be a YouTube URL." },
+        { status: 400 },
+      );
+    }
+
+    if (!tournamentStatus) {
       return NextResponse.json(
         { error: "Invalid tournament status." },
         { status: 400 },
@@ -233,31 +287,75 @@ export async function PUT(request: NextRequest) {
 
     const supabase = getAdminClient();
 
-    const { data, error } = await supabase
+    const basePayload = {
+      id: 1,
+      tournament_name: tournamentName,
+      tagline,
+      organizer_name: organizerName,
+      prize_pool: prizePool,
+      start_date: startDate,
+      end_date: endDate,
+      tournament_status: tournamentStatus,
+      announcement,
+      logo_url: logoUrl,
+      banner_url: bannerUrl,
+      updated_at: new Date().toISOString(),
+    };
+
+    let hasLiveStreamColumn = true;
+
+    let { data, error } = await supabase
       .from("tournament_settings")
       .upsert(
-        {
-          id: 1,
-          tournament_name: tournamentName,
-          tagline,
-          organizer_name: organizerName,
-          prize_pool: prizePool,
-          start_date: startDate,
-          end_date: endDate,
-          tournament_status: tournamentStatus,
-          announcement,
-          logo_url: logoUrl,
-          banner_url: bannerUrl,
-          updated_at: new Date().toISOString(),
-        },
+        { ...basePayload, live_stream_url: liveStreamUrl },
         { onConflict: "id" },
       )
-      .select(
-        "id,tournament_name,tagline,organizer_name,prize_pool,start_date,end_date,tournament_status,announcement,logo_url,banner_url,updated_at",
-      )
+      .select(`${CORE_SETTINGS_COLUMNS},live_stream_url`)
       .single();
 
-    if (error) {
+    if (error && isUndefinedColumnError(error)) {
+      hasLiveStreamColumn = false;
+      ({ data, error } = await supabase
+        .from("tournament_settings")
+        .upsert(basePayload, { onConflict: "id" })
+        .select(CORE_SETTINGS_COLUMNS)
+        .single());
+    }
+
+    // The status lifecycle migration may not have run yet — fall back to the
+    // old 3-value status so the rest of the settings can still be saved.
+    if (error && isCheckConstraintError(error)) {
+      // status migration not yet applied — retry with legacy value
+      const legacyPayload = {
+        ...basePayload,
+        tournament_status: toLegacyStatus(tournamentStatus),
+      };
+
+      if (hasLiveStreamColumn) {
+        ({ data, error } = await supabase
+          .from("tournament_settings")
+          .upsert({ ...legacyPayload, live_stream_url: liveStreamUrl }, { onConflict: "id" })
+          .select(`${CORE_SETTINGS_COLUMNS},live_stream_url`)
+          .single());
+      } else {
+        ({ data, error } = await supabase
+          .from("tournament_settings")
+          .upsert(legacyPayload, { onConflict: "id" })
+          .select(CORE_SETTINGS_COLUMNS)
+          .single());
+      }
+
+      if (error && isUndefinedColumnError(error)) {
+        hasLiveStreamColumn = false;
+        ({ data, error } = await supabase
+          .from("tournament_settings")
+          .upsert(legacyPayload, { onConflict: "id" })
+          .select(CORE_SETTINGS_COLUMNS)
+          .single());
+      }
+    }
+
+    if (error || !data) {
       console.error("PUT /api/settings error:", error);
       return NextResponse.json(
         { error: "Unable to save tournament settings." },
@@ -271,6 +369,10 @@ export async function PUT(request: NextRequest) {
       gameCustomMaps: body.gameCustomMaps,
     });
 
+    const liveStreamUrlOut = hasLiveStreamColumn
+      ? ((data as { live_stream_url?: string }).live_stream_url ?? "")
+      : "";
+
     return NextResponse.json({
       id: data.id,
       tournamentName: data.tournament_name,
@@ -279,10 +381,11 @@ export async function PUT(request: NextRequest) {
       prizePool: data.prize_pool ?? "",
       startDate: data.start_date,
       endDate: data.end_date,
-      tournamentStatus: data.tournament_status ?? "upcoming",
+      tournamentStatus: normalizeStatus(data.tournament_status ?? "") || "upcoming",
       announcement: data.announcement ?? "",
       logoUrl: data.logo_url ?? "",
       bannerUrl: data.banner_url ?? "",
+      liveStreamUrl: liveStreamUrlOut,
       gameId: savedGameConfig.gameId || "valorant",
       gameCustomName: savedGameConfig.gameCustomName || "",
       gameCustomMaps: savedGameConfig.gameCustomMaps || [],
