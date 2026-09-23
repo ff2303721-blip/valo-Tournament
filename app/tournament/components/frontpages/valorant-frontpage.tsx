@@ -57,6 +57,16 @@ export function ValorantFrontPage({
     ? teams.find((t) => t.id === nextMatch.team2Id)
     : null;
 
+  const featuredMatchId = (activeLive || nextMatch)?.id;
+  const upNextMatches = [...live, ...scheduled]
+    .filter((m) => m.id !== featuredMatchId)
+    .sort(
+      (a, b) =>
+        new Date(a.scheduledAt || "9999").getTime() -
+        new Date(b.scheduledAt || "9999").getTime(),
+    )
+    .slice(0, 6);
+
   const STANDINGS_TABS: { id: StandingsView; label: string }[] = [
     { id: "overall", label: "OVERALL" },
     { id: "group", label: "GROUP STAGE" },
@@ -392,6 +402,28 @@ export function ValorantFrontPage({
               <span>→</span>
             </Link>
           </div>
+
+          {/* Up Next — fills remaining space with the next few fixtures */}
+          {upNextMatches.length > 0 && (
+            <div className="mt-6 border-t border-[#1e1e3a] pt-6">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
+                  Up Next
+                </span>
+                <Link
+                  href="/tournament/matches"
+                  className="text-[11px] font-black uppercase tracking-wider text-[#64748b] hover:text-white transition"
+                >
+                  View All Fixtures →
+                </Link>
+              </div>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {upNextMatches.map((m) => (
+                  <MatchCard key={m.id} match={m} teams={teams} compact />
+                ))}
+              </div>
+            </div>
+          )}
         </section>
       )}
 
