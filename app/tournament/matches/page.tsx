@@ -146,27 +146,27 @@ function StatusBadge({ status }: { status: MatchStatus }) {
   switch (status) {
     case "Live":
       return (
-        <span className="inline-flex items-center gap-1.5 rounded-md border border-[#ff2d55]/40 bg-[#ff2d55]/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#ff4d6a]">
+        <span className="inline-flex items-center gap-1.5 rounded-md border border-[#ff2d55]/40 bg-[#ff2d55]/15 px-2 py-0.5 text-[11px] font-black uppercase tracking-wider text-[#ff4d6a]">
           <span className="h-1.5 w-1.5 rounded-full bg-[#ff2d55] animate-pulse" />
           LIVE
         </span>
       );
     case "Completed":
       return (
-        <span className="inline-flex items-center gap-1.5 rounded-md border border-[#10b981]/40 bg-[#10b981]/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#34d399]">
+        <span className="inline-flex items-center gap-1.5 rounded-md border border-[#10b981]/40 bg-[#10b981]/15 px-2 py-0.5 text-[11px] font-black uppercase tracking-wider text-[#34d399]">
           <span className="h-1.5 w-1.5 rounded-full bg-[#34d399]" />
           FINAL
         </span>
       );
     case "Cancelled":
       return (
-        <span className="inline-flex items-center gap-1 rounded-md border border-[#64748b]/40 bg-[#64748b]/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#94a3b8]">
+        <span className="inline-flex items-center gap-1 rounded-md border border-[#64748b]/40 bg-[#64748b]/15 px-2 py-0.5 text-[11px] font-black uppercase tracking-wider text-[#94a3b8]">
           CANCELLED
         </span>
       );
     default:
       return (
-        <span className="inline-flex items-center gap-1.5 rounded-md border border-[#f59e0b]/40 bg-[#f59e0b]/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#fbbf24]">
+        <span className="inline-flex items-center gap-1.5 rounded-md border border-[#f59e0b]/40 bg-[#f59e0b]/10 px-2 py-0.5 text-[11px] font-black uppercase tracking-wider text-[#fbbf24]">
           <span className="h-1.5 w-1.5 rounded-full bg-[#fbbf24]" />
           UPCOMING
         </span>
@@ -335,29 +335,29 @@ export default function PublicMatchesPage() {
     <div className="relative min-h-screen text-[#f1f5f9] pb-24">
       {/* Ambient Neon Glow Orbs */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/12 blur-[180px]" />
+        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#94a3b8]/12 blur-[180px]" />
         <div className="absolute top-1/3 -right-40 h-[500px] w-[500px] rounded-full bg-[#ff2d55]/10 blur-[160px]" />
-        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#06b6d4]/8 blur-[160px]" />
+        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#94a3b8]/8 blur-[160px]" />
       </div>
 
       <TournamentNav />
 
-      <main className="relative z-10 mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
+      <main className="relative z-10 mx-auto max-w-[1680px] px-4 pt-6 sm:px-6 lg:px-8">
         {/* Compact Header & Telemetry Strip */}
         <header className="mb-6 flex flex-col gap-4 border-b border-[#1e1e3a] pb-5 md:flex-row md:items-end md:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="rounded-full border border-[#06b6d4]/40 bg-[#06b6d4]/10 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-[#22d3ee]">
+              <span className="rounded-full border border-[#94a3b8]/40 bg-[#94a3b8]/10 px-2.5 py-0.5 text-[11px] font-black uppercase tracking-widest text-[#f1f5f9]">
                 {game.shortName} ESPORTS
               </span>
-              <span className="text-[10px] font-bold text-[#64748b]">
+              <span className="text-[12px] font-bold text-[#64748b]">
                 • {stats.groupCount} Group Fixtures • {stats.playoffCount} Playoff Matches
               </span>
             </div>
 
             <h1 className="mt-2 text-2xl font-black uppercase tracking-tight text-[#f1f5f9] sm:text-4xl">
               TOURNAMENT{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#06b6d4] via-[#7c3aed] to-[#ff2d55]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#94a3b8] via-[#94a3b8] to-[#ff2d55]">
                 MATCHES
               </span>
             </h1>
@@ -366,32 +366,32 @@ export default function PublicMatchesPage() {
           {/* Quick Metrics Bar */}
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex items-center gap-1.5 rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/80 px-3 py-1.5 backdrop-blur-md">
-              <span className="text-[10px] font-bold uppercase text-[#64748b]">Total:</span>
-              <span className="text-xs font-black text-white">{stats.total}</span>
+              <span className="text-[12px] font-bold uppercase text-[#64748b]">Total:</span>
+              <span className="text-sm font-black text-white">{stats.total}</span>
             </div>
             <div className="flex items-center gap-1.5 rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/80 px-3 py-1.5 backdrop-blur-md">
-              <span className="text-[10px] font-bold uppercase text-[#06b6d4]">Group:</span>
-              <span className="text-xs font-black text-[#22d3ee]">{stats.groupCount}</span>
+              <span className="text-[12px] font-bold uppercase text-[#94a3b8]">Group:</span>
+              <span className="text-sm font-black text-[#f1f5f9]">{stats.groupCount}</span>
             </div>
             <div className="flex items-center gap-1.5 rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/80 px-3 py-1.5 backdrop-blur-md">
-              <span className="text-[10px] font-bold uppercase text-[#a78bfa]">Playoffs:</span>
-              <span className="text-xs font-black text-[#a78bfa]">{stats.playoffCount}</span>
+              <span className="text-[12px] font-bold uppercase text-[#f1f5f9]">Playoffs:</span>
+              <span className="text-sm font-black text-[#f1f5f9]">{stats.playoffCount}</span>
             </div>
             <div className="flex items-center gap-1.5 rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/80 px-3 py-1.5 backdrop-blur-md">
-              <span className="text-[10px] font-bold uppercase text-[#34d399]">Completed:</span>
-              <span className="text-xs font-black text-[#34d399]">{stats.completed}</span>
+              <span className="text-[12px] font-bold uppercase text-[#34d399]">Completed:</span>
+              <span className="text-sm font-black text-[#34d399]">{stats.completed}</span>
             </div>
             {stats.live > 0 && (
               <div className="flex items-center gap-1.5 rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55]/15 px-3 py-1.5 backdrop-blur-md animate-pulse">
-                <span className="text-[10px] font-black uppercase text-[#ff4d6a]">Live:</span>
-                <span className="text-xs font-black text-white">{stats.live}</span>
+                <span className="text-[12px] font-black uppercase text-[#ff4d6a]">Live:</span>
+                <span className="text-sm font-black text-white">{stats.live}</span>
               </div>
             )}
           </div>
         </header>
 
         {error && (
-          <div className="mb-4 rounded-xl border border-[#f59e0b]/30 bg-[#f59e0b]/10 p-3 text-xs font-bold text-[#fbbf24]">
+          <div className="mb-4 rounded-xl border border-[#f59e0b]/30 bg-[#f59e0b]/10 p-3 text-sm font-bold text-[#fbbf24]">
             {error}
           </div>
         )}
@@ -405,13 +405,13 @@ export default function PublicMatchesPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search match ID, stage, team, or map..."
-                className="w-full rounded-lg border border-[#1e1e3a] bg-[#080812] px-3.5 py-2 text-xs font-semibold text-[#f1f5f9] outline-none transition placeholder:text-[#475569] focus:border-[#06b6d4]"
+                className="w-full rounded-lg border border-[#1e1e3a] bg-[#080812] px-3.5 py-2 text-sm font-semibold text-[#f1f5f9] outline-none transition placeholder:text-[#475569] focus:border-[#94a3b8]"
               />
               {search && (
                 <button
                   type="button"
                   onClick={() => setSearch("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#64748b] hover:text-white"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-sm text-[#64748b] hover:text-white"
                 >
                   ✕
                 </button>
@@ -423,7 +423,7 @@ export default function PublicMatchesPage() {
               <select
                 value={stage}
                 onChange={(e) => setStage(e.target.value)}
-                className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-3 py-2 text-xs font-semibold text-[#f1f5f9] outline-none transition focus:border-[#7c3aed]"
+                className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-3 py-2 text-sm font-semibold text-[#f1f5f9] outline-none transition focus:border-[#94a3b8]"
               >
                 {STAGE_OPTIONS.map((stageName) => (
                   <option key={stageName} value={stageName} className="bg-[#0c0c18]">
@@ -436,7 +436,7 @@ export default function PublicMatchesPage() {
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-3 py-2 text-xs font-semibold text-[#f1f5f9] outline-none transition focus:border-[#ff2d55]"
+                className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-3 py-2 text-sm font-semibold text-[#f1f5f9] outline-none transition focus:border-[#ff2d55]"
               >
                 {STATUS_OPTIONS.map((statusName) => (
                   <option key={statusName} value={statusName} className="bg-[#0c0c18]">
@@ -451,9 +451,9 @@ export default function PublicMatchesPage() {
                   type="button"
                   onClick={() => setViewMode("grid")}
                   title="Grid View (Modern Cards)"
-                  className={`rounded-md px-2.5 py-1.5 text-xs font-black transition ${
+                  className={`rounded-md px-2.5 py-1.5 text-sm font-black transition ${
                     viewMode === "grid"
-                      ? "bg-[#7c3aed] text-white shadow-[0_0_10px_rgba(124,58,237,0.4)]"
+                      ? "bg-[#94a3b8] text-white shadow-[0_0_10px_rgba(148,163,184,0.4)]"
                       : "text-[#64748b] hover:text-[#94a3b8]"
                   }`}
                 >
@@ -468,9 +468,9 @@ export default function PublicMatchesPage() {
                   type="button"
                   onClick={() => setViewMode("compact")}
                   title="Compact List View"
-                  className={`rounded-md px-2.5 py-1.5 text-xs font-black transition ${
+                  className={`rounded-md px-2.5 py-1.5 text-sm font-black transition ${
                     viewMode === "compact"
-                      ? "bg-[#7c3aed] text-white shadow-[0_0_10px_rgba(124,58,237,0.4)]"
+                      ? "bg-[#94a3b8] text-white shadow-[0_0_10px_rgba(148,163,184,0.4)]"
                       : "text-[#64748b] hover:text-[#94a3b8]"
                   }`}
                 >
@@ -499,7 +499,7 @@ export default function PublicMatchesPage() {
         ) : filteredMatches.length === 0 ? (
           <div className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-8 text-center backdrop-blur-xl">
             <p className="text-sm font-black text-white">No matches found</p>
-            <p className="mt-1 text-xs text-[#64748b]">
+            <p className="mt-1 text-sm text-[#64748b]">
               Try clearing your search query or selecting a different stage filter.
             </p>
           </div>
@@ -521,25 +521,25 @@ export default function PublicMatchesPage() {
                   : match.matchNumber === 14
                   ? "text-[#ff4d6a] bg-[#ff2d55]/10 border-[#ff2d55]/30"
                   : match.matchNumber >= 13
-                  ? "text-[#a78bfa] bg-[#7c3aed]/10 border-[#7c3aed]/30"
-                  : "text-[#22d3ee] bg-[#06b6d4]/10 border-[#06b6d4]/30";
+                  ? "text-[#f1f5f9] bg-[#94a3b8]/10 border-[#94a3b8]/30"
+                  : "text-[#f1f5f9] bg-[#94a3b8]/10 border-[#94a3b8]/30";
 
               return (
                 <Link
                   key={match.id}
                   href={`/tournament/matches/${encodeURIComponent(match.id)}`}
-                  className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/90 px-4 py-3 backdrop-blur-md transition hover:border-[#7c3aed]/60 hover:bg-[#121224]"
+                  className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/90 px-4 py-3 backdrop-blur-md transition hover:border-[#94a3b8]/60 hover:bg-[#121224]"
                 >
                   {/* Left: Match badge, Stage, Map */}
                   <div className="flex items-center gap-2.5">
-                    <span className="flex h-6 w-9 items-center justify-center rounded border border-[#1e1e3a] bg-[#080812] text-[10px] font-black text-white">
+                    <span className="flex h-6 w-9 items-center justify-center rounded border border-[#1e1e3a] bg-[#080812] text-[12px] font-black text-white">
                       M{String(match.matchNumber).padStart(2, "0")}
                     </span>
-                    <span className={`rounded border px-2 py-0.5 text-[9px] font-black uppercase ${stageColor}`}>
+                    <span className={`rounded border px-2 py-0.5 text-[11px] font-black uppercase ${stageColor}`}>
                       {match.stage}
                     </span>
-                    <span className="text-[10px] text-[#475569]">•</span>
-                    <span className="text-[10px] font-bold uppercase text-[#94a3b8]">
+                    <span className="text-[12px] text-[#475569]">•</span>
+                    <span className="text-[12px] font-bold uppercase text-[#94a3b8]">
                       {match.map || "TBD"}
                     </span>
                   </div>
@@ -549,8 +549,8 @@ export default function PublicMatchesPage() {
                     {/* Team 1 */}
                     <div className="flex items-center gap-2 min-w-0 flex-1 justify-end">
                       <span
-                        className={`truncate text-xs sm:text-sm font-black uppercase ${
-                          isTeam1Winner ? "text-[#34d399]" : slot1.isPlaceholder ? "text-[#a78bfa]" : "text-[#f1f5f9]"
+                        className={`truncate text-sm sm:text-sm font-black uppercase ${
+                          isTeam1Winner ? "text-[#34d399]" : slot1.isPlaceholder ? "text-[#f1f5f9]" : "text-[#f1f5f9]"
                         }`}
                       >
                         {slot1.name}
@@ -566,11 +566,11 @@ export default function PublicMatchesPage() {
                             className="h-full w-full object-contain p-0.5"
                           />
                         ) : slot1.isPlaceholder ? (
-                          <span className="text-[11px]">
+                          <span className="text-[13px]">
                             {match.matchNumber === 16 ? "🏆" : match.matchNumber === 14 ? "⚔️" : "★"}
                           </span>
                         ) : (
-                          <span className="text-[9px] font-black text-[#06b6d4]">
+                          <span className="text-[11px] font-black text-[#94a3b8]">
                             {slot1.tag.slice(1, 4) || "TBD"}
                           </span>
                         )}
@@ -580,15 +580,15 @@ export default function PublicMatchesPage() {
                     {/* Center Score / VS */}
                     <div className="shrink-0 text-center">
                       {isCompleted ? (
-                        <span className="text-xs font-black tracking-widest text-[#34d399]">
+                        <span className="text-sm font-black tracking-widest text-[#34d399]">
                           {match.team1Score} : {match.team2Score}
                         </span>
                       ) : match.status === "Live" ? (
-                        <span className="text-xs font-black tracking-widest text-[#ff4d6a] animate-pulse">
+                        <span className="text-sm font-black tracking-widest text-[#ff4d6a] animate-pulse">
                           {match.team1Score} : {match.team2Score}
                         </span>
                       ) : (
-                        <span className="rounded bg-[#1e1e3a] px-2 py-0.5 text-[9px] font-black text-[#7c3aed]">
+                        <span className="rounded bg-[#1e1e3a] px-2 py-0.5 text-[11px] font-black text-[#94a3b8]">
                           VS
                         </span>
                       )}
@@ -607,18 +607,18 @@ export default function PublicMatchesPage() {
                             className="h-full w-full object-contain p-0.5"
                           />
                         ) : slot2.isPlaceholder ? (
-                          <span className="text-[11px]">
+                          <span className="text-[13px]">
                             {match.matchNumber === 16 ? "🏆" : match.matchNumber === 14 ? "⚔️" : "★"}
                           </span>
                         ) : (
-                          <span className="text-[9px] font-black text-[#7c3aed]">
+                          <span className="text-[11px] font-black text-[#94a3b8]">
                             {slot2.tag.slice(1, 4) || "TBD"}
                           </span>
                         )}
                       </div>
                       <span
-                        className={`truncate text-xs sm:text-sm font-black uppercase ${
-                          isTeam2Winner ? "text-[#34d399]" : slot2.isPlaceholder ? "text-[#a78bfa]" : "text-[#f1f5f9]"
+                        className={`truncate text-sm sm:text-sm font-black uppercase ${
+                          isTeam2Winner ? "text-[#34d399]" : slot2.isPlaceholder ? "text-[#f1f5f9]" : "text-[#f1f5f9]"
                         }`}
                       >
                         {slot2.name}
@@ -629,7 +629,7 @@ export default function PublicMatchesPage() {
                   {/* Right: Status and Link arrow */}
                   <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
                     <StatusBadge status={match.status} />
-                    <span className="text-xs text-[#64748b] transition-transform group-hover:translate-x-1 group-hover:text-[#22d3ee]">
+                    <span className="text-sm text-[#64748b] transition-transform group-hover:translate-x-1 group-hover:text-[#f1f5f9]">
                       →
                     </span>
                   </div>
@@ -656,8 +656,8 @@ export default function PublicMatchesPage() {
                   : match.matchNumber === 14
                   ? "text-[#ff4d6a] bg-[#ff2d55]/10 border-[#ff2d55]/30"
                   : match.matchNumber >= 13
-                  ? "text-[#a78bfa] bg-[#7c3aed]/10 border-[#7c3aed]/30"
-                  : "text-[#22d3ee] bg-[#06b6d4]/10 border-[#06b6d4]/30";
+                  ? "text-[#f1f5f9] bg-[#94a3b8]/10 border-[#94a3b8]/30"
+                  : "text-[#f1f5f9] bg-[#94a3b8]/10 border-[#94a3b8]/30";
 
               const borderHoverColor =
                 match.matchNumber === 16
@@ -665,8 +665,8 @@ export default function PublicMatchesPage() {
                   : match.matchNumber === 14
                   ? "hover:border-[#ff2d55]/70 hover:shadow-[0_0_25px_rgba(255,45,85,0.2)]"
                   : match.matchNumber >= 13
-                  ? "hover:border-[#7c3aed]/70 hover:shadow-[0_0_25px_rgba(124,58,237,0.2)]"
-                  : "hover:border-[#06b6d4]/60 hover:shadow-[0_0_20px_rgba(6,182,212,0.15)]";
+                  ? "hover:border-[#94a3b8]/70 hover:shadow-[0_0_25px_rgba(148,163,184,0.2)]"
+                  : "hover:border-[#94a3b8]/60 hover:shadow-[0_0_20px_rgba(148,163,184,0.15)]";
 
               return (
                 <Link
@@ -692,17 +692,17 @@ export default function PublicMatchesPage() {
                   {/* Card Content Top Strip: Match ID, Stage, Map, Status */}
                   <div className="relative z-10 flex items-center justify-between gap-2 border-b border-[#1e1e3a]/60 pb-2.5">
                     <div className="flex items-center gap-2">
-                      <span className="flex h-6 items-center justify-center rounded border border-[#1e1e3a] bg-[#080812]/90 px-2 text-[10px] font-black tracking-wider text-white">
+                      <span className="flex h-6 items-center justify-center rounded border border-[#1e1e3a] bg-[#080812]/90 px-2 text-[12px] font-black tracking-wider text-white">
                         M{String(match.matchNumber).padStart(2, "0")}
                       </span>
 
                       <span
-                        className={`rounded border px-2 py-0.5 text-[8px] font-black uppercase tracking-wider ${stageColor}`}
+                        className={`rounded border px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${stageColor}`}
                       >
                         {match.stage}
                       </span>
 
-                      <span className="rounded border border-[#1e1e3a] bg-[#080812]/80 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-[#94a3b8]">
+                      <span className="rounded border border-[#1e1e3a] bg-[#080812]/80 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-[#94a3b8]">
                         🗺️ {match.map || "TBD"} • BO{match.bestOf}
                       </span>
                     </div>
@@ -729,7 +729,7 @@ export default function PublicMatchesPage() {
                             {match.matchNumber === 16 ? "🏆" : match.matchNumber === 14 ? "⚔️" : "★"}
                           </span>
                         ) : (
-                          <span className="text-xs font-black text-[#06b6d4]">
+                          <span className="text-sm font-black text-[#94a3b8]">
                             {slot1.tag.slice(1, 4) || "TBD"}
                           </span>
                         )}
@@ -737,7 +737,7 @@ export default function PublicMatchesPage() {
 
                       <div className="min-w-0 flex-1">
                         <p
-                          className={`truncate text-xs sm:text-sm font-black uppercase tracking-tight ${
+                          className={`truncate text-sm sm:text-sm font-black uppercase tracking-tight ${
                             isTeam1Winner
                               ? "text-[#34d399]"
                               : slot1.isPlaceholder
@@ -748,11 +748,11 @@ export default function PublicMatchesPage() {
                           {slot1.name}
                         </p>
                         <div className="mt-0.5 flex items-center gap-1.5">
-                          <span className="rounded bg-[#1e1e3a] px-1.5 py-0.5 text-[8px] font-bold uppercase text-[#94a3b8]">
+                          <span className="rounded bg-[#1e1e3a] px-1.5 py-0.5 text-[10px] font-bold uppercase text-[#94a3b8]">
                             {slot1.tag}
                           </span>
                           {slot1.seed && !slot1.isPlaceholder && (
-                            <span className="text-[9px] font-bold text-[#64748b]">
+                            <span className="text-[11px] font-bold text-[#64748b]">
                               {slot1.seed}
                             </span>
                           )}
@@ -768,7 +768,7 @@ export default function PublicMatchesPage() {
                             <span className={isTeam1Winner ? "text-[#34d399]" : "text-[#64748b]"}>
                               {match.team1Score}
                             </span>
-                            <span className="text-xs text-[#475569]">:</span>
+                            <span className="text-sm text-[#475569]">:</span>
                             <span className={isTeam2Winner ? "text-[#34d399]" : "text-[#64748b]"}>
                               {match.team2Score}
                             </span>
@@ -784,7 +784,7 @@ export default function PublicMatchesPage() {
                         </div>
                       ) : (
                         <div className="flex flex-col items-center">
-                          <div className="rounded-lg border border-[#7c3aed]/40 bg-[#7c3aed]/10 px-2.5 py-0.5 text-[10px] font-black tracking-wider text-[#a78bfa] shadow-[0_0_10px_rgba(124,58,237,0.2)]">
+                          <div className="rounded-lg border border-[#94a3b8]/40 bg-[#94a3b8]/10 px-2.5 py-0.5 text-[12px] font-black tracking-wider text-[#f1f5f9] shadow-[0_0_10px_rgba(148,163,184,0.2)]">
                             VS
                           </div>
                         </div>
@@ -808,7 +808,7 @@ export default function PublicMatchesPage() {
                             {match.matchNumber === 16 ? "🏆" : match.matchNumber === 14 ? "⚔️" : "★"}
                           </span>
                         ) : (
-                          <span className="text-xs font-black text-[#7c3aed]">
+                          <span className="text-sm font-black text-[#94a3b8]">
                             {slot2.tag.slice(1, 4) || "TBD"}
                           </span>
                         )}
@@ -816,7 +816,7 @@ export default function PublicMatchesPage() {
 
                       <div className="min-w-0 flex-1">
                         <p
-                          className={`truncate text-xs sm:text-sm font-black uppercase tracking-tight ${
+                          className={`truncate text-sm sm:text-sm font-black uppercase tracking-tight ${
                             isTeam2Winner
                               ? "text-[#34d399]"
                               : slot2.isPlaceholder
@@ -828,11 +828,11 @@ export default function PublicMatchesPage() {
                         </p>
                         <div className="mt-0.5 flex items-center justify-end gap-1.5">
                           {slot2.seed && !slot2.isPlaceholder && (
-                            <span className="text-[9px] font-bold text-[#64748b]">
+                            <span className="text-[11px] font-bold text-[#64748b]">
                               {slot2.seed}
                             </span>
                           )}
-                          <span className="rounded bg-[#1e1e3a] px-1.5 py-0.5 text-[8px] font-bold uppercase text-[#94a3b8]">
+                          <span className="rounded bg-[#1e1e3a] px-1.5 py-0.5 text-[10px] font-bold uppercase text-[#94a3b8]">
                             {slot2.tag}
                           </span>
                         </div>
@@ -841,11 +841,11 @@ export default function PublicMatchesPage() {
                   </div>
 
                   {/* Card Bottom Strip */}
-                  <div className="relative z-10 flex items-center justify-between border-t border-[#1e1e3a]/60 pt-2 text-[10px]">
+                  <div className="relative z-10 flex items-center justify-between border-t border-[#1e1e3a]/60 pt-2 text-[12px]">
                     <span className="font-semibold text-[#64748b]">
                       🕒 {formatDate(match.scheduledAt)}
                     </span>
-                    <span className="font-black uppercase tracking-wider text-[#22d3ee] group-hover:text-white transition flex items-center gap-1">
+                    <span className="font-black uppercase tracking-wider text-[#f1f5f9] group-hover:text-white transition flex items-center gap-1">
                       <span>DETAILS</span>
                       <span className="transition-transform group-hover:translate-x-1">→</span>
                     </span>

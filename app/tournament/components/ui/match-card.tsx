@@ -71,7 +71,7 @@ function TeamAvatar({ team, size = 32 }: { team?: Team; size?: number }) {
           className="h-full w-full object-contain"
         />
       ) : (
-        <span className="text-[9px] font-black text-[#7c3aed]">
+        <span className="text-[11px] font-black text-[#94a3b8]">
           {team.tag.slice(0, 3).toUpperCase()}
         </span>
       )}
@@ -104,7 +104,7 @@ function MatchCardInner({
     >
       {/* Header row */}
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[9px] font-black uppercase tracking-widest text-[#64748b]">
+        <span className="text-[11px] font-black uppercase tracking-widest text-[#64748b]">
           {phaseLabel(match.matchNumber)}
           {match.map && match.map !== "TBD" && (
             <span className="ml-2 opacity-60">· {match.map}</span>
@@ -126,7 +126,7 @@ function MatchCardInner({
               {t1?.tag ?? "TBD"}
             </div>
             {!compact && (
-              <div className="mt-0.5 text-[9px] text-[#475569]">{t1?.name ?? ""}</div>
+              <div className="mt-0.5 text-[11px] text-[#475569]">{t1?.name ?? ""}</div>
             )}
           </div>
           <TeamAvatar team={t1} size={avatarSize} />
@@ -150,7 +150,7 @@ function MatchCardInner({
             </div>
           ) : (
             <span
-              className={`font-black ${compact ? "text-xs" : "text-sm"} ${
+              className={`font-black ${compact ? "text-sm" : "text-sm"} ${
                 match.status === "Live" ? "text-[#ff2d55]" : "text-[#334155]"
               }`}
             >
@@ -171,7 +171,7 @@ function MatchCardInner({
               {t2?.tag ?? "TBD"}
             </div>
             {!compact && (
-              <div className="mt-0.5 text-[9px] text-[#475569]">{t2?.name ?? ""}</div>
+              <div className="mt-0.5 text-[11px] text-[#475569]">{t2?.name ?? ""}</div>
             )}
           </div>
         </div>
@@ -179,7 +179,7 @@ function MatchCardInner({
 
       {/* Footer: date */}
       {!compact && match.scheduledAt && (
-        <div className="mt-3 text-center text-[9px] text-[#475569]">
+        <div className="mt-3 text-center text-[11px] text-[#475569]">
           {formatScheduledAt(match.scheduledAt)}
         </div>
       )}

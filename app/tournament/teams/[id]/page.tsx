@@ -105,19 +105,19 @@ export default function PublicTeamDetailsPage() {
     <div className="relative min-h-screen text-[#f1f5f9] pb-20">
       {/* ── Ambient Neon Glow Orbs ────────────────────────────────────────── */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/12 blur-[180px]" />
+        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#94a3b8]/12 blur-[180px]" />
         <div className="absolute top-1/3 -right-40 h-[500px] w-[500px] rounded-full bg-[#ff2d55]/10 blur-[160px]" />
-        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#06b6d4]/8 blur-[160px]" />
+        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#94a3b8]/8 blur-[160px]" />
       </div>
 
       <TournamentNav />
 
-      <main className="relative z-10 mx-auto max-w-6xl px-4 pt-6 sm:px-8">
+      <main className="relative z-10 mx-auto max-w-[1440px] px-4 pt-6 sm:px-8">
         {/* Navigation Breadcrumb */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[#1e1e3a] pb-4">
           <Link
             href="/tournament/teams"
-            className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-[#94a3b8] transition hover:text-[#22d3ee]"
+            className="inline-flex items-center gap-1.5 text-sm font-black uppercase tracking-widest text-[#94a3b8] transition hover:text-[#f1f5f9]"
           >
             <span>← ALL TEAMS</span>
           </Link>
@@ -125,13 +125,13 @@ export default function PublicTeamDetailsPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/tournament/matches"
-              className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/90 px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-[#94a3b8] transition hover:border-[#7c3aed]/50 hover:text-white"
+              className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/90 px-3.5 py-2 text-[12px] font-black uppercase tracking-widest text-[#94a3b8] transition hover:border-[#94a3b8]/50 hover:text-white"
             >
               FIXTURES ↗
             </Link>
             <Link
               href="/tournament"
-              className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/90 px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-[#94a3b8] transition hover:border-[#06b6d4]/50 hover:text-[#22d3ee]"
+              className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/90 px-3.5 py-2 text-[12px] font-black uppercase tracking-widest text-[#94a3b8] transition hover:border-[#94a3b8]/50 hover:text-[#f1f5f9]"
             >
               STANDINGS ↗
             </Link>
@@ -156,7 +156,7 @@ export default function PublicTeamDetailsPage() {
           </section>
         ) : error ? (
           <div className="rounded-2xl border border-[#ff2d55]/40 bg-[#ff2d55]/10 p-12 text-center backdrop-blur-xl">
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
+            <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
               Database Error
             </p>
             <h1 className="mt-2 text-3xl font-black uppercase text-white">
@@ -167,14 +167,14 @@ export default function PublicTeamDetailsPage() {
             </p>
             <Link
               href="/tournament/teams"
-              className="mt-6 inline-flex rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55]/15 px-6 py-3 text-xs font-black uppercase tracking-wider text-[#ff4d6a] transition hover:bg-[#ff2d55]/25"
+              className="mt-6 inline-flex rounded-xl border border-[#ff2d55]/40 bg-[#ff2d55]/15 px-6 py-3 text-sm font-black uppercase tracking-wider text-[#ff4d6a] transition hover:bg-[#ff2d55]/25"
             >
               ← Return to Teams
             </Link>
           </div>
         ) : !team ? (
           <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-12 text-center backdrop-blur-xl">
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
+            <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
               Not Found
             </p>
             <h1 className="mt-2 text-3xl font-black uppercase text-white">
@@ -185,7 +185,7 @@ export default function PublicTeamDetailsPage() {
             </p>
             <Link
               href="/tournament/teams"
-              className="mt-6 inline-flex rounded-xl border border-[#1e1e3a] bg-[#0c0c18] px-6 py-3 text-xs font-black uppercase tracking-wider text-[#f1f5f9] transition hover:border-[#7c3aed]"
+              className="mt-6 inline-flex rounded-xl border border-[#1e1e3a] bg-[#0c0c18] px-6 py-3 text-sm font-black uppercase tracking-wider text-[#f1f5f9] transition hover:border-[#94a3b8]"
             >
               ← Browse All Teams
             </Link>
@@ -193,10 +193,10 @@ export default function PublicTeamDetailsPage() {
         ) : (
           <div className="space-y-8">
             {/* Team Hero Section */}
-            <section className="relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl shadow-[0_0_50px_rgba(124,58,237,0.06)] sm:p-8">
+            <section className="relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl shadow-[0_0_50px_rgba(148,163,184,0.06)] sm:p-8">
               <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
                 {/* Team Logo / Avatar */}
-                <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#7c3aed]/40 bg-[#080812] shadow-[0_0_30px_rgba(124,58,237,0.2)]">
+                <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#94a3b8]/40 bg-[#080812] shadow-[0_0_30px_rgba(148,163,184,0.2)]">
                   {team.logo ? (
                     <Image
                       src={team.logo}
@@ -207,7 +207,7 @@ export default function PublicTeamDetailsPage() {
                       className="h-full w-full object-contain p-2"
                     />
                   ) : (
-                    <span className="text-3xl font-black text-[#7c3aed]">
+                    <span className="text-3xl font-black text-[#94a3b8]">
                       {initials(team.name)}
                     </span>
                   )}
@@ -216,10 +216,10 @@ export default function PublicTeamDetailsPage() {
                 {/* Team Info */}
                 <div className="flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-full border border-[#06b6d4]/40 bg-[#06b6d4]/10 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#22d3ee]">
+                    <span className="rounded-full border border-[#94a3b8]/40 bg-[#94a3b8]/10 px-3 py-1 text-[12px] font-black uppercase tracking-wider text-[#f1f5f9]">
                       Seed #{team.seed}
                     </span>
-                    <span className="rounded-full border border-[#7c3aed]/40 bg-[#7c3aed]/10 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#a78bfa]">
+                    <span className="rounded-full border border-[#94a3b8]/40 bg-[#94a3b8]/10 px-3 py-1 text-[12px] font-black uppercase tracking-wider text-[#f1f5f9]">
                       [{team.tag}]
                     </span>
                   </div>
@@ -228,7 +228,7 @@ export default function PublicTeamDetailsPage() {
                     {team.name}
                   </h1>
 
-                  <p className="mt-1.5 text-xs font-bold uppercase tracking-widest text-[#64748b]">
+                  <p className="mt-1.5 text-sm font-bold uppercase tracking-widest text-[#64748b]">
                     Official Tournament Franchise
                   </p>
                 </div>
@@ -237,7 +237,7 @@ export default function PublicTeamDetailsPage() {
               {/* Stat Strip */}
               <div className="mt-8 grid grid-cols-3 divide-x divide-[#1e1e3a] border-t border-[#1e1e3a] pt-6">
                 <div className="text-center">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">
+                  <p className="text-[12px] font-black uppercase tracking-widest text-[#64748b]">
                     Victories
                   </p>
                   <p className="mt-1.5 text-2xl font-black text-[#34d399] sm:text-3xl">
@@ -246,7 +246,7 @@ export default function PublicTeamDetailsPage() {
                 </div>
 
                 <div className="text-center">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">
+                  <p className="text-[12px] font-black uppercase tracking-widest text-[#64748b]">
                     Defeats
                   </p>
                   <p className="mt-1.5 text-2xl font-black text-[#ff4d6a] sm:text-3xl">
@@ -255,10 +255,10 @@ export default function PublicTeamDetailsPage() {
                 </div>
 
                 <div className="text-center">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">
+                  <p className="text-[12px] font-black uppercase tracking-widest text-[#64748b]">
                     Roster Size
                   </p>
-                  <p className="mt-1.5 text-2xl font-black text-[#22d3ee] sm:text-3xl">
+                  <p className="mt-1.5 text-2xl font-black text-[#f1f5f9] sm:text-3xl">
                     {team.players.length}
                   </p>
                 </div>
@@ -269,14 +269,14 @@ export default function PublicTeamDetailsPage() {
             <section className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl">
               <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#7c3aed]">
+                  <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
                     LEADERSHIP
                   </p>
                   <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[#f1f5f9]">
                     Captain & Competitive Tier
                   </h2>
                 </div>
-                <span className="rounded-full border border-[#7c3aed]/30 bg-[#7c3aed]/10 px-3 py-1 text-[9px] font-black text-[#a78bfa]">
+                <span className="rounded-full border border-[#94a3b8]/30 bg-[#94a3b8]/10 px-3 py-1 text-[11px] font-black text-[#f1f5f9]">
                   LEADER
                 </span>
               </div>
@@ -286,7 +286,7 @@ export default function PublicTeamDetailsPage() {
                   ★
                 </span>
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+                  <p className="text-[12px] font-black uppercase tracking-wider text-[#64748b]">
                     Assigned Rank / In-Game Lead
                   </p>
                   <p className="text-base font-black text-[#f1f5f9]">
@@ -300,14 +300,14 @@ export default function PublicTeamDetailsPage() {
             <section className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl sm:p-8">
               <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#06b6d4]">
+                  <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
                     ACTIVE ROSTER
                   </p>
                   <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[#f1f5f9]">
                     Players ({team.players.length})
                   </h2>
                 </div>
-                <span className="rounded-full border border-[#06b6d4]/30 bg-[#06b6d4]/10 px-3 py-1 text-[9px] font-black text-[#22d3ee]">
+                <span className="rounded-full border border-[#94a3b8]/30 bg-[#94a3b8]/10 px-3 py-1 text-[11px] font-black text-[#f1f5f9]">
                   LINEUP
                 </span>
               </div>
@@ -321,10 +321,10 @@ export default function PublicTeamDetailsPage() {
                   {team.players.map((player, index) => (
                     <div
                       key={player.id || index}
-                      className="group flex items-center justify-between rounded-xl border border-[#1e1e3a] bg-[#080812]/80 p-4 transition hover:border-[#7c3aed]/50 hover:bg-[#0c0c18] hover:shadow-[0_0_20px_rgba(124,58,237,0.1)]"
+                      className="group flex items-center justify-between rounded-xl border border-[#1e1e3a] bg-[#080812]/80 p-4 transition hover:border-[#94a3b8]/50 hover:bg-[#0c0c18] hover:shadow-[0_0_20px_rgba(148,163,184,0.1)]"
                     >
                       <div className="flex items-center gap-3.5">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#1e1e3a] bg-[#0c0c18] text-xs font-black text-[#7c3aed] group-hover:border-[#7c3aed]/40 group-hover:text-[#a78bfa]">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#1e1e3a] bg-[#0c0c18] text-sm font-black text-[#94a3b8] group-hover:border-[#94a3b8]/40 group-hover:text-[#f1f5f9]">
                           {String(index + 1).padStart(2, "0")}
                         </div>
 
@@ -332,13 +332,13 @@ export default function PublicTeamDetailsPage() {
                           <p className="text-sm font-black uppercase tracking-tight text-[#f1f5f9]">
                             {player.name}
                           </p>
-                          <span className="mt-1 inline-flex rounded border border-[#06b6d4]/30 bg-[#06b6d4]/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#22d3ee]">
+                          <span className="mt-1 inline-flex rounded border border-[#94a3b8]/30 bg-[#94a3b8]/10 px-2 py-0.5 text-[11px] font-black uppercase tracking-wider text-[#f1f5f9]">
                             {player.role || "Flex"}
                           </span>
                         </div>
                       </div>
 
-                      <span className="text-sm font-black text-[#475569] transition group-hover:text-[#7c3aed]">
+                      <span className="text-sm font-black text-[#475569] transition group-hover:text-[#94a3b8]">
                         →
                       </span>
                     </div>
@@ -351,14 +351,14 @@ export default function PublicTeamDetailsPage() {
             <div className="flex flex-wrap items-center justify-between gap-4 pt-4">
               <Link
                 href="/tournament/teams"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#1e1e3a] bg-[#0c0c18] px-5 py-3 text-xs font-black uppercase tracking-wider text-[#94a3b8] transition hover:border-[#7c3aed]/50 hover:text-white"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#1e1e3a] bg-[#0c0c18] px-5 py-3 text-sm font-black uppercase tracking-wider text-[#94a3b8] transition hover:border-[#94a3b8]/50 hover:text-white"
               >
                 <span>← All Teams</span>
               </Link>
 
               <Link
                 href="/tournament/matches"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#06b6d4]/40 bg-[#06b6d4]/10 px-6 py-3 text-xs font-black uppercase tracking-wider text-[#22d3ee] transition hover:bg-[#06b6d4]/20 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#94a3b8]/40 bg-[#94a3b8]/10 px-6 py-3 text-sm font-black uppercase tracking-wider text-[#f1f5f9] transition hover:bg-[#94a3b8]/20 hover:shadow-[0_0_20px_rgba(148,163,184,0.2)]"
               >
                 <span>View Tournament Matches →</span>
               </Link>

@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import fs from "fs";
 import path from "path";
+import { verifyAdminSessionToken, ADMIN_SESSION_COOKIE } from "@/lib/admin-session";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey =
   process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-const SESSION_COOKIE = "valorant_admin_session";
+const SESSION_COOKIE = ADMIN_SESSION_COOKIE;
 
 function resolveTeamLogo(teamId: string, rawLogo?: string | null): string {
   const pngPath = path.join(process.cwd(), "public", "logos", `${teamId}.png`);
@@ -49,10 +50,7 @@ function getSupabaseAdmin() {
 }
 
 function isAdmin(request: NextRequest) {
-  return (
-    request.cookies.get(SESSION_COOKIE)?.value ===
-    "authenticated"
-  );
+  return verifyAdminSessionToken(request.cookies.get(SESSION_COOKIE)?.value);
 }
 
 async function getTeam(

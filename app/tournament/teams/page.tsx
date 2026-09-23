@@ -28,7 +28,7 @@ function TeamStatBox({
 }) {
   return (
     <div className="border-r border-[#1e1e3a] p-3.5 text-center last:border-r-0">
-      <p className="text-[8px] font-black uppercase tracking-widest text-[#475569]">
+      <p className="text-[10px] font-black uppercase tracking-widest text-[#475569]">
         {label}
       </p>
       <p className={`mt-1 text-lg font-black ${accent ?? "text-[#f1f5f9]"}`}>
@@ -69,16 +69,16 @@ export default function PublicTeamsPage() {
     <div className="min-h-screen text-[#f1f5f9]">
       {/* Ambient glow */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-40 -top-40 h-[500px] w-[500px] rounded-full bg-[#7c3aed]/7 blur-[160px]" />
-        <div className="absolute -right-40 top-20 h-[400px] w-[400px] rounded-full bg-[#06b6d4]/6 blur-[140px]" />
+        <div className="absolute -left-40 -top-40 h-[500px] w-[500px] rounded-full bg-[#94a3b8]/7 blur-[160px]" />
+        <div className="absolute -right-40 top-20 h-[400px] w-[400px] rounded-full bg-[#94a3b8]/6 blur-[140px]" />
       </div>
 
       <TournamentNav />
 
-      <main className="relative mx-auto max-w-7xl px-5 py-8 sm:px-8">
+      <main className="relative mx-auto max-w-[1680px] px-5 py-8 sm:px-8">
         {/* Page header */}
         <header className="mb-8 border-b border-[#1e1e3a] pb-6">
-          <div className="text-[9px] font-black uppercase tracking-[0.3em] text-[#06b6d4]">
+          <div className="text-[11px] font-black uppercase tracking-[0.3em] text-[#94a3b8]">
             Registered Rosters
           </div>
           <h1 className="mt-2 text-4xl font-black uppercase tracking-tight">Teams</h1>
@@ -88,20 +88,20 @@ export default function PublicTeamsPage() {
 
           {error && (
             <div className="mt-4 rounded-lg border border-[#ff2d55]/30 bg-[#ff2d55]/8 px-4 py-3">
-              <p className="text-xs font-bold text-[#ff4d6a]">{error}</p>
+              <p className="text-sm font-bold text-[#ff4d6a]">{error}</p>
             </div>
           )}
         </header>
 
         {loading ? (
           <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/80 py-24 text-center backdrop-blur-xl">
-            <p className="text-xs font-black uppercase tracking-widest text-[#64748b]">
+            <p className="text-sm font-black uppercase tracking-widest text-[#64748b]">
               Loading registered teams…
             </p>
           </div>
         ) : sortedTeams.length === 0 ? (
           <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/80 py-24 text-center backdrop-blur-xl">
-            <p className="text-xs font-black uppercase tracking-widest text-[#64748b]">
+            <p className="text-sm font-black uppercase tracking-widest text-[#64748b]">
               No teams registered
             </p>
           </div>
@@ -114,7 +114,7 @@ export default function PublicTeamsPage() {
                 <Link
                   key={team.id}
                   href={`/tournament/teams/${team.id}`}
-                  className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 backdrop-blur-xl transition hover:border-[#7c3aed]/50 hover:shadow-[0_0_30px_rgba(124,58,237,0.15)]"
+                  className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 backdrop-blur-xl transition hover:border-[#94a3b8]/50 hover:shadow-[0_0_30px_rgba(148,163,184,0.15)]"
                 >
                   <div>
                     {/* Team header */}
@@ -122,7 +122,7 @@ export default function PublicTeamsPage() {
                       {/* Logo / Avatar */}
                       <div
                         className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#1e1e3a] bg-[#030308]"
-                        style={{ boxShadow: "inset 0 0 12px rgba(124,58,237,0.08)" }}
+                        style={{ boxShadow: "inset 0 0 12px rgba(148,163,184,0.08)" }}
                       >
                         {team.logo ? (
                           <Image
@@ -134,7 +134,7 @@ export default function PublicTeamsPage() {
                             className="h-full w-full object-contain p-1"
                           />
                         ) : (
-                          <span className="text-base font-black text-[#7c3aed]">
+                          <span className="text-base font-black text-[#94a3b8]">
                             {initials(team.name)}
                           </span>
                         )}
@@ -142,10 +142,10 @@ export default function PublicTeamsPage() {
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="rounded border border-[#7c3aed]/40 bg-[#7c3aed]/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-[#a78bfa]">
+                          <span className="rounded border border-[#94a3b8]/40 bg-[#94a3b8]/10 px-2 py-0.5 text-[11px] font-black uppercase tracking-widest text-[#f1f5f9]">
                             SEED #{team.seed}
                           </span>
-                          <span className="rounded border border-[#1e1e3a] bg-[#030308] px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#64748b]">
+                          <span className="rounded border border-[#1e1e3a] bg-[#030308] px-2 py-0.5 text-[11px] font-black uppercase tracking-wider text-[#64748b]">
                             [{team.tag}]
                           </span>
                         </div>
@@ -170,7 +170,7 @@ export default function PublicTeamsPage() {
                       <TeamStatBox
                         label="Players"
                         value={team.players.length}
-                        accent="text-[#06b6d4]"
+                        accent="text-[#94a3b8]"
                       />
                     </div>
 
@@ -180,12 +180,12 @@ export default function PublicTeamsPage() {
                       {team.captainRank && (
                         <div className="mb-3.5 flex items-center justify-between rounded-lg border border-[#f59e0b]/30 bg-[#f59e0b]/10 px-3 py-1.5">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-xs text-[#f59e0b]">★</span>
-                            <span className="text-[9px] font-black uppercase tracking-wider text-[#f59e0b]">
+                            <span className="text-sm text-[#f59e0b]">★</span>
+                            <span className="text-[11px] font-black uppercase tracking-wider text-[#f59e0b]">
                               CAPTAIN
                             </span>
                           </div>
-                          <span className="text-xs font-black uppercase tracking-tight text-[#fbbf24]">
+                          <span className="text-sm font-black uppercase tracking-tight text-[#fbbf24]">
                             {team.captainRank}
                           </span>
                         </div>
@@ -209,7 +209,7 @@ export default function PublicTeamsPage() {
                           return (
                             <div
                               key={player.id || i}
-                              className={`flex items-center justify-between rounded-lg border px-2.5 py-1.5 text-xs transition ${
+                              className={`flex items-center justify-between rounded-lg border px-2.5 py-1.5 text-sm transition ${
                                 isLastOdd ? "col-span-2" : ""
                               } ${
                                 isCaptain
@@ -219,7 +219,7 @@ export default function PublicTeamsPage() {
                             >
                               <div className="flex items-center gap-1.5 min-w-0">
                                 <span
-                                  className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-[8px] font-black ${
+                                  className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-[10px] font-black ${
                                     isCaptain
                                       ? "bg-[#f59e0b]/20 text-[#f59e0b]"
                                       : "bg-[#0c0c18] text-[#475569]"
@@ -228,7 +228,7 @@ export default function PublicTeamsPage() {
                                   {i + 1}
                                 </span>
                                 <span
-                                  className={`truncate text-[11px] font-bold uppercase tracking-tight ${
+                                  className={`truncate text-[13px] font-bold uppercase tracking-tight ${
                                     isCaptain ? "text-[#fbbf24]" : "text-[#f1f5f9]"
                                   }`}
                                 >
@@ -237,7 +237,7 @@ export default function PublicTeamsPage() {
                               </div>
 
                               {isCaptain && (
-                                <span className="ml-1 shrink-0 rounded bg-[#f59e0b]/25 px-1 py-0.5 text-[8px] font-black uppercase text-[#fbbf24]">
+                                <span className="ml-1 shrink-0 rounded bg-[#f59e0b]/25 px-1 py-0.5 text-[10px] font-black uppercase text-[#fbbf24]">
                                   ★ CPT
                                 </span>
                               )}
@@ -249,9 +249,9 @@ export default function PublicTeamsPage() {
                   </div>
 
                   {/* Integrated Card Footer */}
-                  <div className="flex items-center justify-between border-t border-[#1e1e3a] bg-[#080812]/90 px-5 py-2.5 text-xs font-black tracking-widest text-[#7c3aed] transition-colors group-hover:bg-[#7c3aed]/15 group-hover:text-[#a78bfa]">
-                    <span className="text-[10px] uppercase">Roster Telemetry</span>
-                    <span className="flex items-center gap-1 text-[11px]">
+                  <div className="flex items-center justify-between border-t border-[#1e1e3a] bg-[#080812]/90 px-5 py-2.5 text-sm font-black tracking-widest text-[#94a3b8] transition-colors group-hover:bg-[#94a3b8]/15 group-hover:text-[#f1f5f9]">
+                    <span className="text-[12px] uppercase">Roster Telemetry</span>
+                    <span className="flex items-center gap-1 text-[13px]">
                       VIEW ROSTER{" "}
                       <span className="transition-transform group-hover:translate-x-1">
                         →

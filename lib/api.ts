@@ -7,7 +7,7 @@ export const defaultSettings: TournamentSettings = {
   prizePool: "",
   startDate: null,
   endDate: null,
-  tournamentStatus: "Upcoming",
+  tournamentStatus: "upcoming",
   announcement: "",
   logoUrl: "",
   bannerUrl: "",

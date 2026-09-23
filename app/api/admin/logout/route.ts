@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import { ADMIN_SESSION_COOKIE } from "@/lib/admin-session";
 
-const SESSION_COOKIE = "valorant_admin_session";
+const SESSION_COOKIE = ADMIN_SESSION_COOKIE;
 
 function shouldUseSecureCookie(request: Request) {
   const forwardedProtocol = request.headers

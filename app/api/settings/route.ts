@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import fs from "fs";
 import path from "path";
+import { verifyAdminSessionToken, ADMIN_SESSION_COOKIE } from "@/lib/admin-session";
 
-const SESSION_COOKIE = "valorant_admin_session";
+const SESSION_COOKIE = ADMIN_SESSION_COOKIE;
 const GAME_SETTINGS_PATH = path.join(process.cwd(), "app", "data", "game-settings.json");
 
 function readGameSettings() {
@@ -56,7 +57,7 @@ function getAdminClient() {
 }
 
 function isAdmin(request: NextRequest) {
-  return request.cookies.get(SESSION_COOKIE)?.value === "authenticated";
+  return verifyAdminSessionToken(request.cookies.get(SESSION_COOKIE)?.value);
 }
 
 function cleanString(value: unknown) {
@@ -73,8 +74,17 @@ function normalizeDate(value: unknown) {
   return date.toISOString();
 }
 
+const VALID_TOURNAMENT_STATUSES = [
+  "registration_open",
+  "upcoming",
+  "ongoing_group_stage",
+  "ongoing_playoffs",
+  "ongoing_grand_finals",
+  "concluded",
+];
+
 function validateStatus(value: string) {
-  return ["Upcoming", "Live", "Completed"].includes(value);
+  return VALID_TOURNAMENT_STATUSES.includes(value);
 }
 
 export async function GET() {
@@ -108,7 +118,7 @@ export async function GET() {
         prizePool: data.prize_pool ?? "",
         startDate: data.start_date,
         endDate: data.end_date,
-        tournamentStatus: data.tournament_status ?? "Upcoming",
+        tournamentStatus: data.tournament_status ?? "upcoming",
         announcement: data.announcement ?? "",
         logoUrl: data.logo_url ?? "",
         bannerUrl: data.banner_url ?? "",
@@ -269,7 +279,7 @@ export async function PUT(request: NextRequest) {
       prizePool: data.prize_pool ?? "",
       startDate: data.start_date,
       endDate: data.end_date,
-      tournamentStatus: data.tournament_status ?? "Upcoming",
+      tournamentStatus: data.tournament_status ?? "upcoming",
       announcement: data.announcement ?? "",
       logoUrl: data.logo_url ?? "",
       bannerUrl: data.banner_url ?? "",

@@ -8,13 +8,13 @@ type SectionHeaderProps = {
 export function SectionHeader({
   eyebrow,
   title,
-  eyebrowColor = "text-[#7c3aed]",
+  eyebrowColor = "text-[#94a3b8]",
   action,
 }: SectionHeaderProps) {
   return (
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <div className={`text-[9px] font-black uppercase tracking-[0.3em] ${eyebrowColor}`}>
+        <div className={`text-[11px] font-black uppercase tracking-[0.3em] ${eyebrowColor}`}>
           {eyebrow}
         </div>
         <h2 className="mt-1 text-xl font-black tracking-tight text-[#f1f5f9]">

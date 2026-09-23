@@ -6,6 +6,7 @@ import { StatusBadge } from "../ui/status-badge";
 import { MatchCard } from "../ui/match-card";
 import type { FrontPageProps, StandingsView } from "./types";
 import type { Match } from "@/lib/types";
+import { getTournamentStatusMeta } from "@/lib/tournament-status";
 
 function phaseMatches(matches: Match[]) {
   return matches
@@ -68,24 +69,28 @@ export function ValorantFrontPage({
       {/* ══════════════════════════════════════════════════════════════════
           1. EPIC CINEMATIC HERO ARENA
       ══════════════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden rounded-3xl border border-[#1e1e3a] bg-[#0c0c18]/90 p-6 sm:p-10 backdrop-blur-2xl shadow-[0_0_50px_rgba(124,58,237,0.1)]">
+      <section className="relative overflow-hidden rounded-3xl border border-[#1e1e3a] bg-[#0c0c18]/90 p-6 sm:p-10 backdrop-blur-2xl shadow-[0_0_50px_rgba(148,163,184,0.1)]">
         {/* Radial gradient backing */}
-        <div className="pointer-events-none absolute -right-20 -top-20 h-96 w-96 rounded-full bg-[#7c3aed]/15 blur-[100px]" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-96 w-96 rounded-full bg-[#2e2e5a]/15 blur-[100px]" />
         <div className="pointer-events-none absolute -left-20 -bottom-20 h-80 w-80 rounded-full bg-[#ff2d55]/10 blur-[100px]" />
 
         <div className="relative grid gap-8 lg:grid-cols-[1.3fr_1fr] items-center">
           {/* Left: Tournament Identity */}
           <div>
             <div className="flex flex-wrap items-center gap-2.5">
-              <span className="rounded-full border border-[#06b6d4]/40 bg-[#06b6d4]/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-[#22d3ee]">
+              <span className="rounded-full border border-[#2e2e5a]/40 bg-[#2e2e5a]/10 px-3 py-1 text-[12px] font-black uppercase tracking-widest text-[#94a3b8]">
                 {game.shortName} ESPORTS
               </span>
-              <span className="rounded-full border border-[#ff2d55]/40 bg-[#ff2d55]/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-[#ff4d6a]">
+              <span className="rounded-full border border-[#ff2d55]/40 bg-[#ff2d55]/10 px-3 py-1 text-[12px] font-black uppercase tracking-widest text-[#ff4d6a]">
                 SEASON 2026
               </span>
               {settings?.tournamentStatus && (
-                <span className="rounded-full border border-[#f59e0b]/40 bg-[#f59e0b]/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-[#fbbf24]">
-                  ● {settings.tournamentStatus.toUpperCase()}
+                <span
+                  className={`rounded-full border px-3 py-1 text-[12px] font-black uppercase tracking-widest ${
+                    getTournamentStatusMeta(settings.tournamentStatus).badgeClass
+                  }`}
+                >
+                  ● {getTournamentStatusMeta(settings.tournamentStatus).display}
                 </span>
               )}
             </div>
@@ -98,9 +103,9 @@ export function ValorantFrontPage({
               {settings?.tagline || "ONE GAME ONE SQUAD XMD FAMILY"}
             </p>
 
-            <div className="mt-6 flex flex-wrap items-center gap-6 text-xs text-[#94a3b8] border-t border-[#1e1e3a]/80 pt-5">
+            <div className="mt-6 flex flex-wrap items-center gap-6 text-sm text-[#94a3b8] border-t border-[#1e1e3a]/80 pt-5">
               <div className="flex items-center gap-2">
-                <span className="text-[#06b6d4]">📅</span>
+                <span className="text-[#94a3b8]">📅</span>
                 <span>
                   <strong className="text-white">SCHEDULE:</strong>{" "}
                   {settings?.startDate
@@ -126,7 +131,7 @@ export function ValorantFrontPage({
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <Link
                 href="/tournament/bracket"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#7c3aed]/50 bg-[#7c3aed]/20 px-5 py-2.5 text-xs font-black uppercase tracking-wider text-[#d8b4fe] transition hover:bg-[#7c3aed]/35 hover:shadow-[0_0_20px_rgba(124,58,237,0.3)]"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#ff2d55]/50 bg-[#ff2d55]/20 px-5 py-2.5 text-sm font-black uppercase tracking-wider text-[#ff8fa3] transition hover:bg-[#ff2d55]/35 hover:shadow-[0_0_20px_rgba(255,45,85,0.3)]"
               >
                 <span>PLAYOFF BRACKET</span>
                 <span>↗</span>
@@ -134,7 +139,7 @@ export function ValorantFrontPage({
 
               <Link
                 href="/tournament/matches"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#06b6d4]/40 bg-[#06b6d4]/15 px-5 py-2.5 text-xs font-black uppercase tracking-wider text-[#67e8f9] transition hover:bg-[#06b6d4]/25 hover:shadow-[0_0_20px_rgba(6,182,212,0.25)]"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#1e1e3a] bg-[#080812] px-5 py-2.5 text-sm font-black uppercase tracking-wider text-[#f1f5f9] transition hover:border-[#ff2d55]/50"
               >
                 <span>MATCHES</span>
                 <span>↗</span>
@@ -142,7 +147,7 @@ export function ValorantFrontPage({
 
               <Link
                 href="/tournament/teams"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#1e1e3a] bg-[#080812] px-5 py-2.5 text-xs font-black uppercase tracking-wider text-[#f1f5f9] transition hover:border-[#7c3aed]/50"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#1e1e3a] bg-[#080812] px-5 py-2.5 text-sm font-black uppercase tracking-wider text-[#f1f5f9] transition hover:border-[#ff2d55]/50"
               >
                 <span>TEAMS</span>
                 <span>↗</span>
@@ -156,11 +161,11 @@ export function ValorantFrontPage({
             <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-3">
               <div className="flex items-center gap-2">
                 <span className="text-xl">🏆</span>
-                <span className="text-xs font-black uppercase tracking-widest text-[#fbbf24]">
+                <span className="text-sm font-black uppercase tracking-widest text-[#fbbf24]">
                   PRIZE POOL ({settings?.prizePool ? `₹${settings.prizePool}` : "OFFICIAL"})
                 </span>
               </div>
-              <span className="rounded-full border border-[#f59e0b]/40 bg-[#f59e0b]/10 px-2.5 py-0.5 text-[9px] font-black uppercase text-[#fbbf24]">
+              <span className="rounded-full border border-[#f59e0b]/40 bg-[#f59e0b]/10 px-2.5 py-0.5 text-[11px] font-black uppercase text-[#fbbf24]">
                 OFFICIAL BREAKDOWN
               </span>
             </div>
@@ -192,7 +197,7 @@ export function ValorantFrontPage({
 
         {/* Announcement ticker if set */}
         {settings?.announcement && (
-          <div className="mt-6 flex items-center gap-3 rounded-xl border border-[#f59e0b]/30 bg-[#f59e0b]/10 p-3.5 text-xs text-[#fde68a]">
+          <div className="mt-6 flex items-center gap-3 rounded-xl border border-[#f59e0b]/30 bg-[#f59e0b]/10 p-3.5 text-sm text-[#fde68a]">
             <span className="text-base font-black">📢</span>
             <span className="font-bold">{settings.announcement}</span>
           </div>
@@ -204,30 +209,30 @@ export function ValorantFrontPage({
       ══════════════════════════════════════════════════════════════════ */}
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Card 1: Registered Teams */}
-        <div className="relative overflow-hidden rounded-2xl border border-[#06b6d4]/30 bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#06b6d4]/60 hover:shadow-[0_0_25px_rgba(6,182,212,0.15)]">
+        <div className="relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#2e2e5a]">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#22d3ee]">
+            <span className="text-[12px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
               FRANCHISES
             </span>
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#06b6d4]/40 bg-[#06b6d4]/10 text-sm">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#080812] text-sm">
               🛡️
             </span>
           </div>
           <div className="mt-3 text-3xl font-black text-white">
             {teams.length}
           </div>
-          <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#64748b]">
+          <p className="mt-1 text-[12px] font-bold uppercase tracking-wider text-[#64748b]">
             {teams.length} Verified Lineups
           </p>
         </div>
 
         {/* Card 2: Completed Matches */}
-        <div className="relative overflow-hidden rounded-2xl border border-[#10b981]/30 bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#10b981]/60 hover:shadow-[0_0_25px_rgba(16,185,129,0.15)]">
+        <div className="relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#2e2e5a]">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#34d399]">
+            <span className="text-[12px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
               COMPLETED
             </span>
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#10b981]/40 bg-[#10b981]/10 text-sm">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#080812] text-sm">
               ⚔️
             </span>
           </div>
@@ -235,7 +240,7 @@ export function ValorantFrontPage({
             {completed.length}{" "}
             <span className="text-sm font-bold text-[#64748b]">/ 16</span>
           </div>
-          <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#64748b]">
+          <p className="mt-1 text-[12px] font-bold uppercase tracking-wider text-[#64748b]">
             {completed.length} Official Results Logged
           </p>
         </div>
@@ -243,7 +248,7 @@ export function ValorantFrontPage({
         {/* Card 3: Live Arena */}
         <div className="relative overflow-hidden rounded-2xl border border-[#ff2d55]/30 bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#ff2d55]/60 hover:shadow-[0_0_25px_rgba(255,45,85,0.15)]">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
+            <span className="text-[12px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
               LIVE ARENA
             </span>
             <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#ff2d55]/40 bg-[#ff2d55]/10 text-sm">
@@ -253,18 +258,18 @@ export function ValorantFrontPage({
           <div className="mt-3 text-3xl font-black text-[#ff4d6a]">
             {live.length}
           </div>
-          <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#64748b]">
+          <p className="mt-1 text-[12px] font-bold uppercase tracking-wider text-[#64748b]">
             {live.length > 0 ? "Broadcast Stream Active" : "No Active Games"}
           </p>
         </div>
 
         {/* Card 4: Upcoming / Next */}
-        <div className="relative overflow-hidden rounded-2xl border border-[#7c3aed]/30 bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#7c3aed]/60 hover:shadow-[0_0_25px_rgba(124,58,237,0.15)]">
+        <div className="relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-5 backdrop-blur-xl transition hover:border-[#2e2e5a]">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#a78bfa]">
+            <span className="text-[12px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
               NEXT SCHEDULED
             </span>
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#7c3aed]/40 bg-[#7c3aed]/10 text-sm">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#080812] text-sm">
               ⏱️
             </span>
           </div>
@@ -279,26 +284,27 @@ export function ValorantFrontPage({
               "None"
             )}
           </div>
-          <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#a78bfa]">
+          <p className="mt-1 text-[12px] font-bold uppercase tracking-wider text-[#64748b]">
             {scheduled.length} Scheduled Fixture{scheduled.length === 1 ? "" : "s"}
           </p>
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          3. FEATURED UPCOMING / LIVE CLASH
+          3. FEATURED CLASH + ROADMAP — SIDE BY SIDE ON WIDE SCREENS
       ══════════════════════════════════════════════════════════════════ */}
+      <div className="grid gap-6 xl:grid-cols-[1.35fr_1fr] xl:items-start">
       {(activeLive || nextMatch) && (
-        <section className="relative overflow-hidden rounded-3xl border border-[#1e1e3a] bg-[#0c0c18]/90 p-6 sm:p-8 backdrop-blur-xl shadow-[0_0_40px_rgba(6,182,212,0.08)]">
+        <section className="relative overflow-hidden rounded-3xl border border-[#1e1e3a] bg-[#0c0c18]/90 p-6 sm:p-8 backdrop-blur-xl shadow-[0_0_40px_rgba(148,163,184,0.08)]">
           <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-7 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 text-xs font-black text-white">
+              <span className="flex h-7 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 text-sm font-black text-white">
                 M{String((activeLive || nextMatch)!.matchNumber).padStart(2, "0")}
               </span>
-              <span className="rounded-lg border border-[#06b6d4]/40 bg-[#06b6d4]/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-[#22d3ee]">
+              <span className="rounded-lg border border-[#2e2e5a]/40 bg-[#2e2e5a]/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-[#94a3b8]">
                 {(activeLive || nextMatch)!.stage}
               </span>
-              <span className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-[#94a3b8]">
+              <span className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-[#94a3b8]">
                 {(activeLive || nextMatch)!.map || "TBD"} • BO{(activeLive || nextMatch)!.bestOf}
               </span>
             </div>
@@ -309,7 +315,7 @@ export function ValorantFrontPage({
           <div className="mt-6 grid items-center gap-6 grid-cols-1 md:grid-cols-[1fr_auto_1fr]">
             {/* Team 1 */}
             <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] shadow-[0_0_20px_rgba(6,182,212,0.15)]">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] shadow-[0_0_20px_rgba(148,163,184,0.15)]">
                 {nextMatchTeam1?.logo ? (
                   <Image
                     src={nextMatchTeam1.logo}
@@ -320,7 +326,7 @@ export function ValorantFrontPage({
                     className="h-full w-full object-contain p-1"
                   />
                 ) : (
-                  <span className="text-sm font-black text-[#06b6d4]">
+                  <span className="text-sm font-black text-[#94a3b8]">
                     {(nextMatchTeam1?.tag ?? "TBD").slice(0, 3)}
                   </span>
                 )}
@@ -329,7 +335,7 @@ export function ValorantFrontPage({
                 <h4 className="text-lg sm:text-xl font-black uppercase tracking-tight text-white">
                   {nextMatchTeam1?.name ?? "TBD"}
                 </h4>
-                <p className="mt-0.5 text-xs font-bold text-[#64748b]">
+                <p className="mt-0.5 text-sm font-bold text-[#64748b]">
                   [{nextMatchTeam1?.tag ?? "TBD"}] • Seed #{nextMatchTeam1?.seed ?? "—"}
                 </p>
               </div>
@@ -337,17 +343,17 @@ export function ValorantFrontPage({
 
             {/* Center Hub */}
             <div className="flex flex-col items-center justify-center py-2 md:py-0 px-6">
-              <div className="rounded-2xl border border-[#7c3aed]/40 bg-[#7c3aed]/15 px-5 py-2 text-sm font-black tracking-widest text-[#d8b4fe] shadow-[0_0_20px_rgba(124,58,237,0.25)]">
+              <div className="rounded-2xl border border-[#2e2e5a]/40 bg-[#2e2e5a]/15 px-5 py-2 text-sm font-black tracking-widest text-[#f1f5f9] shadow-[0_0_20px_rgba(148,163,184,0.25)]">
                 VS
               </div>
-              <span className="mt-2 text-xs font-black uppercase tracking-wider text-[#06b6d4]">
+              <span className="mt-2 text-sm font-black uppercase tracking-wider text-[#94a3b8]">
                 {formatDate((activeLive || nextMatch)!.scheduledAt)}
               </span>
             </div>
 
             {/* Team 2 */}
             <div className="flex items-center gap-4 md:flex-row-reverse md:text-right">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] shadow-[0_0_20px_rgba(124,58,237,0.15)]">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] shadow-[0_0_20px_rgba(148,163,184,0.15)]">
                 {nextMatchTeam2?.logo ? (
                   <Image
                     src={nextMatchTeam2.logo}
@@ -358,7 +364,7 @@ export function ValorantFrontPage({
                     className="h-full w-full object-contain p-1"
                   />
                 ) : (
-                  <span className="text-sm font-black text-[#7c3aed]">
+                  <span className="text-sm font-black text-[#94a3b8]">
                     {(nextMatchTeam2?.tag ?? "TBD").slice(0, 3)}
                   </span>
                 )}
@@ -367,7 +373,7 @@ export function ValorantFrontPage({
                 <h4 className="text-lg sm:text-xl font-black uppercase tracking-tight text-white">
                   {nextMatchTeam2?.name ?? "TBD"}
                 </h4>
-                <p className="mt-0.5 text-xs font-bold text-[#64748b]">
+                <p className="mt-0.5 text-sm font-bold text-[#64748b]">
                   [{nextMatchTeam2?.tag ?? "TBD"}] • Seed #{nextMatchTeam2?.seed ?? "—"}
                 </p>
               </div>
@@ -375,12 +381,12 @@ export function ValorantFrontPage({
           </div>
 
           <div className="mt-6 flex items-center justify-between border-t border-[#1e1e3a] pt-4">
-            <span className="text-xs text-[#64748b]">
+            <span className="text-sm text-[#64748b]">
               Featured Match Stream & Scoreboard Telemetry
             </span>
             <Link
               href={`/tournament/matches/${encodeURIComponent((activeLive || nextMatch)!.id)}`}
-              className="inline-flex items-center gap-2 rounded-xl border border-[#06b6d4]/40 bg-[#06b6d4]/10 px-4 py-2 text-xs font-black uppercase tracking-wider text-[#22d3ee] transition hover:bg-[#06b6d4]/20"
+              className="inline-flex items-center gap-2 rounded-xl border border-[#2e2e5a]/40 bg-[#2e2e5a]/10 px-4 py-2 text-sm font-black uppercase tracking-wider text-[#94a3b8] transition hover:bg-[#2e2e5a]/20"
             >
               <span>OPEN MATCH TELEMETRY</span>
               <span>→</span>
@@ -395,7 +401,7 @@ export function ValorantFrontPage({
       <section className="rounded-3xl border border-[#1e1e3a] bg-[#0c0c18]/90 p-6 sm:p-8 backdrop-blur-xl">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#1e1e3a] pb-4">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ff2d55]">
+            <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#ff2d55]">
               TOURNAMENT ARCHITECTURE
             </p>
             <h3 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
@@ -404,60 +410,60 @@ export function ValorantFrontPage({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-black uppercase tracking-wider text-[#22d3ee]">
+            <span className="text-sm font-black uppercase tracking-wider text-[#94a3b8]">
               Group Stage: {groupCompleted}/12 Matches
             </span>
-            <span className="rounded-full bg-[#06b6d4]/20 px-2 py-0.5 text-[10px] font-black text-[#22d3ee]">
+            <span className="rounded-full bg-[#2e2e5a]/20 px-2 py-0.5 text-[12px] font-black text-[#94a3b8]">
               {progress}%
             </span>
           </div>
         </div>
 
         {/* 3-Stage Milestone Grid */}
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
+        <div className="mt-6 grid gap-4 sm:grid-cols-3 xl:grid-cols-1">
           {/* Milestone 1: Group Stage */}
-          <div className="relative rounded-2xl border border-[#06b6d4]/40 bg-[#080812] p-5 shadow-[0_0_25px_rgba(6,182,212,0.1)]">
+          <div className="relative rounded-2xl border border-[#2e2e5a]/40 bg-[#080812] p-5 shadow-[0_0_25px_rgba(148,163,184,0.1)]">
             <div className="flex items-center justify-between">
-              <span className="rounded bg-[#06b6d4]/20 px-2 py-0.5 text-[9px] font-black uppercase text-[#22d3ee]">
+              <span className="rounded bg-[#2e2e5a]/20 px-2 py-0.5 text-[11px] font-black uppercase text-[#94a3b8]">
                 PHASE 1
               </span>
-              <span className="text-xs font-black text-[#34d399]">
+              <span className="text-sm font-black text-[#34d399]">
                 {groupCompleted === 12 ? "COMPLETED" : "ACTIVE STAGE"}
               </span>
             </div>
             <h4 className="mt-3 text-base font-black uppercase text-white">
               Group Stage
             </h4>
-            <p className="mt-1 text-xs text-[#64748b]">
+            <p className="mt-1 text-sm text-[#64748b]">
               12 Fixtures • Single Round-Robin. Top 2 advance to Qualifier 1; 3rd & 4th to Eliminator.
             </p>
             <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-[#1e1e3a]">
               <div
-                className="h-full bg-gradient-to-r from-[#06b6d4] to-[#34d399]"
+                className="h-full bg-gradient-to-r from-[#2e2e5a] to-[#34d399]"
                 style={{ width: `${progress}%` }}
               />
             </div>
           </div>
 
           {/* Milestone 2: Double-Elimination Playoffs */}
-          <div className="relative rounded-2xl border border-[#7c3aed]/30 bg-[#080812] p-5">
+          <div className="relative rounded-2xl border border-[#2e2e5a]/30 bg-[#080812] p-5">
             <div className="flex items-center justify-between">
-              <span className="rounded bg-[#7c3aed]/20 px-2 py-0.5 text-[9px] font-black uppercase text-[#a78bfa]">
+              <span className="rounded bg-[#2e2e5a]/20 px-2 py-0.5 text-[11px] font-black uppercase text-[#94a3b8]">
                 PHASE 2
               </span>
-              <span className="text-xs font-black text-[#a78bfa]">
+              <span className="text-sm font-black text-[#94a3b8]">
                 {groupCompleted === 12 ? "UNLOCKED" : "LOCKED"}
               </span>
             </div>
             <h4 className="mt-3 text-base font-black uppercase text-white">
               IPL Playoffs
             </h4>
-            <p className="mt-1 text-xs text-[#64748b]">
+            <p className="mt-1 text-sm text-[#64748b]">
               3 Matches (Q1, Eliminator, Q2). Top seeds get two chances to qualify for the Grand Final.
             </p>
             <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-[#1e1e3a]">
               <div
-                className="h-full bg-[#7c3aed]"
+                className="h-full bg-[#2e2e5a]"
                 style={{ width: groupCompleted === 12 ? "30%" : "0%" }}
               />
             </div>
@@ -466,17 +472,17 @@ export function ValorantFrontPage({
           {/* Milestone 3: Grand Final */}
           <div className="relative rounded-2xl border border-[#f59e0b]/30 bg-[#080812] p-5">
             <div className="flex items-center justify-between">
-              <span className="rounded bg-[#f59e0b]/20 px-2 py-0.5 text-[9px] font-black uppercase text-[#fbbf24]">
+              <span className="rounded bg-[#f59e0b]/20 px-2 py-0.5 text-[11px] font-black uppercase text-[#fbbf24]">
                 CHAMPIONSHIP
               </span>
-              <span className="text-xs font-black text-[#fbbf24]">
+              <span className="text-sm font-black text-[#fbbf24]">
                 OCT 23
               </span>
             </div>
             <h4 className="mt-3 text-base font-black uppercase text-white">
               Grand Final
             </h4>
-            <p className="mt-1 text-xs text-[#64748b]">
+            <p className="mt-1 text-sm text-[#64748b]">
               The ultimate championship series. Winner claims the gold trophy & ₹6,000 prize pool.
             </p>
             <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-[#1e1e3a]">
@@ -488,6 +494,7 @@ export function ValorantFrontPage({
           </div>
         </div>
       </section>
+      </div>
 
       {/* ══════════════════════════════════════════════════════════════════
           5. BROADCAST STANDINGS DECK
@@ -496,7 +503,7 @@ export function ValorantFrontPage({
         <div className="border-b border-[#1e1e3a] p-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#f59e0b]">
+              <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#f59e0b]">
                 TELEMETRY
               </p>
               <h3 className="mt-1 text-2xl font-black uppercase tracking-tight text-white">
@@ -512,7 +519,7 @@ export function ValorantFrontPage({
                     key={tab.id}
                     type="button"
                     onClick={() => setStandingsView(tab.id)}
-                    className={`rounded-xl border px-4 py-2 text-[10px] font-black tracking-widest uppercase transition ${
+                    className={`rounded-xl border px-4 py-2 text-[12px] font-black tracking-widest uppercase transition ${
                       active
                         ? "border-[#ff2d55]/70 bg-[#ff2d55]/20 text-[#ff4d6a] shadow-[0_0_15px_rgba(255,45,85,0.2)]"
                         : "border-[#1e1e3a] bg-[#080812] text-[#64748b] hover:border-[#2e2e5a] hover:text-white"
@@ -531,29 +538,26 @@ export function ValorantFrontPage({
           <div className="overflow-x-auto">
             <table className="w-full min-w-[700px] text-left">
               <thead>
-                <tr className="border-b border-[#1e1e3a] bg-[#080812] text-[10px] font-black uppercase tracking-widest text-[#64748b]">
-                  <th className="px-6 py-4">Rank</th>
+                <tr className="border-b border-[#1e1e3a] bg-[#080812] text-[13px] font-black uppercase tracking-widest text-[#94a3b8]">
+                  <th className="px-6 py-4 w-16">#</th>
                   <th className="px-6 py-4">Franchise</th>
                   <th className="px-4 py-4 text-center">Played</th>
                   <th className="px-4 py-4 text-center">Won</th>
                   <th className="px-4 py-4 text-center">Lost</th>
                   <th className="px-4 py-4 text-center">Round Diff</th>
-                  <th className="px-6 py-4 text-center">Total Points</th>
+                  <th className="px-6 py-4 text-center">Points</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1e1e3a] text-sm font-semibold">
+              <tbody className="divide-y divide-[#1e1e3a] text-base font-semibold">
                 {standings.map((s, i) => {
                   const isUpperBracket = i < 2;
                   const isLowerBracket = i >= 2 && i < 4;
 
-                  const rankStyle =
-                    i === 0
-                      ? "border-l-4 border-l-[#f59e0b] bg-[#f59e0b]/5"
-                      : i === 1
-                      ? "border-l-4 border-l-[#38bdf8] bg-[#38bdf8]/5"
-                      : i === 2
-                      ? "border-l-4 border-l-[#d97706] bg-[#d97706]/5"
-                      : "border-l-4 border-l-[#475569]";
+                  const rankStyle = isUpperBracket
+                    ? "border-l-4 border-l-[#34d399]"
+                    : isLowerBracket
+                    ? "border-l-4 border-l-[#fbbf24]"
+                    : "border-l-4 border-l-transparent";
 
                   return (
                     <tr
@@ -561,30 +565,10 @@ export function ValorantFrontPage({
                       className={`transition hover:bg-[#080812]/70 ${rankStyle}`}
                     >
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs font-black ${
-                              i === 0
-                                ? "bg-[#f59e0b]/20 text-[#fbbf24]"
-                                : i === 1
-                                ? "bg-[#38bdf8]/20 text-[#38bdf8]"
-                                : i === 2
-                                ? "bg-[#d97706]/20 text-[#fbbf24]"
-                                : "bg-[#1e1e3a] text-[#64748b]"
-                            }`}
-                          >
-                            {String(i + 1).padStart(2, "0")}
+                        <div className="flex items-center gap-3">
+                          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1e1e3a] text-lg font-black text-white">
+                            {i + 1}
                           </span>
-                          {isUpperBracket && (
-                            <span className="hidden sm:inline-block rounded bg-[#10b981]/15 px-2 py-0.5 text-[8px] font-black uppercase text-[#34d399]">
-                              UPPER BRACKET
-                            </span>
-                          )}
-                          {isLowerBracket && (
-                            <span className="hidden sm:inline-block rounded bg-[#f59e0b]/15 px-2 py-0.5 text-[8px] font-black uppercase text-[#fbbf24]">
-                              LOWER BRACKET
-                            </span>
-                          )}
                         </div>
                       </td>
 
@@ -593,28 +577,34 @@ export function ValorantFrontPage({
                           href={`/tournament/teams/${encodeURIComponent(s.team.id)}`}
                           className="group flex items-center gap-3.5"
                         >
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#1e1e3a] bg-[#080812] group-hover:border-[#7c3aed]">
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#1e1e3a] bg-[#080812] group-hover:border-[#ff2d55]/60">
                             {s.team.logo ? (
                               <Image
                                 src={s.team.logo}
                                 alt={s.team.name}
-                                width={40}
-                                height={40}
+                                width={44}
+                                height={44}
                                 unoptimized
                                 className="h-full w-full object-contain p-1"
                               />
                             ) : (
-                              <span className="text-xs font-black text-[#7c3aed]">
+                              <span className="text-sm font-black text-[#94a3b8]">
                                 {s.team.tag.slice(0, 3)}
                               </span>
                             )}
                           </div>
                           <div>
-                            <p className="font-black uppercase text-white group-hover:text-[#22d3ee] transition-colors">
+                            <p className="text-base font-black uppercase text-white group-hover:text-[#ff4d6a] transition-colors">
                               {s.team.name}
                             </p>
-                            <p className="text-[10px] font-bold uppercase text-[#64748b]">
+                            <p className="text-[13px] font-bold uppercase text-[#64748b]">
                               [{s.team.tag}] • Seed #{s.team.seed}
+                              {isUpperBracket && (
+                                <span className="ml-2 text-[#34d399]">● Advances to Q1</span>
+                              )}
+                              {isLowerBracket && (
+                                <span className="ml-2 text-[#fbbf24]">● Eliminator</span>
+                              )}
                             </p>
                           </div>
                         </Link>
@@ -632,16 +622,22 @@ export function ValorantFrontPage({
                         {s.losses}
                       </td>
 
-                      <td className="px-4 py-4 text-center font-bold text-[#22d3ee]">
+                      <td
+                        className={`px-4 py-4 text-center font-bold ${
+                          s.roundDifference > 0
+                            ? "text-[#34d399]"
+                            : s.roundDifference < 0
+                            ? "text-[#ff4d6a]"
+                            : "text-[#94a3b8]"
+                        }`}
+                      >
                         {s.roundDifference > 0
                           ? `+${s.roundDifference}`
                           : s.roundDifference}
                       </td>
 
-                      <td className="px-6 py-4 text-center">
-                        <span className="inline-block rounded-xl border border-[#f59e0b]/40 bg-[#f59e0b]/15 px-3 py-1 text-sm font-black text-[#fbbf24]">
-                          {s.points} PTS
-                        </span>
+                      <td className="px-6 py-4 text-center text-lg font-black text-white">
+                        {s.points}
                       </td>
                     </tr>
                   );
@@ -650,13 +646,13 @@ export function ValorantFrontPage({
             </table>
 
             {/* Qualification Footer Legend */}
-            <div className="flex flex-wrap items-center gap-6 border-t border-[#1e1e3a] bg-[#080812] px-6 py-3 text-[10px] font-black uppercase tracking-wider text-[#64748b]">
+            <div className="flex flex-wrap items-center gap-6 border-t border-[#1e1e3a] bg-[#080812] px-6 py-3 text-[13px] font-black uppercase tracking-wider text-[#64748b]">
               <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#10b981]" />
+                <span className="h-2 w-2 rounded-full bg-[#34d399]" />
                 <span>Top 2 Advance to Upper Bracket (Q1)</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#f59e0b]" />
+                <span className="h-2 w-2 rounded-full bg-[#fbbf24]" />
                 <span>3rd & 4th Advance to Eliminator (Lower Bracket)</span>
               </div>
             </div>
@@ -666,8 +662,8 @@ export function ValorantFrontPage({
         {/* Qualifiers path view */}
         {standingsView === "qualifiers" && (
           <div className="grid gap-6 p-6 md:grid-cols-2">
-            <div className="rounded-2xl border border-[#7c3aed]/30 bg-[#080812] p-5">
-              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#a78bfa]">
+            <div className="rounded-2xl border border-[#2e2e5a]/30 bg-[#080812] p-5">
+              <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
                 QUALIFICATION SEEDING
               </p>
               <h4 className="mt-1 text-lg font-black text-white">
@@ -680,15 +676,15 @@ export function ValorantFrontPage({
                     className="flex items-center justify-between rounded-xl border border-[#1e1e3a] bg-[#0c0c18] p-3.5"
                   >
                     <div>
-                      <div className="text-xs font-black uppercase text-white">
+                      <div className="text-sm font-black uppercase text-white">
                         {item.team.name}
                       </div>
-                      <div className="mt-0.5 text-[9px] font-bold text-[#64748b]">
+                      <div className="mt-0.5 text-[11px] font-bold text-[#64748b]">
                         STANDINGS SEED #{i + 1}
                       </div>
                     </div>
                     <span
-                      className={`rounded-lg px-2.5 py-1 text-[9px] font-black uppercase ${
+                      className={`rounded-lg px-2.5 py-1 text-[11px] font-black uppercase ${
                         i < 2
                           ? "border border-[#10b981]/40 bg-[#10b981]/15 text-[#34d399]"
                           : "border border-[#f59e0b]/40 bg-[#f59e0b]/15 text-[#fbbf24]"
@@ -703,7 +699,7 @@ export function ValorantFrontPage({
 
             <div className="space-y-3">
               {qualifierMs.length === 0 ? (
-                <div className="rounded-2xl border border-[#1e1e3a] bg-[#080812] p-10 text-center text-xs text-[#64748b]">
+                <div className="rounded-2xl border border-[#1e1e3a] bg-[#080812] p-10 text-center text-sm text-[#64748b]">
                   Qualifier matches will be unlocked after all 12 Group Stage matches conclude.
                 </div>
               ) : (
@@ -721,7 +717,7 @@ export function ValorantFrontPage({
             {!grandFinal ? (
               <div className="rounded-2xl border border-[#f59e0b]/30 bg-[#080812] p-12 text-center">
                 <div className="text-3xl">🏆</div>
-                <p className="mt-3 text-xs font-black uppercase tracking-[0.25em] text-[#fbbf24]">
+                <p className="mt-3 text-sm font-black uppercase tracking-[0.25em] text-[#fbbf24]">
                   GRAND FINAL CHAMPIONSHIP
                 </p>
                 <p className="mt-2 text-sm text-[#64748b]">
@@ -742,10 +738,10 @@ export function ValorantFrontPage({
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1e1e3a] pb-5">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
+              <span className="text-[12px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
                 OFFICIAL PARTNERS
               </span>
-              <span className="rounded-full border border-[#f59e0b]/40 bg-[#f59e0b]/10 px-2 py-0.5 text-[8px] font-black uppercase text-[#fbbf24]">
+              <span className="rounded-full border border-[#f59e0b]/40 bg-[#f59e0b]/10 px-2 py-0.5 text-[10px] font-black uppercase text-[#fbbf24]">
                 4 CHAMPIONSHIP SPONSORS
               </span>
             </div>
@@ -753,122 +749,109 @@ export function ValorantFrontPage({
               Tournament Sponsors
             </h4>
           </div>
-          <span className="rounded-full border border-[#1e1e3a] bg-[#080812] px-3.5 py-1 text-[10px] font-black text-[#94a3b8]">
+          <span className="rounded-full border border-[#1e1e3a] bg-[#080812] px-3.5 py-1 text-[12px] font-black text-[#94a3b8]">
             PRESENTED BY XMD FAMILY
           </span>
         </div>
 
-        {/* 4 Dedicated Sponsor Cards */}
+        {/* 4 Equal-Weight Sponsor Cards */}
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {/* 1. SHEIKH KUNJAPPU */}
-          <div className="group relative flex flex-col items-center justify-between overflow-hidden rounded-2xl border border-[#ff2d55]/50 bg-gradient-to-b from-[#ff2d55]/15 via-[#0c0c18] to-[#080812] p-6 text-center transition hover:border-[#f59e0b] hover:shadow-[0_0_35px_rgba(255,45,85,0.25)]">
-            <div className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-[#ff2d55]/20 blur-2xl" />
+          {[
+            {
+              name: "Sheikh Kunjappu",
+              role: "Title Partner & Championship Patron",
+              image: "/sponsors/sheikh-kunjappu.jpg",
+              fit: "object-cover",
+            },
+            {
+              name: "OSDF Clan",
+              role: "Official Clan & Community Sponsor",
+              image: "/sponsors/osdf-clan.png",
+              fit: "object-contain p-3",
+            },
+            {
+              name: "Deuz X Gaming",
+              role: "Esports Media & Gaming Partner",
+              image: "/sponsors/deuz-x.png",
+              fit: "object-contain p-2.5",
+            },
+            {
+              name: "Agon Desantos",
+              role: "Championship Supporter & Sponsor",
+              image: "/sponsors/agon-desantos.png",
+              fit: "object-contain p-1",
+            },
+          ].map((sponsor) => (
+            <div
+              key={sponsor.name}
+              className="group relative flex flex-col items-center justify-between overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/80 p-6 text-center transition hover:border-white/50 hover:shadow-[0_0_25px_rgba(255,255,255,0.1)]"
+            >
+              <span className="rounded-full border border-[#1e1e3a] bg-[#080812] px-3 py-1 text-[11px] font-black uppercase tracking-widest text-[#94a3b8]">
+                OFFICIAL SPONSOR
+              </span>
 
-            <span className="rounded-full border border-[#f59e0b]/50 bg-[#f59e0b]/15 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-[#fbbf24] shadow-[0_0_12px_rgba(245,158,11,0.2)]">
-              ★ TITLE SPONSOR
+              <div className="my-5 flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[#94a3b8]/40 bg-[#080812] shadow-[0_0_25px_rgba(255,255,255,0.1)] transition-transform duration-300 group-hover:scale-105">
+                <Image
+                  src={sponsor.image}
+                  alt={sponsor.name}
+                  width={112}
+                  height={112}
+                  unoptimized
+                  className={`h-full w-full ${sponsor.fit}`}
+                />
+              </div>
+
+              <div>
+                <h5 className="text-lg font-black uppercase tracking-tight text-white group-hover:text-[#f1f5f9] transition-colors">
+                  {sponsor.name}
+                </h5>
+                <p className="mt-1 text-[12px] font-bold uppercase tracking-wider text-[#64748b]">
+                  {sponsor.role}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          7. OFFICIAL CASTERS / BROADCAST TALENT
+      ══════════════════════════════════════════════════════════════════ */}
+      <section className="rounded-3xl border border-[#1e1e3a] bg-[#0c0c18]/90 p-6 sm:p-8 backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1e1e3a] pb-5">
+          <div>
+            <span className="text-[12px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
+              BROADCAST TALENT
             </span>
-
-            <div className="my-5 relative flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[#f59e0b]/60 bg-[#080812] shadow-[0_0_30px_rgba(255,45,85,0.35)] transition-transform duration-300 group-hover:scale-105">
-              <Image
-                src="/sponsors/sheikh-kunjappu.jpg"
-                alt="Sheikh Kunjappu"
-                width={112}
-                height={112}
-                unoptimized
-                className="h-full w-full object-cover"
-              />
-            </div>
-
-            <div>
-              <h5 className="text-lg font-black uppercase tracking-tight text-white group-hover:text-[#fbbf24] transition-colors">
-                Sheikh Kunjappu
-              </h5>
-              <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#ff6080]">
-                Title Partner & Championship Patron
-              </p>
-            </div>
+            <h4 className="mt-1 text-2xl font-black uppercase tracking-tight text-white">
+              Official Casters
+            </h4>
           </div>
+          <span className="rounded-full border border-[#1e1e3a] bg-[#080812] px-3.5 py-1 text-[12px] font-black text-[#94a3b8]">
+            WATCH ON YOUTUBE
+          </span>
+        </div>
 
-          {/* 2. OSDF CLAN */}
-          <div className="group relative flex flex-col items-center justify-between overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/80 p-6 text-center transition hover:border-white/50 hover:shadow-[0_0_25px_rgba(255,255,255,0.1)]">
-            <span className="rounded-full border border-[#1e1e3a] bg-[#080812] px-3 py-1 text-[9px] font-black uppercase tracking-widest text-[#94a3b8]">
-              COMMUNITY PARTNER
-            </span>
-
-            <div className="my-5 flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[#94a3b8]/40 bg-[#080812] p-3 shadow-[0_0_25px_rgba(255,255,255,0.1)] transition-transform duration-300 group-hover:scale-105">
-              <Image
-                src="/sponsors/osdf-clan.png"
-                alt="OSDF Clan"
-                width={112}
-                height={112}
-                unoptimized
-                className="h-full w-full object-contain"
-              />
-            </div>
-
-            <div>
-              <h5 className="text-lg font-black uppercase tracking-tight text-white group-hover:text-[#f1f5f9] transition-colors">
-                OSDF Clan
-              </h5>
-              <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#64748b]">
-                Official Clan & Community Sponsor
-              </p>
-            </div>
-          </div>
-
-          {/* 3. DEUZ X GAMING */}
-          <div className="group relative flex flex-col items-center justify-between overflow-hidden rounded-2xl border border-[#7c3aed]/40 bg-[#0c0c18]/80 p-6 text-center transition hover:border-[#7c3aed] hover:shadow-[0_0_25px_rgba(124,58,237,0.2)]">
-            <span className="rounded-full border border-[#7c3aed]/30 bg-[#7c3aed]/10 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-[#a78bfa]">
-              GAMING PARTNER
-            </span>
-
-            <div className="my-5 flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[#7c3aed]/50 bg-[#080812] p-2.5 shadow-[0_0_25px_rgba(124,58,237,0.25)] transition-transform duration-300 group-hover:scale-105">
-              <Image
-                src="/sponsors/deuz-x.png"
-                alt="Deuz X Gaming"
-                width={112}
-                height={112}
-                unoptimized
-                className="h-full w-full object-contain"
-              />
-            </div>
-
-            <div>
-              <h5 className="text-lg font-black uppercase tracking-tight text-white group-hover:text-[#a78bfa] transition-colors">
-                Deuz X Gaming
-              </h5>
-              <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#9d63ff]">
-                Esports Media & Gaming Partner
-              </p>
-            </div>
-          </div>
-
-          {/* 4. AGON DESANTOS */}
-          <div className="group relative flex flex-col items-center justify-between overflow-hidden rounded-2xl border border-[#06b6d4]/40 bg-[#0c0c18]/80 p-6 text-center transition hover:border-[#06b6d4] hover:shadow-[0_0_25px_rgba(6,182,212,0.2)]">
-            <span className="rounded-full border border-[#06b6d4]/30 bg-[#06b6d4]/10 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-[#22d3ee]">
-              ELITE SPONSOR
-            </span>
-
-            <div className="my-5 flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[#06b6d4]/50 bg-[#080812] p-1 shadow-[0_0_25px_rgba(6,182,212,0.25)] transition-transform duration-300 group-hover:scale-105">
-              <Image
-                src="/sponsors/agon-desantos.png"
-                alt="Agon Desantos"
-                width={112}
-                height={112}
-                unoptimized
-                className="h-full w-full object-contain"
-              />
-            </div>
-
-            <div>
-              <h5 className="text-lg font-black uppercase tracking-tight text-white group-hover:text-[#22d3ee] transition-colors">
-                Agon Desantos
-              </h5>
-              <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#06b6d4]">
-                Championship Supporter & Sponsor
-              </p>
-            </div>
-          </div>
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {[1, 2, 3, 4].map((slot) => (
+            <a
+              key={slot}
+              href="#"
+              className="group flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-[#1e1e3a] bg-[#080812]/60 p-6 text-center transition hover:border-[#ff2d55]/50 hover:bg-[#080812]"
+            >
+              <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed border-[#1e1e3a] bg-[#0c0c18] text-2xl text-[#64748b] transition group-hover:border-[#ff2d55]/50 group-hover:text-[#ff4d6a]">
+                ▶
+              </div>
+              <div>
+                <p className="text-sm font-black uppercase tracking-wider text-[#94a3b8] group-hover:text-white transition-colors">
+                  Caster Slot {slot}
+                </p>
+                <p className="mt-1 text-[11px] font-bold uppercase tracking-wider text-[#64748b]">
+                  YouTube channel link coming soon
+                </p>
+              </div>
+            </a>
+          ))}
         </div>
       </section>
     </div>

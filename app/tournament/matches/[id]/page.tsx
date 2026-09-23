@@ -90,27 +90,27 @@ function statusBadge(status: MatchStatus) {
   switch (status) {
     case "Live":
       return (
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#ff2d55]/40 bg-[#ff2d55]/15 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-[#ff4d6a]">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#ff2d55]/40 bg-[#ff2d55]/15 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#ff4d6a]">
           <span className="h-1.5 w-1.5 rounded-full bg-[#ff2d55] animate-pulse" />
           LIVE NOW
         </span>
       );
     case "Completed":
       return (
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#10b981]/40 bg-[#10b981]/15 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-[#34d399]">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#10b981]/40 bg-[#10b981]/15 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#34d399]">
           <span className="h-1.5 w-1.5 rounded-full bg-[#34d399]" />
           FINAL RESULT
         </span>
       );
     case "Cancelled":
       return (
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#64748b]/40 bg-[#64748b]/15 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-[#94a3b8]">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#64748b]/40 bg-[#64748b]/15 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#94a3b8]">
           CANCELLED
         </span>
       );
     default:
       return (
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#f59e0b]/40 bg-[#f59e0b]/15 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-[#fbbf24]">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#f59e0b]/40 bg-[#f59e0b]/15 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#fbbf24]">
           <span className="h-1.5 w-1.5 rounded-full bg-[#fbbf24]" />
           UPCOMING
         </span>
@@ -221,19 +221,19 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
     <div className="relative min-h-screen text-[#f1f5f9] pb-24">
       {/* ── Ambient Neon Glow Orbs ────────────────────────────────────────── */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#7c3aed]/12 blur-[180px]" />
+        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#94a3b8]/12 blur-[180px]" />
         <div className="absolute top-1/3 -right-40 h-[500px] w-[500px] rounded-full bg-[#ff2d55]/10 blur-[160px]" />
-        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#06b6d4]/8 blur-[160px]" />
+        <div className="absolute bottom-10 left-1/3 h-[500px] w-[500px] rounded-full bg-[#94a3b8]/8 blur-[160px]" />
       </div>
 
       <TournamentNav />
 
-      <main className="relative z-10 mx-auto max-w-6xl px-4 pt-6 sm:px-8">
+      <main className="relative z-10 mx-auto max-w-[1440px] px-4 pt-6 sm:px-8">
         {/* Navigation Breadcrumb */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[#1e1e3a] pb-4">
           <Link
             href="/tournament/matches"
-            className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-[#94a3b8] transition hover:text-[#22d3ee]"
+            className="inline-flex items-center gap-1.5 text-sm font-black uppercase tracking-widest text-[#94a3b8] transition hover:text-[#f1f5f9]"
           >
             <span>← ALL MATCHES</span>
           </Link>
@@ -241,13 +241,13 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
           <div className="flex items-center gap-3">
             <Link
               href="/tournament/bracket"
-              className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/90 px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-[#94a3b8] transition hover:border-[#7c3aed]/50 hover:text-white"
+              className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/90 px-3.5 py-2 text-[12px] font-black uppercase tracking-widest text-[#94a3b8] transition hover:border-[#94a3b8]/50 hover:text-white"
             >
               BRACKET ↗
             </Link>
             <Link
               href="/tournament"
-              className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/90 px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-[#94a3b8] transition hover:border-[#06b6d4]/50 hover:text-[#22d3ee]"
+              className="rounded-xl border border-[#1e1e3a] bg-[#0c0c18]/90 px-3.5 py-2 text-[12px] font-black uppercase tracking-widest text-[#94a3b8] transition hover:border-[#94a3b8]/50 hover:text-[#f1f5f9]"
             >
               STANDINGS ↗
             </Link>
@@ -261,7 +261,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
           </div>
         ) : !match ? (
           <div className="rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-12 text-center backdrop-blur-xl">
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
+            <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
               Not Found
             </p>
             <h1 className="mt-2 text-3xl font-black uppercase text-white">
@@ -272,7 +272,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
             </p>
             <Link
               href="/tournament/matches"
-              className="mt-6 inline-flex rounded-xl border border-[#1e1e3a] bg-[#0c0c18] px-6 py-3 text-xs font-black uppercase tracking-wider text-[#f1f5f9] transition hover:border-[#7c3aed]"
+              className="mt-6 inline-flex rounded-xl border border-[#1e1e3a] bg-[#0c0c18] px-6 py-3 text-sm font-black uppercase tracking-wider text-[#f1f5f9] transition hover:border-[#94a3b8]"
             >
               ← Back to All Matches
             </Link>
@@ -280,17 +280,17 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
         ) : (
           <div className="space-y-8">
             {/* Match Hero Scoreboard */}
-            <section className="relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl shadow-[0_0_50px_rgba(124,58,237,0.08)] sm:p-8">
+            <section className="relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl shadow-[0_0_50px_rgba(148,163,184,0.08)] sm:p-8">
               {/* Header tags */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1e1e3a] pb-4">
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-7 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 text-xs font-black tracking-wider text-[#f1f5f9]">
+                  <span className="flex h-7 items-center justify-center rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 text-sm font-black tracking-wider text-[#f1f5f9]">
                     M{String(match.matchNumber).padStart(2, "0")}
                   </span>
-                  <span className="rounded-lg border border-[#7c3aed]/40 bg-[#7c3aed]/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-[#a78bfa]">
+                  <span className="rounded-lg border border-[#94a3b8]/40 bg-[#94a3b8]/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-[#f1f5f9]">
                     {match.stage}
                   </span>
-                  <span className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-[#94a3b8]">
+                  <span className="rounded-lg border border-[#1e1e3a] bg-[#080812] px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-[#94a3b8]">
                     {match.map || "TBD"} • BO{match.bestOf}
                   </span>
                 </div>
@@ -302,7 +302,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
               <div className="mt-8 grid items-center gap-6 md:grid-cols-[1fr_auto_1fr]">
                 {/* Team 1 Card */}
                 <div className="flex flex-col items-center rounded-2xl border border-[#1e1e3a]/60 bg-[#080812]/70 p-6 text-center">
-                  <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] shadow-[0_0_20px_rgba(6,182,212,0.15)]">
+                  <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] shadow-[0_0_20px_rgba(148,163,184,0.15)]">
                     {team1?.logo ? (
                       <Image
                         src={team1.logo}
@@ -313,7 +313,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
                         className="h-full w-full object-contain p-2"
                       />
                     ) : (
-                      <span className="text-2xl font-black text-[#06b6d4]">
+                      <span className="text-2xl font-black text-[#94a3b8]">
                         {(team1?.tag ?? "TBD").slice(0, 3)}
                       </span>
                     )}
@@ -327,7 +327,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
                     {team1?.name ?? "TBD"}
                   </h2>
 
-                  <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#64748b]">
+                  <p className="mt-1 text-sm font-bold uppercase tracking-wider text-[#64748b]">
                     {team1?.tag ? `[${team1.tag}]` : "Team 1"}
                     {isTeam1Winner && " • WINNER"}
                   </p>
@@ -354,7 +354,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
                           {match.team2Score}
                         </span>
                       </div>
-                      <p className="mt-2 text-[10px] font-black uppercase tracking-[0.25em] text-[#64748b]">
+                      <p className="mt-2 text-[12px] font-black uppercase tracking-[0.25em] text-[#64748b]">
                         FINAL SCORE
                       </p>
                     </div>
@@ -367,7 +367,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
 
                 {/* Team 2 Card */}
                 <div className="flex flex-col items-center rounded-2xl border border-[#1e1e3a]/60 bg-[#080812]/70 p-6 text-center">
-                  <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] shadow-[0_0_20px_rgba(124,58,237,0.15)]">
+                  <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18] shadow-[0_0_20px_rgba(148,163,184,0.15)]">
                     {team2?.logo ? (
                       <Image
                         src={team2.logo}
@@ -378,7 +378,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
                         className="h-full w-full object-contain p-2"
                       />
                     ) : (
-                      <span className="text-2xl font-black text-[#7c3aed]">
+                      <span className="text-2xl font-black text-[#94a3b8]">
                         {(team2?.tag ?? "TBD").slice(0, 3)}
                       </span>
                     )}
@@ -392,7 +392,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
                     {team2?.name ?? "TBD"}
                   </h2>
 
-                  <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#64748b]">
+                  <p className="mt-1 text-sm font-bold uppercase tracking-wider text-[#64748b]">
                     {team2?.tag ? `[${team2.tag}]` : "Team 2"}
                     {isTeam2Winner && " • WINNER"}
                   </p>
@@ -400,7 +400,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
               </div>
 
               {/* Schedule and Map info strip */}
-              <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[#1e1e3a] pt-4 text-xs font-semibold text-[#64748b]">
+              <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[#1e1e3a] pt-4 text-sm font-semibold text-[#64748b]">
                 <span>{formatDate(match.scheduledAt)}</span>
                 <span className="text-right text-[#94a3b8]">
                   Map: <strong className="text-white">{match.map || "TBD"}</strong> • Format: <strong className="text-white">BO{match.bestOf}</strong>
@@ -417,7 +417,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
                       ★
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-[#f59e0b]">
+                      <p className="text-[12px] font-black uppercase tracking-widest text-[#f59e0b]">
                         MATCH MVP
                       </p>
                       <h3 className="text-lg font-black uppercase text-[#f1f5f9]">
@@ -433,7 +433,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
                       ⊕
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-[#ff4d6a]">
+                      <p className="text-[12px] font-black uppercase tracking-widest text-[#ff4d6a]">
                         TOP FRAGGER
                       </p>
                       <h3 className="text-lg font-black uppercase text-[#f1f5f9]">
@@ -448,7 +448,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
             {/* Scoreboard Table Section */}
             <section className="space-y-6">
               <div className="border-b border-[#1e1e3a] pb-3">
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#06b6d4]">
+                <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#94a3b8]">
                   PERFORMANCE TELEMETRY
                 </p>
                 <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[#f1f5f9]">
@@ -465,13 +465,13 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
                   {/* Team 1 Scoreboard */}
                   {team1Stats.length > 0 && (
                     <div className="overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 backdrop-blur-xl">
-                      <div className="border-b border-[#1e1e3a] bg-[#080812] px-5 py-3 text-xs font-black uppercase tracking-wider text-[#06b6d4]">
+                      <div className="border-b border-[#1e1e3a] bg-[#080812] px-5 py-3 text-sm font-black uppercase tracking-wider text-[#94a3b8]">
                         {team1?.name ?? "Team 1"} — Roster Performance
                       </div>
                       <div className="overflow-x-auto">
                         <table className="min-w-[650px] w-full text-left">
                           <thead>
-                            <tr className="border-b border-[#1e1e3a] text-[10px] font-black uppercase tracking-widest text-[#64748b]">
+                            <tr className="border-b border-[#1e1e3a] text-[12px] font-black uppercase tracking-widest text-[#64748b]">
                               <th className="px-5 py-3">Player</th>
                               <th className="px-4 py-3 text-right">ACS</th>
                               <th className="px-4 py-3 text-right">K</th>
@@ -490,7 +490,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
                                   <td className="px-5 py-3.5 font-bold uppercase text-white">
                                     {stat.playerName}
                                   </td>
-                                  <td className="px-4 py-3.5 text-right font-black text-[#22d3ee]">
+                                  <td className="px-4 py-3.5 text-right font-black text-[#f1f5f9]">
                                     {stat.acs}
                                   </td>
                                   <td className="px-4 py-3.5 text-right font-black text-white">
@@ -523,13 +523,13 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
                   {/* Team 2 Scoreboard */}
                   {team2Stats.length > 0 && (
                     <div className="overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 backdrop-blur-xl">
-                      <div className="border-b border-[#1e1e3a] bg-[#080812] px-5 py-3 text-xs font-black uppercase tracking-wider text-[#a78bfa]">
+                      <div className="border-b border-[#1e1e3a] bg-[#080812] px-5 py-3 text-sm font-black uppercase tracking-wider text-[#f1f5f9]">
                         {team2?.name ?? "Team 2"} — Roster Performance
                       </div>
                       <div className="overflow-x-auto">
                         <table className="min-w-[650px] w-full text-left">
                           <thead>
-                            <tr className="border-b border-[#1e1e3a] text-[10px] font-black uppercase tracking-widest text-[#64748b]">
+                            <tr className="border-b border-[#1e1e3a] text-[12px] font-black uppercase tracking-widest text-[#64748b]">
                               <th className="px-5 py-3">Player</th>
                               <th className="px-4 py-3 text-right">ACS</th>
                               <th className="px-4 py-3 text-right">K</th>
@@ -548,7 +548,7 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
                                   <td className="px-5 py-3.5 font-bold uppercase text-white">
                                     {stat.playerName}
                                   </td>
-                                  <td className="px-4 py-3.5 text-right font-black text-[#a78bfa]">
+                                  <td className="px-4 py-3.5 text-right font-black text-[#f1f5f9]">
                                     {stat.acs}
                                   </td>
                                   <td className="px-4 py-3.5 text-right font-black text-white">
