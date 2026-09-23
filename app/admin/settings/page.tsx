@@ -17,6 +17,7 @@ type Settings = {
   announcement: string;
   logoUrl: string;
   bannerUrl: string;
+  liveStreamUrl: string;
   gameId: string;
   gameCustomName: string;
   gameCustomMaps: string[];
@@ -113,6 +114,7 @@ const EMPTY_SETTINGS: Settings = {
   announcement: "",
   logoUrl: "",
   bannerUrl: "",
+  liveStreamUrl: "",
   gameId: "valorant",
   gameCustomName: "",
   gameCustomMaps: [],
@@ -179,6 +181,7 @@ export default function TournamentSettingsPage() {
           announcement: data.announcement ?? "",
           logoUrl: data.logoUrl ?? "",
           bannerUrl: data.bannerUrl ?? "",
+          liveStreamUrl: data.liveStreamUrl ?? "",
           gameId: data.gameId || "valorant",
           gameCustomName: data.gameCustomName || "",
           gameCustomMaps: data.gameCustomMaps || [],
@@ -247,6 +250,7 @@ export default function TournamentSettingsPage() {
         announcement: data.announcement ?? "",
         logoUrl: data.logoUrl ?? "",
         bannerUrl: data.bannerUrl ?? "",
+        liveStreamUrl: data.liveStreamUrl ?? "",
         gameId: data.gameId || "valorant",
         gameCustomName: data.gameCustomName || "",
         gameCustomMaps: data.gameCustomMaps || [],
@@ -827,6 +831,42 @@ export default function TournamentSettingsPage() {
                 placeholder="Enter an official announcement, server IP, rules reminder, or broadcast link..."
                 className={inputClass + " resize-y leading-6"}
               />
+            </div>
+          </section>
+
+          {/* Section 3b: Live Stream */}
+          <section className="relative overflow-hidden rounded-2xl border border-[#ff2d55]/40 bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#ff2d55]/60 hover:shadow-[0_0_35px_rgba(255,45,85,0.1)] sm:p-8">
+            <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
+              <div>
+                <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
+                  LIVE BROADCAST
+                </p>
+                <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[#f1f5f9]">
+                  Live Stream Link
+                </h2>
+              </div>
+              <span className="rounded-full border border-[#ff2d55]/30 bg-[#ff2d55]/10 px-3 py-1 text-[11px] font-black text-[#ff4d6a]">
+                YOUTUBE
+              </span>
+            </div>
+
+            <div className="mt-6">
+              <label htmlFor="liveStreamUrl" className="text-[12px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+                YouTube Live / Video Link
+              </label>
+              <input
+                id="liveStreamUrl"
+                type="url"
+                value={settings.liveStreamUrl}
+                onChange={(e) => update("liveStreamUrl", e.target.value)}
+                disabled={loading || saving}
+                placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
+                className={inputClass}
+              />
+              <p className="mt-2.5 text-[12px] text-[#64748b]">
+                Paste the YouTube link when a match goes live and the public overview page will
+                automatically embed the stream under the hero. Leave empty to hide it.
+              </p>
             </div>
           </section>
 

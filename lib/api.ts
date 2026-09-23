@@ -11,6 +11,7 @@ export const defaultSettings: TournamentSettings = {
   announcement: "",
   logoUrl: "",
   bannerUrl: "",
+  liveStreamUrl: "",
 };
 
 export async function fetchTournamentData(): Promise<{

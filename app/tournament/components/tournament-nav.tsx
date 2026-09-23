@@ -50,11 +50,13 @@ export function TournamentNav() {
       : pathname.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#030308]/85 backdrop-blur-2xl transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+    <header className="sticky top-0 z-50 border-b border-[#ff2d55]/20 bg-[#030308]/95 backdrop-blur-2xl transition-all duration-300 shadow-[0_4px_40px_rgba(0,0,0,0.7)]">
+      {/* Top accent strip */}
+      <div className="h-[3px] w-full bg-gradient-to-r from-[#ff2d55] via-[#ff4d6a] to-[#ff2d55]" />
       {/* Micro-ambient bottom border glow */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-[#ff2d55]/40 to-transparent" />
 
-      <div className="mx-auto flex max-w-[1680px] items-center justify-between px-4 py-2.5 sm:px-6">
+      <div className="mx-auto flex max-w-[1680px] items-center justify-between px-4 py-3.5 sm:px-6">
         {/* ── 1. Brand & Game Identity ──────────────────────────────── */}
         <div className="flex items-center gap-4">
           <Link href="/tournament" className="group flex items-center gap-3">
@@ -63,11 +65,11 @@ export function TournamentNav() {
               <img
                 src={logoUrl}
                 alt="Logo"
-                className="h-10 w-10 rounded-xl border border-white/10 bg-[#0c0c18] object-contain p-1 shadow-md transition group-hover:border-white/30 group-hover:scale-105"
+                className="h-12 w-12 rounded-xl border border-[#ff2d55]/30 bg-[#0c0c18] object-contain p-1 shadow-[0_0_20px_rgba(255,45,85,0.2)] transition group-hover:border-[#ff2d55]/60 group-hover:scale-105"
               />
             ) : (
-              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.08] to-white/[0.02] text-sm font-black text-white shadow-inner transition-transform duration-200 group-hover:scale-105 group-hover:border-white/25">
-                <span className="drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
+              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#ff2d55]/30 bg-gradient-to-b from-[#ff2d55]/15 to-[#0c0c18] text-lg font-black text-white shadow-[0_0_20px_rgba(255,45,85,0.2)] transition-transform duration-200 group-hover:scale-105 group-hover:border-[#ff2d55]/60">
+                <span className="drop-shadow-[0_0_8px_rgba(255,45,85,0.5)]">
                   {game.icon}
                 </span>
               </div>
@@ -102,7 +104,7 @@ export function TournamentNav() {
                 href={link.href}
                 className={`relative rounded-full px-4 py-1.5 text-[13px] font-bold tracking-wider uppercase transition-all duration-200 ${
                   active
-                    ? "bg-white/10 text-white border border-white/15 shadow-[0_2px_12px_rgba(0,0,0,0.5)]"
+                    ? "bg-[#ff2d55]/20 text-white border border-[#ff2d55]/50 shadow-[0_2px_16px_rgba(255,45,85,0.35)]"
                     : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
                 }`}
               >
@@ -116,11 +118,11 @@ export function TournamentNav() {
         <div className="flex items-center gap-2.5">
           <Link
             href="/admin"
-            className="hidden sm:inline-flex items-center gap-2 rounded-full border border-purple-500/40 bg-gradient-to-r from-purple-600/25 via-indigo-600/20 to-purple-600/25 px-4 py-1.5 text-[13px] font-black tracking-wider text-purple-200 transition-all duration-200 hover:border-purple-400 hover:bg-purple-600/40 hover:text-white hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:scale-[1.02]"
+            className="hidden sm:inline-flex items-center gap-2 rounded-full border border-[#ff2d55]/50 bg-gradient-to-r from-[#ff2d55]/25 via-[#ff4d6a]/15 to-[#ff2d55]/25 px-4 py-1.5 text-[13px] font-black tracking-wider text-[#ff8fa3] transition-all duration-200 hover:border-[#ff2d55] hover:bg-[#ff2d55]/40 hover:text-white hover:shadow-[0_0_20px_rgba(255,45,85,0.4)] hover:scale-[1.02]"
           >
-            <span className="text-[12px] text-purple-400">⚡</span>
+            <span className="text-[12px] text-[#ff4d6a]">⚡</span>
             <span>ADMIN HUB</span>
-            <span className="text-[12px] text-purple-400">↗</span>
+            <span className="text-[12px] text-[#ff4d6a]">↗</span>
           </Link>
 
           {/* Mobile hamburger toggle */}
@@ -153,7 +155,7 @@ export function TournamentNav() {
                   onClick={() => setMobileOpen(false)}
                   className={`rounded-xl px-4 py-2.5 text-sm font-bold tracking-wider uppercase transition ${
                     active
-                      ? "bg-white/10 text-white border border-white/15"
+                      ? "bg-[#ff2d55]/20 text-white border border-[#ff2d55]/50"
                       : "text-slate-400 hover:bg-white/[0.04] hover:text-white"
                   }`}
                 >
@@ -164,7 +166,7 @@ export function TournamentNav() {
             <Link
               href="/admin"
               onClick={() => setMobileOpen(false)}
-              className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-purple-500/40 bg-purple-600/25 px-4 py-2.5 text-sm font-black tracking-wider text-purple-200"
+              className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-[#ff2d55]/50 bg-[#ff2d55]/25 px-4 py-2.5 text-sm font-black tracking-wider text-[#ff8fa3]"
             >
               <span>⚡ ADMIN HUB</span>
               <span>↗</span>
