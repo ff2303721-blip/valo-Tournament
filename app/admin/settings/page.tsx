@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { getAllGames, getGameDefinition } from "@/lib/games/registry";
 import { TOURNAMENT_STATUS_LIST } from "@/lib/tournament-status";
-import type { TournamentStatusId } from "@/lib/types";
+import type { Caster, TournamentStatusId } from "@/lib/types";
 
 type Settings = {
   tournamentName: string;
@@ -18,10 +18,29 @@ type Settings = {
   logoUrl: string;
   bannerUrl: string;
   liveStreamUrl: string;
+  casters: Caster[];
   gameId: string;
   gameCustomName: string;
   gameCustomMaps: string[];
 };
+
+const EMPTY_CASTERS: Caster[] = Array.from({ length: 4 }, () => ({
+  name: "",
+  logoUrl: "",
+  youtubeUrl: "",
+}));
+
+function normalizeCasters(value: unknown): Caster[] {
+  const list = Array.isArray(value) ? value : [];
+  return Array.from({ length: 4 }, (_, i) => {
+    const entry = list[i] as Partial<Caster> | undefined;
+    return {
+      name: entry?.name ?? "",
+      logoUrl: entry?.logoUrl ?? "",
+      youtubeUrl: entry?.youtubeUrl ?? "",
+    };
+  });
+}
 
 type DateTimeParts = {
   date: string;
@@ -115,6 +134,7 @@ const EMPTY_SETTINGS: Settings = {
   logoUrl: "",
   bannerUrl: "",
   liveStreamUrl: "",
+  casters: EMPTY_CASTERS,
   gameId: "valorant",
   gameCustomName: "",
   gameCustomMaps: [],
@@ -182,6 +202,7 @@ export default function TournamentSettingsPage() {
           logoUrl: data.logoUrl ?? "",
           bannerUrl: data.bannerUrl ?? "",
           liveStreamUrl: data.liveStreamUrl ?? "",
+          casters: normalizeCasters(data.casters),
           gameId: data.gameId || "valorant",
           gameCustomName: data.gameCustomName || "",
           gameCustomMaps: data.gameCustomMaps || [],
@@ -214,6 +235,14 @@ export default function TournamentSettingsPage() {
 
   function update<K extends keyof Settings>(key: K, value: Settings[K]) {
     setSettings((current) => ({ ...current, [key]: value }));
+  }
+
+  function updateCaster(index: number, field: keyof Caster, value: string) {
+    setSettings((current) => {
+      const casters = [...current.casters];
+      casters[index] = { ...casters[index], [field]: value };
+      return { ...current, casters };
+    });
   }
 
   async function saveSettings(event: FormEvent<HTMLFormElement>) {
@@ -251,6 +280,7 @@ export default function TournamentSettingsPage() {
         logoUrl: data.logoUrl ?? "",
         bannerUrl: data.bannerUrl ?? "",
         liveStreamUrl: data.liveStreamUrl ?? "",
+        casters: normalizeCasters(data.casters),
         gameId: data.gameId || "valorant",
         gameCustomName: data.gameCustomName || "",
         gameCustomMaps: data.gameCustomMaps || [],
@@ -868,6 +898,80 @@ export default function TournamentSettingsPage() {
                 automatically embed the stream under the hero. Leave empty to hide it.
               </p>
             </div>
+          </section>
+
+          {/* Section 3c: Official Casters */}
+          <section className="relative overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 p-6 backdrop-blur-xl transition hover:border-[#ff2d55]/40 sm:p-8">
+            <div className="flex items-center justify-between border-b border-[#1e1e3a] pb-4">
+              <div>
+                <p className="text-[12px] font-black uppercase tracking-[0.25em] text-[#ff4d6a]">
+                  BROADCAST TALENT
+                </p>
+                <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[#f1f5f9]">
+                  Official Casters
+                </h2>
+              </div>
+              <span className="rounded-full border border-[#1e1e3a] bg-[#080812] px-3 py-1 text-[11px] font-black text-[#94a3b8]">
+                4 SLOTS
+              </span>
+            </div>
+
+            <div className="mt-6 grid gap-5 sm:grid-cols-2">
+              {settings.casters.map((caster, index) => (
+                <div key={index} className="rounded-xl border border-[#1e1e3a] bg-[#080812]/60 p-4">
+                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#64748b]">
+                    Caster Slot {index + 1}
+                  </p>
+                  <div className="mt-3 space-y-3">
+                    <div>
+                      <label htmlFor={`caster-${index}-name`} className="text-[11px] font-bold uppercase tracking-wider text-[#475569]">
+                        Name
+                      </label>
+                      <input
+                        id={`caster-${index}-name`}
+                        type="text"
+                        value={caster.name}
+                        onChange={(e) => updateCaster(index, "name", e.target.value)}
+                        disabled={loading || saving}
+                        placeholder="Caster display name"
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor={`caster-${index}-logo`} className="text-[11px] font-bold uppercase tracking-wider text-[#475569]">
+                        Logo / Avatar URL
+                      </label>
+                      <input
+                        id={`caster-${index}-logo`}
+                        type="url"
+                        value={caster.logoUrl}
+                        onChange={(e) => updateCaster(index, "logoUrl", e.target.value)}
+                        disabled={loading || saving}
+                        placeholder="https://..."
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor={`caster-${index}-yt`} className="text-[11px] font-bold uppercase tracking-wider text-[#475569]">
+                        YouTube Channel Link
+                      </label>
+                      <input
+                        id={`caster-${index}-yt`}
+                        type="url"
+                        value={caster.youtubeUrl}
+                        onChange={(e) => updateCaster(index, "youtubeUrl", e.target.value)}
+                        disabled={loading || saving}
+                        placeholder="https://www.youtube.com/@channel"
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 text-[12px] text-[#64748b]">
+              Leave a slot's fields empty to keep showing its placeholder on the public overview page.
+            </p>
           </section>
 
           {/* Section 4: Media URLs */}

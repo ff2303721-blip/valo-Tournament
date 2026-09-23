@@ -3,9 +3,23 @@ import { createClient } from "@supabase/supabase-js";
 import fs from "fs";
 import path from "path";
 import { verifyAdminSessionToken, ADMIN_SESSION_COOKIE } from "@/lib/admin-session";
+import type { Caster } from "@/lib/types";
 
 const SESSION_COOKIE = ADMIN_SESSION_COOKIE;
 const GAME_SETTINGS_PATH = path.join(process.cwd(), "app", "data", "game-settings.json");
+const MAX_CASTERS = 4;
+
+function sanitizeCasters(value: unknown): Caster[] {
+  if (!Array.isArray(value)) return [];
+  return value.slice(0, MAX_CASTERS).map((entry) => {
+    const raw = entry && typeof entry === "object" ? (entry as Record<string, unknown>) : {};
+    return {
+      name: typeof raw.name === "string" ? raw.name.trim().slice(0, 60) : "",
+      logoUrl: typeof raw.logoUrl === "string" ? raw.logoUrl.trim() : "",
+      youtubeUrl: typeof raw.youtubeUrl === "string" ? raw.youtubeUrl.trim() : "",
+    };
+  });
+}
 
 function readGameSettings() {
   try {
@@ -14,10 +28,15 @@ function readGameSettings() {
       return JSON.parse(raw);
     }
   } catch {}
-  return { gameId: "valorant", gameCustomName: "", gameCustomMaps: [] };
+  return { gameId: "valorant", gameCustomName: "", gameCustomMaps: [], casters: [] };
 }
 
-function writeGameSettings(data: { gameId?: string; gameCustomName?: string; gameCustomMaps?: string[] }) {
+function writeGameSettings(data: {
+  gameId?: string;
+  gameCustomName?: string;
+  gameCustomMaps?: string[];
+  casters?: Caster[];
+}) {
   try {
     const current = readGameSettings();
     const updated = {
@@ -25,6 +44,7 @@ function writeGameSettings(data: { gameId?: string; gameCustomName?: string; gam
       gameId: data.gameId ?? current.gameId ?? "valorant",
       gameCustomName: data.gameCustomName ?? current.gameCustomName ?? "",
       gameCustomMaps: data.gameCustomMaps ?? current.gameCustomMaps ?? [],
+      casters: data.casters ?? current.casters ?? [],
     };
     fs.writeFileSync(GAME_SETTINGS_PATH, JSON.stringify(updated, null, 2), "utf-8");
     return updated;
@@ -165,6 +185,7 @@ export async function GET() {
         logoUrl: data.logo_url ?? "",
         bannerUrl: data.banner_url ?? "",
         liveStreamUrl,
+        casters: sanitizeCasters(gameConfig.casters),
         gameId: gameConfig.gameId || "valorant",
         gameCustomName: gameConfig.gameCustomName || "",
         gameCustomMaps: gameConfig.gameCustomMaps || [],
@@ -255,6 +276,19 @@ export async function PUT(request: NextRequest) {
         { error: "Live stream link must be a YouTube URL." },
         { status: 400 },
       );
+    }
+
+    const casters = sanitizeCasters(body.casters);
+    for (const caster of casters) {
+      if (
+        caster.youtubeUrl &&
+        !/^https:\/\/(www\.)?youtube\.com\//i.test(caster.youtubeUrl)
+      ) {
+        return NextResponse.json(
+          { error: "Caster channel links must be YouTube URLs." },
+          { status: 400 },
+        );
+      }
     }
 
     if (!tournamentStatus) {
@@ -367,6 +401,7 @@ export async function PUT(request: NextRequest) {
       gameId: body.gameId,
       gameCustomName: body.gameCustomName,
       gameCustomMaps: body.gameCustomMaps,
+      casters,
     });
 
     const liveStreamUrlOut = hasLiveStreamColumn
@@ -386,6 +421,7 @@ export async function PUT(request: NextRequest) {
       logoUrl: data.logo_url ?? "",
       bannerUrl: data.banner_url ?? "",
       liveStreamUrl: liveStreamUrlOut,
+      casters: sanitizeCasters(savedGameConfig.casters),
       gameId: savedGameConfig.gameId || "valorant",
       gameCustomName: savedGameConfig.gameCustomName || "",
       gameCustomMaps: savedGameConfig.gameCustomMaps || [],

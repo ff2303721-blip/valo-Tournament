@@ -12,6 +12,7 @@ export const defaultSettings: TournamentSettings = {
   logoUrl: "",
   bannerUrl: "",
   liveStreamUrl: "",
+  casters: [],
 };
 
 export async function fetchTournamentData(): Promise<{
