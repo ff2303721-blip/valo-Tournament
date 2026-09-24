@@ -361,25 +361,77 @@ export function ValorantFrontPage({
         </div>
 
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((slot) => (
-            <a
-              key={slot}
-              href="#"
-              className="group flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-[#1e1e3a] bg-[#080812]/60 p-6 text-center transition hover:border-[#ff2d55]/50 hover:bg-[#080812]"
-            >
-              <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed border-[#1e1e3a] bg-[#0c0c18] text-2xl text-[#64748b] transition group-hover:border-[#ff2d55]/50 group-hover:text-[#ff4d6a]">
-                ▶
+          {[0, 1, 2, 3].map((slot) => {
+            const caster = settings?.casters?.[slot];
+            const hasCaster = !!(caster && (caster.name || caster.youtubeUrl));
+
+            if (!hasCaster) {
+              return (
+                <div
+                  key={slot}
+                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-[#1e1e3a] bg-[#080812]/60 p-6 text-center"
+                >
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed border-[#1e1e3a] bg-[#0c0c18] text-2xl text-[#64748b]">
+                    ▶
+                  </div>
+                  <div>
+                    <p className="text-sm font-black uppercase tracking-wider text-[#94a3b8]">
+                      Caster Slot {slot + 1}
+                    </p>
+                    <p className="mt-1 text-[11px] font-bold uppercase tracking-wider text-[#64748b]">
+                      YouTube channel link coming soon
+                    </p>
+                  </div>
+                </div>
+              );
+            }
+
+            const content = (
+              <>
+                <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-2 border-[#ff2d55]/40 bg-[#0c0c18] transition group-hover:border-[#ff2d55]">
+                  {caster.logoUrl ? (
+                    <Image
+                      src={caster.logoUrl}
+                      alt={caster.name || "Caster"}
+                      width={80}
+                      height={80}
+                      unoptimized
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-2xl text-[#ff4d6a]">▶</span>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-black uppercase tracking-wider text-white transition-colors">
+                    {caster.name || "Official Caster"}
+                  </p>
+                  <p className="mt-1 text-[11px] font-bold uppercase tracking-wider text-[#64748b]">
+                    {caster.youtubeUrl ? "Watch on YouTube" : "Broadcast Talent"}
+                  </p>
+                </div>
+              </>
+            );
+
+            return caster.youtubeUrl ? (
+              <a
+                key={slot}
+                href={caster.youtubeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col items-center justify-center gap-3 rounded-2xl border border-[#1e1e3a] bg-[#080812]/60 p-6 text-center transition hover:border-[#ff2d55]/50 hover:bg-[#080812]"
+              >
+                {content}
+              </a>
+            ) : (
+              <div
+                key={slot}
+                className="group flex flex-col items-center justify-center gap-3 rounded-2xl border border-[#1e1e3a] bg-[#080812]/60 p-6 text-center"
+              >
+                {content}
               </div>
-              <div>
-                <p className="text-sm font-black uppercase tracking-wider text-[#94a3b8] group-hover:text-white transition-colors">
-                  Caster Slot {slot}
-                </p>
-                <p className="mt-1 text-[11px] font-bold uppercase tracking-wider text-[#64748b]">
-                  YouTube channel link coming soon
-                </p>
-              </div>
-            </a>
-          ))}
+            );
+          })}
         </div>
       </section>
     </div>

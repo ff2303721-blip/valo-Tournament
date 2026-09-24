@@ -1,5 +1,27 @@
 {
   "gameId": "valorant",
   "gameCustomName": "",
-  "gameCustomMaps": []
+  "gameCustomMaps": [],
+  "casters": [
+    {
+      "name": "",
+      "logoUrl": "",
+      "youtubeUrl": ""
+    },
+    {
+      "name": "",
+      "logoUrl": "",
+      "youtubeUrl": ""
+    },
+    {
+      "name": "",
+      "logoUrl": "",
+      "youtubeUrl": ""
+    },
+    {
+      "name": "",
+      "logoUrl": "",
+      "youtubeUrl": ""
+    }
+  ]
 }

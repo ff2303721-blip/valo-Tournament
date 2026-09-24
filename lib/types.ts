@@ -61,6 +61,12 @@ export type Team = {
   players: Player[];
 };
 
+export type Caster = {
+  name: string;
+  logoUrl: string;
+  youtubeUrl: string;
+};
+
 export type TournamentSettings = {
   tournamentName: string;
   tagline: string;
@@ -73,6 +79,7 @@ export type TournamentSettings = {
   logoUrl: string;
   bannerUrl: string;
   liveStreamUrl?: string;
+  casters?: Caster[];
   gameId?: string;
   gameCustomName?: string;
   gameCustomMaps?: string[];
