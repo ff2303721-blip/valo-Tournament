@@ -197,7 +197,7 @@ export default function PublicTeamsPage() {
               </div>
             </section>
 
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {sortedTeams.map((team, index) => {
               const captainClean = (team.captainRank || "").trim().toLowerCase();
 
@@ -205,32 +205,31 @@ export default function PublicTeamsPage() {
                 <Link
                   key={team.id}
                   href={`/tournament/teams/${team.id}`}
-                  className="group flex flex-col overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 backdrop-blur-xl transition hover:border-[#94a3b8]/50 hover:shadow-[0_0_30px_rgba(148,163,184,0.15)]"
+                  className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-[#1e1e3a] bg-[#0c0c18]/85 backdrop-blur-xl transition hover:border-[#94a3b8]/50 hover:shadow-[0_0_30px_rgba(148,163,184,0.15)]"
                 >
-                <div className="flex flex-col lg:flex-row">
-                  {/* Left: identity + stats */}
-                  <div className="flex shrink-0 flex-col lg:w-80 lg:border-r lg:border-[#1e1e3a]">
-                    <div className="flex items-center gap-4 border-b border-[#1e1e3a] p-5">
+                  <div>
+                    {/* Card Header: Identity */}
+                    <div className="flex items-center gap-3.5 border-b border-[#1e1e3a] p-4 sm:p-5">
                       {/* Rank badge */}
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#1e1e3a] text-base font-black text-white">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#1e1e3a] text-sm font-black text-white">
                         {index + 1}
                       </span>
                       {/* Logo / Avatar */}
                       <div
-                        className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#1e1e3a] bg-[#030308]"
+                        className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#1e1e3a] bg-[#030308]"
                         style={{ boxShadow: "inset 0 0 12px rgba(148,163,184,0.08)" }}
                       >
                         {team.logo ? (
                           <Image
                             src={team.logo}
                             alt={team.name}
-                            width={56}
-                            height={56}
+                            width={48}
+                            height={48}
                             unoptimized
                             className="h-full w-full object-contain p-1"
                           />
                         ) : (
-                          <span className="text-base font-black text-[#94a3b8]">
+                          <span className="text-sm font-black text-[#94a3b8]">
                             {initials(team.name)}
                           </span>
                         )}
@@ -238,21 +237,21 @@ export default function PublicTeamsPage() {
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="rounded border border-[#94a3b8]/40 bg-[#94a3b8]/10 px-2 py-0.5 text-[11px] font-black uppercase tracking-widest text-[#f1f5f9]">
+                          <span className="rounded border border-[#94a3b8]/40 bg-[#94a3b8]/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-[#f1f5f9]">
                             SEED #{team.seed}
                           </span>
-                          <span className="rounded border border-[#1e1e3a] bg-[#030308] px-2 py-0.5 text-[11px] font-black uppercase tracking-wider text-[#64748b]">
+                          <span className="rounded border border-[#1e1e3a] bg-[#030308] px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-[#64748b]">
                             [{team.tag}]
                           </span>
                         </div>
-                        <h2 className="mt-1.5 truncate text-lg font-black uppercase tracking-tight text-[#f1f5f9] group-hover:text-white">
+                        <h2 className="mt-1 truncate text-base font-black uppercase tracking-tight text-[#f1f5f9] group-hover:text-white sm:text-lg">
                           {team.name}
                         </h2>
                       </div>
                     </div>
 
-                    {/* Stats row */}
-                    <div className="grid grid-cols-3 border-b border-[#1e1e3a] bg-[#080812]/50 lg:border-b-0">
+                    {/* Stats Row */}
+                    <div className="grid grid-cols-3 border-b border-[#1e1e3a] bg-[#080812]/50">
                       <TeamStatBox
                         label="Wins"
                         value={team.wins}
@@ -269,29 +268,26 @@ export default function PublicTeamsPage() {
                         accent="text-[#94a3b8]"
                       />
                     </div>
-                  </div>
 
-                  {/* Right: roster */}
-                  <div className="flex-1">
                     {/* Roster Container */}
-                    <div className="p-5">
+                    <div className="p-4 sm:p-5">
                       {/* Captain Banner */}
                       {team.captainRank && (
-                        <div className="mb-3.5 flex items-center justify-between rounded-lg border border-[#f59e0b]/30 bg-[#f59e0b]/10 px-3 py-1.5">
+                        <div className="mb-3 flex items-center justify-between rounded-lg border border-[#f59e0b]/30 bg-[#f59e0b]/10 px-3 py-1.5">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-sm text-[#f59e0b]">★</span>
-                            <span className="text-[11px] font-black uppercase tracking-wider text-[#f59e0b]">
+                            <span className="text-xs text-[#f59e0b]">★</span>
+                            <span className="text-[10px] font-black uppercase tracking-wider text-[#f59e0b]">
                               CAPTAIN
                             </span>
                           </div>
-                          <span className="text-sm font-black uppercase tracking-tight text-[#fbbf24]">
+                          <span className="truncate text-xs font-black uppercase tracking-tight text-[#fbbf24] ml-2">
                             {team.captainRank}
                           </span>
                         </div>
                       )}
 
                       {/* Roster Grid */}
-                      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+                      <div className="grid grid-cols-2 gap-2">
                         {[...team.players]
                           .sort((a, b) => {
                             const isCaptainName = (name: string) =>
@@ -306,40 +302,39 @@ export default function PublicTeamsPage() {
                           })
                           .slice(0, 6)
                           .map((player, i) => {
-                          const isCaptain =
-                            (
-                              captainClean &&
-                              player.name &&
-                              (captainClean.includes(player.name.toLowerCase()) ||
-                                player.name.toLowerCase().includes(captainClean))
-                            ) || (player.role ? /captain|igl/i.test(player.role) : false);
+                            const isCaptain =
+                              (
+                                captainClean &&
+                                player.name &&
+                                (captainClean.includes(player.name.toLowerCase()) ||
+                                  player.name.toLowerCase().includes(captainClean))
+                              ) || (player.role ? /captain|igl/i.test(player.role) : false);
 
-                          return (
-                            <div
-                              key={player.id || i}
-                              className="flex items-center justify-between rounded-lg border border-[#1e1e3a] bg-[#030308]/90 px-2.5 py-1.5 text-sm text-[#94a3b8] transition group-hover:border-[#2e2e5a]"
-                            >
-                              <div className="flex items-center gap-1.5 min-w-0">
-                                <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded bg-[#0c0c18] text-[10px] font-black text-[#475569]">
-                                  {i + 1}
-                                </span>
-                                <span className="truncate text-[13px] font-bold uppercase tracking-tight text-[#f1f5f9]">
-                                  {isCaptain && <span className="mr-1 text-[#f59e0b]">★</span>}
-                                  {player.name}
-                                </span>
+                            return (
+                              <div
+                                key={player.id || i}
+                                className="flex items-center justify-between rounded-lg border border-[#1e1e3a] bg-[#030308]/90 px-2.5 py-1.5 text-xs text-[#94a3b8] transition group-hover:border-[#2e2e5a]"
+                              >
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                  <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded bg-[#0c0c18] text-[9px] font-black text-[#475569]">
+                                    {i + 1}
+                                  </span>
+                                  <span className="truncate text-[12px] font-bold uppercase tracking-tight text-[#f1f5f9]">
+                                    {isCaptain && <span className="mr-1 text-[#f59e0b]">★</span>}
+                                    {player.name}
+                                  </span>
+                                </div>
                               </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
                       </div>
                     </div>
                   </div>
-                </div>
 
                   {/* Integrated Card Footer */}
-                  <div className="flex items-center justify-between border-t border-[#1e1e3a] bg-[#080812]/90 px-5 py-2.5 text-sm font-black tracking-widest text-[#94a3b8] transition-colors group-hover:bg-[#94a3b8]/15 group-hover:text-[#f1f5f9]">
-                    <span className="text-[12px] uppercase">Roster Telemetry</span>
-                    <span className="flex items-center gap-1 text-[13px]">
+                  <div className="flex items-center justify-between border-t border-[#1e1e3a] bg-[#080812]/90 px-5 py-2.5 text-xs font-black tracking-widest text-[#94a3b8] transition-colors group-hover:bg-[#94a3b8]/15 group-hover:text-[#f1f5f9]">
+                    <span className="text-[11px] uppercase">Roster Telemetry</span>
+                    <span className="flex items-center gap-1 text-[12px]">
                       VIEW ROSTER{" "}
                       <span className="transition-transform group-hover:translate-x-1">
                         →
