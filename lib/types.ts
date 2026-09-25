@@ -93,3 +93,22 @@ export type Standing = {
   points: number;
   roundDifference: number;
 };
+
+export function formatStartingSide(
+  startingSide?: string | null,
+  team1Tag?: string | null,
+  team2Tag?: string | null,
+): string | null {
+  if (!startingSide) return null;
+  const s = startingSide.trim();
+  if (s.toLowerCase() === "attack") {
+    return team1Tag ? `@${team1Tag} Attack` : "Attack";
+  }
+  if (s.toLowerCase() === "defend") {
+    return team2Tag ? `@${team2Tag} Attack` : "Defend";
+  }
+  if (s.toLowerCase().includes("attack") || s.toLowerCase().includes("defend")) {
+    return s.startsWith("@") ? s : `@${s}`;
+  }
+  return s;
+}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { unstable_cache, revalidateTag } from "next/cache";
 import { syncPlayoffsWithDatabase } from "@/lib/playoffs";
 import { verifyAdminSessionToken, ADMIN_SESSION_COOKIE } from "@/lib/admin-session";
 
@@ -155,6 +156,12 @@ function normalizeMatch(
   };
 }
 
+const MATCH_COLUMNS =
+  "id, match_number, stage, team1_id, team2_id, scheduled_at, map, best_of, team1_score, team2_score, status, winner_id, mvp_player_id, top_fragger_player_id, starting_side, created_at";
+
+const STAT_COLUMNS =
+  "id, match_id, player_id, player_name, team_id, kills, deaths, assists, acs, adr, kast";
+
 async function getAllMatches(
   client: ReturnType<
     typeof getPublicClient
@@ -165,7 +172,7 @@ async function getAllMatches(
     error: matchesError,
   } = await client
     .from("matches")
-    .select("*")
+    .select(MATCH_COLUMNS)
     .order(
       "match_number",
       {
@@ -193,7 +200,7 @@ async function getAllMatches(
     error: statsError,
   } = await client
     .from("match_player_stats")
-    .select("*")
+    .select(STAT_COLUMNS)
     .in(
       "match_id",
       matchIds,
@@ -211,32 +218,31 @@ async function getAllMatches(
   return matches.map(
     (match) =>
       normalizeMatch(
-        match,
-        (stats ?? []).filter(
-          (stat) =>
-            stat.match_id ===
-            match.id,
-        ),
+        match as unknown as DbMatch,
+        (stats ?? []) as unknown as DbPlayerStat[],
       ),
   );
 }
 
+const getCachedMatches = unstable_cache(
+  async () => {
+    const client = getPublicClient();
+    return await getAllMatches(client);
+  },
+  ["public-matches-list"],
+  {
+    revalidate: 60,
+    tags: ["matches"],
+  },
+);
+
 export async function GET() {
   try {
-    // Non-blocking background sync so GET response returns immediately
-    try {
-      const adminClient = getAdminClient();
-      syncPlayoffsWithDatabase(adminClient).catch(() => {});
-    } catch {
-      // Ignore background sync errors
-    }
-
-    const client = getPublicClient();
-    const matches = await getAllMatches(client);
+    const matches = await getCachedMatches();
 
     return NextResponse.json(matches, {
       headers: {
-        "Cache-Control": "public, s-maxage=5, stale-while-revalidate=25",
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
       },
     });
   } catch (error) {
@@ -558,7 +564,7 @@ export async function POST(
         createdError,
     } = await client
       .from("matches")
-      .select("*")
+      .select(MATCH_COLUMNS)
       .eq(
         "id",
         id.trim(),
@@ -577,7 +583,7 @@ export async function POST(
         createdStatsError,
     } = await client
       .from("match_player_stats")
-      .select("*")
+      .select(STAT_COLUMNS)
       .eq(
         "match_id",
         id.trim(),
@@ -592,10 +598,18 @@ export async function POST(
       );
     }
 
+    try {
+      await syncPlayoffsWithDatabase(client);
+    } catch {}
+
+    try {
+      revalidateTag("matches", "default");
+    } catch {}
+
     return NextResponse.json(
       normalizeMatch(
-        created,
-        createdStats ?? [],
+        created as unknown as DbMatch,
+        (createdStats ?? []) as unknown as DbPlayerStat[],
       ),
       {
         status: 201,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { unstable_cache, revalidateTag } from "next/cache";
 import fs from "fs";
 import path from "path";
 import { verifyAdminSessionToken, ADMIN_SESSION_COOKIE } from "@/lib/admin-session";
@@ -9,6 +10,9 @@ const serviceRoleKey =
   process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const SESSION_COOKIE = ADMIN_SESSION_COOKIE;
+
+const TEAM_COLUMNS = "id, name, tag, seed, logo, wins, losses, captain_rank";
+const PLAYER_COLUMNS = "id, team_id, name, role";
 
 function resolveTeamLogo(teamId: string, rawLogo?: string | null): string {
   const pngPath = path.join(process.cwd(), "public", "logos", `${teamId}.png`);
@@ -60,7 +64,7 @@ async function getTeam(
   const { data: team, error: teamError } =
     await client
       .from("teams")
-      .select("*")
+      .select(TEAM_COLUMNS)
       .eq("id", id)
       .maybeSingle();
 
@@ -75,9 +79,7 @@ async function getTeam(
   const { data: players, error: playersError } =
     await client
       .from("players")
-      .select(
-        "id, team_id, name, role",
-      )
+      .select(PLAYER_COLUMNS)
       .eq("team_id", id)
       .order("created_at", {
         ascending: true,
@@ -108,21 +110,27 @@ async function getTeam(
   };
 }
 
+const loadTeamCached = unstable_cache(
+  async (id: string) => {
+    const client = getSupabaseAdmin();
+    return await getTeam(client, id);
+  },
+  ["team-detail-by-id"],
+  {
+    revalidate: 60,
+    tags: ["teams"],
+  },
+);
+
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   context: {
     params: Promise<{ id: string }>;
   },
 ) {
   try {
     const { id } = await context.params;
-
-    const client = getSupabaseAdmin();
-
-    const team = await getTeam(
-      client,
-      id,
-    );
+    const team = await loadTeamCached(id);
 
     if (!team) {
       return NextResponse.json(
@@ -133,7 +141,7 @@ export async function GET(
 
     return NextResponse.json(team, {
       headers: {
-        "Cache-Control": "no-store",
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
       },
     });
   } catch (error) {
@@ -344,6 +352,13 @@ export async function PUT(
         id,
       );
 
+    try {
+      revalidateTag("teams", "default");
+      revalidateTag("matches", "default");
+    } catch (e) {
+      console.warn("revalidateTag error:", e);
+    }
+
     return NextResponse.json(
       updatedTeam,
     );
@@ -388,6 +403,13 @@ export async function DELETE(
         { error: error.message },
         { status: 400 },
       );
+    }
+
+    try {
+      revalidateTag("teams", "default");
+      revalidateTag("matches", "default");
+    } catch (e) {
+      console.warn("revalidateTag error:", e);
     }
 
     return NextResponse.json({
