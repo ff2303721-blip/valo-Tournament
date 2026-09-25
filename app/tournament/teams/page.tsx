@@ -50,8 +50,8 @@ export default function PublicTeamsPage() {
     async function fetchData() {
       try {
         const [teamsRes, matchesRes] = await Promise.all([
-          fetch("/api/teams?lite=1", { cache: "no-store" }),
-          fetch("/api/matches", { cache: "no-store" }),
+          fetch("/api/teams?lite=1"),
+          fetch("/api/matches"),
         ]);
         if (!teamsRes.ok) throw new Error("Unable to load registered teams.");
         const teamsData = await teamsRes.json();

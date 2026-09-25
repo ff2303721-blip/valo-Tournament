@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { unstable_cache, revalidateTag } from "next/cache";
 import { syncPlayoffsWithDatabase } from "@/lib/playoffs";
 import { verifyAdminSessionToken, ADMIN_SESSION_COOKIE } from "@/lib/admin-session";
 
@@ -160,6 +161,12 @@ function normalizeMatch(
   };
 }
 
+const MATCH_COLUMNS =
+  "id, match_number, stage, team1_id, team2_id, scheduled_at, map, best_of, team1_score, team2_score, status, winner_id, mvp_player_id, top_fragger_player_id, starting_side, created_at";
+
+const STAT_COLUMNS =
+  "id, match_id, player_id, player_name, team_id, kills, deaths, assists, acs, adr, kast";
+
 async function loadMatch(
   client: ReturnType<
     typeof getPublicClient
@@ -171,7 +178,7 @@ async function loadMatch(
     error: matchError,
   } = await client
     .from("matches")
-    .select("*")
+    .select(MATCH_COLUMNS)
     .eq("id", id)
     .maybeSingle();
 
@@ -190,7 +197,7 @@ async function loadMatch(
     error: statsError,
   } = await client
     .from("match_player_stats")
-    .select("*")
+    .select(STAT_COLUMNS)
     .eq("match_id", id)
     .order("id", {
       ascending: true,
@@ -203,13 +210,25 @@ async function loadMatch(
   }
 
   return normalizeMatch(
-    match,
-    stats ?? [],
+    match as unknown as DbMatch,
+    (stats ?? []) as unknown as DbPlayerStat[],
   );
 }
 
+const loadMatchCached = unstable_cache(
+  async (id: string) => {
+    const client = getPublicClient();
+    return await loadMatch(client, id);
+  },
+  ["match-detail-by-id"],
+  {
+    revalidate: 60,
+    tags: ["matches"],
+  },
+);
+
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   context: {
     params: Promise<{
       id: string;
@@ -220,14 +239,8 @@ export async function GET(
     const { id } =
       await context.params;
 
-    const client =
-      getPublicClient();
-
     const match =
-      await loadMatch(
-        client,
-        id,
-      );
+      await loadMatchCached(id);
 
     if (!match) {
       return NextResponse.json(
@@ -246,7 +259,7 @@ export async function GET(
       {
         headers: {
           "Cache-Control":
-            "no-store",
+            "public, s-maxage=60, stale-while-revalidate=120",
         },
       },
     );
@@ -547,6 +560,10 @@ export async function PUT(
       // Ignore background sync errors
     }
 
+    try {
+      revalidateTag("matches", "default");
+    } catch {}
+
     const updated =
       await loadMatch(
         client,
@@ -616,6 +633,10 @@ export async function DELETE(
         },
       );
     }
+
+    try {
+      revalidateTag("matches", "default");
+    } catch {}
 
     return NextResponse.json({
       success: true,

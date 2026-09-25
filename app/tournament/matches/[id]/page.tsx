@@ -137,10 +137,8 @@ export default function PublicMatchDetailPage({ params }: PageProps) {
         setMatchId(id);
 
         const [matchResponse, teamsResponse] = await Promise.all([
-          fetch(`/api/matches/${encodeURIComponent(id)}`, {
-            cache: "no-store",
-          }),
-          fetch("/api/teams?lite=1", { cache: "no-store" }),
+          fetch(`/api/matches/${encodeURIComponent(id)}`),
+          fetch("/api/teams?lite=1"),
         ]);
 
         const matchData = matchResponse.ok ? await matchResponse.json() : null;

@@ -20,7 +20,7 @@ export function TournamentBrand({ compact = false }: { compact?: boolean }) {
 
     async function loadSettings() {
       try {
-        const response = await fetch("/api/settings", { cache: "no-store" });
+        const response = await fetch("/api/settings");
         if (!response.ok) return;
         const data = await response.json();
         if (!active) return;

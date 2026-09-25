@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 800" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradients -->
+    <radialGradient id="voidGlowLeft" cx="15%" cy="30%" r="50%">
+      <stop offset="0%" stop-color="#ff2d55" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#030308" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="voidGlowRight" cx="85%" cy="70%" r="55%">
+      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#030308" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="cyanCenterGlow" cx="50%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#030308" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Metal & Neon Gradients -->
+    <linearGradient id="titaniumText" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="30%" stop-color="#e2e8f0" />
+      <stop offset="70%" stop-color="#94a3b8" />
+      <stop offset="100%" stop-color="#475569" />
+    </linearGradient>
+
+    <linearGradient id="crimsonVioletGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff2d55" />
+      <stop offset="50%" stop-color="#9d63ff" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+
+    <linearGradient id="laserBeam" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff2d55" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#ff2d55" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#ff2d55" stop-opacity="0" />
+    </linearGradient>
+
+    <linearGradient id="glassBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff2d55" stop-opacity="0.6" />
+      <stop offset="50%" stop-color="#1e1e3a" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0.6" />
+    </linearGradient>
+
+    <!-- Grid Pattern -->
+    <pattern id="dotGrid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="20" cy="20" r="1" fill="#334155" opacity="0.35" />
+    </pattern>
+    <pattern id="lineGrid" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M 80 0 L 0 0 0 80" fill="none" stroke="#1e1e3a" stroke-width="0.75" stroke-opacity="0.4" />
+    </pattern>
+
+    <!-- Drop Shadows / Glows -->
+    <filter id="neonGlowCrimson" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur1" />
+      <feGaussianBlur stdDeviation="24" result="blur2" />
+      <feMerge>
+        <feMergeNode in="blur2" />
+        <feMergeNode in="blur1" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- 1. Deep Void Base Background -->
+  <rect width="1920" height="800" fill="#030308" />
+
+  <!-- 2. Ambient Volumetric Neon Orbs -->
+  <rect width="1920" height="800" fill="url(#voidGlowLeft)" />
+  <rect width="1920" height="800" fill="url(#voidGlowRight)" />
+  <rect width="1920" height="800" fill="url(#cyanCenterGlow)" />
+
+  <!-- 3. Cyber Grids -->
+  <rect width="1920" height="800" fill="url(#lineGrid)" />
+  <rect width="1920" height="800" fill="url(#dotGrid)" />
+
+  <!-- 4. Dynamic Laser Light Beams & Angles -->
+  <line x1="-100" y1="150" x2="1100" y2="900" stroke="url(#laserBeam)" stroke-width="2.5" />
+  <line x1="0" y1="120" x2="800" y2="850" stroke="#ff2d55" stroke-width="1" stroke-opacity="0.25" stroke-dasharray="10 20" />
+  <line x1="850" y1="-50" x2="2000" y2="700" stroke="#7c3aed" stroke-width="1.5" stroke-opacity="0.3" />
+
+  <!-- 5. Technical Telemetry HUD Elements -->
+  <!-- Top Left Stamp -->
+  <g transform="translate(80, 80)">
+    <text font-family="'Geist', 'Montserrat', sans-serif" font-size="11" font-weight="900" fill="#ff2d55" letter-spacing="4">
+      ● LIVE SYSTEM // TOURNAMENT PROTOCOL
+    </text>
+    <text y="20" font-family="'Geist Mono', monospace" font-size="9" font-weight="700" fill="#64748b" letter-spacing="2">
+      COORDINATES: 28°36'N 77°12'E // FREQ: 144.02 MHz // TACTICAL_FPS
+    </text>
+    <path d="M -15 -10 L -15 25 L 300 25" fill="none" stroke="#1e1e3a" stroke-width="1" />
+  </g>
+
+  <!-- Top Right Stamp -->
+  <g transform="translate(1560, 80)">
+    <rect x="0" y="-8" width="280" height="34" rx="6" fill="#0c0c18" stroke="#1e1e3a" stroke-width="1" />
+    <text x="140" y="14" font-family="'Geist', 'Montserrat', sans-serif" font-size="10" font-weight="900" fill="#f1f5f9" text-anchor="middle" letter-spacing="3">
+      VALORANT // SEASON 2026
+    </text>
+  </g>
+
+  <!-- 6. Central High-Tech Shield / Glassmorphic Panel -->
+  <g transform="translate(960, 420)">
+    <!-- Backing Glass Card -->
+    <rect x="-560" y="-190" width="1120" height="360" rx="24" fill="#0c0c18" fill-opacity="0.75" stroke="url(#glassBorder)" stroke-width="1.5" />
+
+    <!-- Corner Accents on Card -->
+    <path d="M -540 -170 L -520 -170 M -540 -170 L -540 -150" stroke="#ff2d55" stroke-width="2.5" fill="none" />
+    <path d="M 540 -170 L 520 -170 M 540 -170 L 540 -150" stroke="#7c3aed" stroke-width="2.5" fill="none" />
+    <path d="M -540 150 L -520 150 M -540 150 L -540 130" stroke="#06b6d4" stroke-width="2.5" fill="none" />
+    <path d="M 540 150 L 520 150 M 540 150 L 540 130" stroke="#f59e0b" stroke-width="2.5" fill="none" />
+
+    <!-- Top Eyebrow Tag -->
+    <g transform="translate(0, -120)">
+      <rect x="-130" y="-16" width="260" height="30" rx="15" fill="#131326" stroke="#1e1e3a" stroke-width="1" />
+      <text font-family="'Geist', 'Montserrat', sans-serif" font-size="11" font-weight="900" fill="#22d3ee" text-anchor="middle" y="4" letter-spacing="4">
+        ★ OFFICIAL TOURNAMENT ★
+      </text>
+    </g>
+
+    <!-- Main Monumental Typography -->
+    <!-- Giant Monogram "XMD" -->
+    <text y="-5" font-family="'Geist', 'Montserrat', 'Bebas Neue', sans-serif" font-size="112" font-weight="950" fill="url(#crimsonVioletGrad)" text-anchor="middle" letter-spacing="12" filter="url(#neonGlowCrimson)">
+      XMD
+    </text>
+
+    <!-- Secondary Heading: VALORANT TOURNAMENT -->
+    <text y="75" font-family="'Geist', 'Montserrat', sans-serif" font-size="34" font-weight="900" fill="url(#titaniumText)" text-anchor="middle" letter-spacing="10">
+      VALORANT TOURNAMENT
+    </text>
+
+    <!-- Version & Details Bottom Pill Strip -->
+    <g transform="translate(0, 125)">
+      <text font-family="'Geist Mono', monospace" font-size="12" font-weight="800" fill="#94a3b8" text-anchor="middle" letter-spacing="5">
+        EDITION V1.0  •  5V5 COMPETITIVE  •  NEON VOID SERIES
+      </text>
+    </g>
+  </g>
+
+  <!-- 7. Bottom Telemetry Bar -->
+  <g transform="translate(80, 730)">
+    <text font-family="'Geist Mono', monospace" font-size="10" font-weight="700" fill="#475569" letter-spacing="3">
+      [01] GROUP STAGE  //  [02] QUALIFIERS  //  [03] ELIMINATION  //  [04] GRAND FINALS
+    </text>
+  </g>
+  <g transform="translate(1640, 730)">
+    <text font-family="'Geist Mono', monospace" font-size="10" font-weight="700" fill="#34d399" letter-spacing="2">
+      STATUS: VERIFIED SECURE ✓
+    </text>
+  </g>
+
+  <!-- Subtle Horizontal Grid Ruler Lines -->
+  <line x1="80" y1="705" x2="1840" y2="705" stroke="#1e1e3a" stroke-width="1" />
+</svg>

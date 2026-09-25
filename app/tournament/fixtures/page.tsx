@@ -190,12 +190,8 @@ export default function FixturesPage() {
     async function load() {
       try {
         const [teamsResponse, matchesResponse] = await Promise.all([
-          fetch("/api/teams", {
-            cache: "no-store",
-          }),
-          fetch("/api/matches", {
-            cache: "no-store",
-          }),
+          fetch("/api/teams?lite=1"),
+          fetch("/api/matches"),
         ]);
 
         const teamsData = teamsResponse.ok ? await teamsResponse.json() : null;

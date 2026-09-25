@@ -113,7 +113,7 @@ export default function PlayerStatisticsPage() {
         const [teamsData, matchesData, settingsRes] = await Promise.all([
           fetchTeams(),
           fetchMatches(),
-          fetch("/api/settings", { cache: "no-store" }).catch(() => null),
+          fetch("/api/settings").catch(() => null),
         ]);
         if (!active) return;
         if (teamsData && teamsData.length > 0) setTeams(teamsData);

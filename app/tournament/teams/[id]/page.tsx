@@ -59,9 +59,7 @@ export default function PublicTeamDetailsPage() {
       }
 
       try {
-        const response = await fetch(`/api/teams/${encodeURIComponent(teamId)}`, {
-          cache: "no-store",
-        });
+        const response = await fetch(`/api/teams/${encodeURIComponent(teamId)}`);
         const foundTeam = response.ok ? await response.json() : null;
 
         if (!mounted) {

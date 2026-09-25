@@ -24,7 +24,7 @@ export default function RandomValorantBackground() {
     let mounted = true;
     async function loadGameSettings() {
       try {
-        const res = await fetch("/api/settings", { cache: "no-store" });
+        const res = await fetch("/api/settings");
         if (res.ok) {
           const data = await res.json();
           if (mounted && data?.gameId) {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { unstable_cache, revalidateTag } from "next/cache";
 import fs from "fs";
 import path from "path";
 import { verifyAdminSessionToken, ADMIN_SESSION_COOKIE } from "@/lib/admin-session";
@@ -137,8 +138,8 @@ function isUndefinedColumnError(error: { code?: string } | null) {
   return error?.code === "42703" || error?.code === "PGRST204";
 }
 
-export async function GET() {
-  try {
+const getCachedSettings = unstable_cache(
+  async () => {
     const supabase = getPublicClient();
 
     let { data, error } = await supabase
@@ -159,11 +160,7 @@ export async function GET() {
     }
 
     if (error || !data) {
-      console.error("GET /api/settings error:", error);
-      return NextResponse.json(
-        { error: "Unable to load tournament settings." },
-        { status: 500 },
-      );
+      throw new Error(error?.message || "Unable to load tournament settings.");
     }
 
     const gameConfig = readGameSettings();
@@ -171,29 +168,42 @@ export async function GET() {
       ? ((data as { live_stream_url?: string }).live_stream_url ?? "")
       : "";
 
+    return {
+      id: data.id,
+      tournamentName: data.tournament_name,
+      tagline: data.tagline,
+      organizerName: data.organizer_name ?? "",
+      prizePool: data.prize_pool ?? "",
+      startDate: data.start_date,
+      endDate: data.end_date,
+      tournamentStatus: normalizeStatus(data.tournament_status ?? "") || "upcoming",
+      announcement: data.announcement ?? "",
+      logoUrl: data.logo_url ?? "",
+      bannerUrl: data.banner_url ?? "",
+      liveStreamUrl,
+      casters: sanitizeCasters(gameConfig.casters),
+      gameId: gameConfig.gameId || "valorant",
+      gameCustomName: gameConfig.gameCustomName || "",
+      gameCustomMaps: gameConfig.gameCustomMaps || [],
+      updatedAt: data.updated_at,
+    };
+  },
+  ["public-tournament-settings"],
+  {
+    revalidate: 60,
+    tags: ["settings"],
+  },
+);
+
+export async function GET() {
+  try {
+    const settings = await getCachedSettings();
+
     return NextResponse.json(
-      {
-        id: data.id,
-        tournamentName: data.tournament_name,
-        tagline: data.tagline,
-        organizerName: data.organizer_name ?? "",
-        prizePool: data.prize_pool ?? "",
-        startDate: data.start_date,
-        endDate: data.end_date,
-        tournamentStatus: normalizeStatus(data.tournament_status ?? "") || "upcoming",
-        announcement: data.announcement ?? "",
-        logoUrl: data.logo_url ?? "",
-        bannerUrl: data.banner_url ?? "",
-        liveStreamUrl,
-        casters: sanitizeCasters(gameConfig.casters),
-        gameId: gameConfig.gameId || "valorant",
-        gameCustomName: gameConfig.gameCustomName || "",
-        gameCustomMaps: gameConfig.gameCustomMaps || [],
-        updatedAt: data.updated_at,
-      },
+      settings,
       {
         headers: {
-          "Cache-Control": "public, s-maxage=10, stale-while-revalidate=59",
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
         },
       },
     );
@@ -404,6 +414,12 @@ export async function PUT(request: NextRequest) {
     const liveStreamUrlOut = hasLiveStreamColumn
       ? ((data as { live_stream_url?: string }).live_stream_url ?? "")
       : "";
+
+    try {
+      revalidateTag("settings", "default");
+    } catch (e) {
+      console.warn("revalidateTag error:", e);
+    }
 
     return NextResponse.json({
       id: data.id,

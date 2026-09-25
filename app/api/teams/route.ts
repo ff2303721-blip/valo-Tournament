@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { unstable_cache, revalidateTag } from "next/cache";
 import fs from "fs";
 import path from "path";
 import { verifyAdminSessionToken, ADMIN_SESSION_COOKIE } from "@/lib/admin-session";
@@ -10,6 +11,9 @@ const publishableKey =
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const SESSION_COOKIE = ADMIN_SESSION_COOKIE;
+
+const TEAM_COLUMNS = "id, name, tag, seed, logo, wins, losses, captain_rank";
+const PLAYER_COLUMNS = "id, team_id, name, role";
 
 function resolveTeamLogo(teamId: string, rawLogo?: string | null): string {
   const pngPath = path.join(process.cwd(), "public", "logos", `${teamId}.png`);
@@ -64,19 +68,31 @@ function isAdmin(request: NextRequest) {
   return verifyAdminSessionToken(request.cookies.get(SESSION_COOKIE)?.value);
 }
 
+type SupabaseTeamRow = {
+  id: string;
+  name: string;
+  tag: string;
+  seed: number;
+  logo?: string | null;
+  wins?: number | null;
+  losses?: number | null;
+  captain_rank?: string | null;
+};
+
 async function buildTeamResponse(
-  client: ReturnType<typeof getSupabaseAdmin>,
+  client: ReturnType<typeof getSupabaseAdmin> | ReturnType<typeof getSupabasePublic>,
 ) {
-  const { data: teams, error: teamsError } = await client
+  const { data: teamsData, error: teamsError } = await client
     .from("teams")
-    .select("*")
+    .select(TEAM_COLUMNS)
     .order("seed", { ascending: true });
 
   if (teamsError) {
     throw new Error(teamsError.message);
   }
 
-  const teamIds = (teams ?? []).map((team) => team.id);
+  const rawTeams = (teamsData as unknown as SupabaseTeamRow[]) ?? [];
+  const teamIds = rawTeams.map((team) => team.id);
 
   let players: Array<{
     id: string;
@@ -88,7 +104,7 @@ async function buildTeamResponse(
   if (teamIds.length > 0) {
     const { data, error } = await client
       .from("players")
-      .select("id, team_id, name, role")
+      .select(PLAYER_COLUMNS)
       .in("team_id", teamIds)
       .order("created_at", {
         ascending: true,
@@ -101,7 +117,7 @@ async function buildTeamResponse(
     players = data ?? [];
   }
 
-  return (teams ?? []).map((team) => ({
+  return rawTeams.map((team) => ({
     id: team.id,
     name: team.name,
     tag: team.tag,
@@ -120,92 +136,25 @@ async function buildTeamResponse(
   }));
 }
 
-export async function GET(request: NextRequest) {
-  try {
+const getCachedTeams = unstable_cache(
+  async () => {
     const client = getSupabasePublic();
-    const { searchParams } = new URL(request.url);
-    const isLite =
-      searchParams.get("lite") === "1" ||
-      searchParams.get("lite") === "true";
+    return await buildTeamResponse(client);
+  },
+  ["public-teams-list"],
+  {
+    revalidate: 60,
+    tags: ["teams"],
+  },
+);
 
-    type SupabaseTeamRow = {
-      id: string;
-      name: string;
-      tag: string;
-      seed: number;
-      logo?: string | null;
-      wins?: number | null;
-      losses?: number | null;
-      captain_rank?: string | null;
-    };
+export async function GET() {
+  try {
+    const teams = await getCachedTeams();
 
-    const teamQuery = isLite
-      ? client.from("teams").select("id, name, tag, seed, logo, wins, losses, captain_rank")
-      : client.from("teams").select("*");
-
-    const { data: teamsData, error: teamsError } = await teamQuery.order("seed", {
-      ascending: true,
-    });
-
-    if (teamsError) {
-      return NextResponse.json(
-        { error: teamsError.message },
-        { status: 500 },
-      );
-    }
-
-    const rawTeams = (teamsData as unknown as SupabaseTeamRow[]) ?? [];
-    const teamIds = rawTeams.map((team) => team.id);
-
-    let players: Array<{
-      id: string;
-      team_id: string;
-      name: string;
-      role: string | null;
-    }> = [];
-
-    if (teamIds.length > 0) {
-      const { data, error } = await client
-        .from("players")
-        .select("id, team_id, name, role")
-        .in("team_id", teamIds)
-        .order("created_at", {
-          ascending: true,
-        });
-
-      if (error) {
-        return NextResponse.json(
-          { error: error.message },
-          { status: 500 },
-        );
-      }
-
-      players = data ?? [];
-    }
-
-    const response = rawTeams.map((team) => ({
-      id: team.id,
-      name: team.name,
-      tag: team.tag,
-      seed: team.seed,
-      logo: resolveTeamLogo(team.id, team.logo),
-      wins: team.wins ?? 0,
-      losses: team.losses ?? 0,
-      captainRank: team.captain_rank ?? "",
-      players: players
-        .filter(
-          (player) => player.team_id === team.id,
-        )
-        .map((player) => ({
-          id: player.id,
-          name: player.name,
-          role: player.role ?? undefined,
-        })),
-    }));
-
-    return NextResponse.json(response, {
+    return NextResponse.json(teams, {
       headers: {
-        "Cache-Control": "public, s-maxage=10, stale-while-revalidate=59",
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
       },
     });
   } catch (error) {
@@ -349,6 +298,13 @@ export async function POST(request: NextRequest) {
     const createdTeam = teams.find(
       (team) => team.id === id.trim(),
     );
+
+    try {
+      revalidateTag("teams", "default");
+      revalidateTag("matches", "default");
+    } catch (e) {
+      console.warn("revalidateTag error:", e);
+    }
 
     return NextResponse.json(createdTeam, {
       status: 201,

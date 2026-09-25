@@ -1,9 +1,14 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { revalidateTag } from "next/cache";
 
 export async function syncPlayoffsWithDatabase(client: SupabaseClient) {
   try {
+    let playoffUpdated = false;
     const [matchesRes, teamsRes] = await Promise.all([
-      client.from("matches").select("*").order("match_number", { ascending: true }),
+      client
+        .from("matches")
+        .select("id, match_number, status, team1_id, team2_id, team1_score, team2_score, winner_id")
+        .order("match_number", { ascending: true }),
       client.from("teams").select("id, name, seed").order("seed", { ascending: true }),
     ]);
 
@@ -72,6 +77,7 @@ export async function syncPlayoffsWithDatabase(client: SupabaseClient) {
           .eq("id", m13.id);
         m13.team1_id = rank1;
         m13.team2_id = rank2;
+        playoffUpdated = true;
       }
 
       // M14 (Eliminator): Rank 3 vs Rank 4
@@ -83,10 +89,16 @@ export async function syncPlayoffsWithDatabase(client: SupabaseClient) {
           .eq("id", m14.id);
         m14.team1_id = rank3;
         m14.team2_id = rank4;
+        playoffUpdated = true;
+      }
+
+      if (playoffUpdated) {
+        try { revalidateTag("matches", "default"); } catch {}
       }
     }
 
     // 2. Progression into Qualifier 2 (M15) & Grand Final (M16)
+    let p2Updated = false;
     const m13 = matches.find((m) => m.match_number === 13);
     const m14 = matches.find((m) => m.match_number === 14);
     const m15 = matches.find((m) => m.match_number === 15);
@@ -122,6 +134,7 @@ export async function syncPlayoffsWithDatabase(client: SupabaseClient) {
           .eq("id", m15.id);
         m15.team1_id = newTeam1;
         m15.team2_id = newTeam2;
+        p2Updated = true;
       }
     }
 
@@ -142,7 +155,12 @@ export async function syncPlayoffsWithDatabase(client: SupabaseClient) {
           .from("matches")
           .update({ team1_id: newTeam1, team2_id: newTeam2 })
           .eq("id", m16.id);
+        p2Updated = true;
       }
+    }
+
+    if (p2Updated) {
+      try { revalidateTag("matches", "default"); } catch {}
     }
   } catch (err) {
     console.warn("Failed to auto-sync playoffs:", err);
