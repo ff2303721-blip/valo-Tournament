@@ -391,6 +391,7 @@ export function ValorantFrontPage({
                       width={80}
                       height={80}
                       unoptimized
+                      referrerPolicy="no-referrer"
                       className="h-full w-full object-cover"
                     />
                   ) : (
