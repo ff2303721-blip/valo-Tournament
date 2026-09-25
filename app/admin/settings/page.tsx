@@ -953,7 +953,7 @@ export default function TournamentSettingsPage() {
                     </div>
                     <div>
                       <label htmlFor={`caster-${index}-yt`} className="text-[11px] font-bold uppercase tracking-wider text-[#475569]">
-                        YouTube Channel Link
+                        Channel Link (YouTube, Kick, Twitch, etc.)
                       </label>
                       <input
                         id={`caster-${index}-yt`}

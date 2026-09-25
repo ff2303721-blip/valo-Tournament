@@ -289,25 +289,21 @@ export function ValorantFrontPage({
               name: "Sheikh Kunjappu",
               role: "Title Partner & Championship Patron",
               image: "/sponsors/sheikh-kunjappu.jpg",
-              fit: "object-cover",
             },
             {
               name: "OSDF Clan",
               role: "Official Clan & Community Sponsor",
               image: "/sponsors/osdf-clan.png",
-              fit: "object-contain p-3",
             },
             {
               name: "Deuz X Gaming",
               role: "Esports Media & Gaming Partner",
               image: "/sponsors/deuz-x.png",
-              fit: "object-contain p-2.5",
             },
             {
               name: "Agon Desantos",
               role: "Championship Supporter & Sponsor",
               image: "/sponsors/agon-desantos.png",
-              fit: "object-contain p-1",
             },
           ].map((sponsor) => (
             <div
@@ -318,14 +314,13 @@ export function ValorantFrontPage({
                 OFFICIAL SPONSOR
               </span>
 
-              <div className="my-5 flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[#94a3b8]/40 bg-[#080812] shadow-[0_0_25px_rgba(255,255,255,0.1)] transition-transform duration-300 group-hover:scale-105">
+              <div className="relative my-5 flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 border-[#94a3b8]/40 bg-[#080812] shadow-[0_0_25px_rgba(255,255,255,0.1)] transition-transform duration-300 group-hover:scale-105">
                 <Image
                   src={sponsor.image}
                   alt={sponsor.name}
-                  width={112}
-                  height={112}
+                  fill
                   unoptimized
-                  className={`h-full w-full ${sponsor.fit}`}
+                  className="object-contain p-4"
                 />
               </div>
 
@@ -356,7 +351,7 @@ export function ValorantFrontPage({
             </h4>
           </div>
           <span className="rounded-full border border-[#1e1e3a] bg-[#080812] px-3.5 py-1 text-[12px] font-black text-[#94a3b8]">
-            WATCH ON YOUTUBE
+            WATCH LIVE
           </span>
         </div>
 
@@ -407,7 +402,7 @@ export function ValorantFrontPage({
                     {caster.name || "Official Caster"}
                   </p>
                   <p className="mt-1 text-[11px] font-bold uppercase tracking-wider text-[#64748b]">
-                    {caster.youtubeUrl ? "Watch on YouTube" : "Broadcast Talent"}
+                    {caster.youtubeUrl ? "Watch Channel" : "Broadcast Talent"}
                   </p>
                 </div>
               </>
