@@ -280,12 +280,9 @@ export async function PUT(request: NextRequest) {
 
     const casters = sanitizeCasters(body.casters);
     for (const caster of casters) {
-      if (
-        caster.youtubeUrl &&
-        !/^https:\/\/(www\.)?youtube\.com\//i.test(caster.youtubeUrl)
-      ) {
+      if (caster.youtubeUrl && !/^https:\/\//i.test(caster.youtubeUrl)) {
         return NextResponse.json(
-          { error: "Caster channel links must be YouTube URLs." },
+          { error: "Caster channel links must be a valid https:// URL." },
           { status: 400 },
         );
       }
