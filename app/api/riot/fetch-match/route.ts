@@ -10,6 +10,7 @@ interface FetchMatchRequestBody {
   matchId?: string;
   region?: string;
   apiKey?: string;
+  mode?: string;
   team1Id?: string;
   team2Id?: string;
   team1Players?: TeamPlayer[];
@@ -117,9 +118,15 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Try v4 endpoint first
-      const v4Url = `https://api.henrikdev.xyz/valorant/v4/matches/${encodeURIComponent(region)}/pc/${encodeURIComponent(name)}/${encodeURIComponent(tag)}?size=3`;
-      let res = await fetch(v4Url, {
+      const requestedMode = body.mode ? body.mode.trim().toLowerCase() : "custom";
+      const isCustomOnly = requestedMode === "custom";
+
+      // 1. Try v4 endpoint with mode filter (e.g. mode=custom)
+      let queryUrl = isCustomOnly
+        ? `https://api.henrikdev.xyz/valorant/v4/matches/${encodeURIComponent(region)}/pc/${encodeURIComponent(name)}/${encodeURIComponent(tag)}?mode=custom&size=5`
+        : `https://api.henrikdev.xyz/valorant/v4/matches/${encodeURIComponent(region)}/pc/${encodeURIComponent(name)}/${encodeURIComponent(tag)}?size=5`;
+
+      let res = await fetch(queryUrl, {
         headers: {
           Authorization: apiKey,
           Accept: "application/json",
@@ -127,16 +134,51 @@ export async function POST(request: NextRequest) {
         cache: "no-store",
       });
 
-      // If v4 returns 404/failure, fallback to v3
+      // 2. If v4 with custom filter fails or returns 404, fallback to v3 with mode=custom
       if (!res.ok && res.status !== 401 && res.status !== 403 && res.status !== 429) {
-        const v3Url = `https://api.henrikdev.xyz/valorant/v3/matches/${encodeURIComponent(region)}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}?size=3`;
-        res = await fetch(v3Url, {
+        const v3Url = isCustomOnly
+          ? `https://api.henrikdev.xyz/valorant/v3/matches/${encodeURIComponent(region)}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}?mode=custom&size=5`
+          : `https://api.henrikdev.xyz/valorant/v3/matches/${encodeURIComponent(region)}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}?size=5`;
+
+        const v3Res = await fetch(v3Url, {
           headers: {
             Authorization: apiKey,
             Accept: "application/json",
           },
           cache: "no-store",
         });
+
+        if (v3Res.ok) {
+          res = v3Res;
+        }
+      }
+
+      // 3. If custom-mode query failed or returned no matches, fallback to general match query
+      if (!res.ok && isCustomOnly && res.status !== 401 && res.status !== 403 && res.status !== 429) {
+        const fallbackUrl = `https://api.henrikdev.xyz/valorant/v4/matches/${encodeURIComponent(region)}/pc/${encodeURIComponent(name)}/${encodeURIComponent(tag)}?size=5`;
+        const fallbackRes = await fetch(fallbackUrl, {
+          headers: {
+            Authorization: apiKey,
+            Accept: "application/json",
+          },
+          cache: "no-store",
+        });
+
+        if (fallbackRes.ok) {
+          res = fallbackRes;
+        } else {
+          const v3FallbackUrl = `https://api.henrikdev.xyz/valorant/v3/matches/${encodeURIComponent(region)}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}?size=5`;
+          const v3FallbackRes = await fetch(v3FallbackUrl, {
+            headers: {
+              Authorization: apiKey,
+              Accept: "application/json",
+            },
+            cache: "no-store",
+          });
+          if (v3FallbackRes.ok) {
+            res = v3FallbackRes;
+          }
+        }
       }
 
       if (!res.ok) {
@@ -161,7 +203,7 @@ export async function POST(request: NextRequest) {
         if (res.status === 404) {
           return NextResponse.json(
             {
-              error: `Player '${riotId}' was not found on region '${region}'. Check spelling, capitalization, or region.`,
+              error: `Player '${riotId}' was not found on region '${region}'. Check spelling, capitalization, or region. Note: In Valorant, custom games only appear in match history if 'Tournament Mode: ON' was set in custom lobby options.`,
             },
             { status: 404 },
           );
@@ -182,14 +224,27 @@ export async function POST(request: NextRequest) {
       if (!list || list.length === 0) {
         return NextResponse.json(
           {
-            error: `No recent matches found for '${riotId}'. If the match just finished, wait 15 seconds for Riot to process it.`,
+            error: `No matches found for '${riotId}'. Note: Custom games only appear in public match history if 'Tournament Mode: ON' was enabled in custom lobby settings. You can also paste the Match UUID or enter the score manually above.`,
           },
           { status: 404 },
         );
       }
 
-      // Pick the most recent match
-      rawMatchData = list[0];
+      // If looking for a custom match, inspect the list for custom matches first
+      let chosenMatch = list[0];
+      if (isCustomOnly) {
+        const foundCustom = list.find((m: any) => {
+          const mMode = String(
+            m?.metadata?.mode || m?.metadata?.queue || m?.metadata?.game_mode || ""
+          ).toLowerCase();
+          return mMode.includes("custom");
+        });
+        if (foundCustom) {
+          chosenMatch = foundCustom;
+        }
+      }
+
+      rawMatchData = chosenMatch;
     }
 
     if (!rawMatchData) {

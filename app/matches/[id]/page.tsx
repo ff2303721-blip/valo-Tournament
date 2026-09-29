@@ -107,6 +107,7 @@ export default function MatchResultRecorderPage() {
   const [ingestionMethod, setIngestionMethod] = useState<"riot" | "ocr">("riot");
   const [riotPlayerInput, setRiotPlayerInput] = useState("");
   const [riotRegion, setRiotRegion] = useState("ap");
+  const [riotMatchMode, setRiotMatchMode] = useState<"custom" | "all">("custom");
   const [fetchingRiot, setFetchingRiot] = useState(false);
   const [riotFetchError, setRiotFetchError] = useState("");
   const [riotFetchSuccess, setRiotFetchSuccess] = useState("");
@@ -253,6 +254,7 @@ export default function MatchResultRecorderPage() {
       const payload: any = {
         region: riotRegion,
         apiKey: apiKey || undefined,
+        mode: riotMatchMode,
         team1Id: match?.team1Id,
         team2Id: match?.team2Id,
         team1Players: team1?.players?.map((p) => ({ id: p.id, name: p.name })) || [],
@@ -891,39 +893,60 @@ export default function MatchResultRecorderPage() {
                   {/* Quick Player Suggestion Chips */}
                   {(team1 || team2) && (
                     <div className="rounded-xl border border-[#1e1e3a] bg-[#080812]/70 p-4">
-                      <span className="text-[12px] font-black uppercase tracking-widest text-[#64748b] block mb-2">
-                        Quick Select Participant from Lineups:
-                      </span>
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <span className="text-[12px] font-black uppercase tracking-widest text-[#64748b]">
+                          Quick Select Participant from Lineups:
+                        </span>
+                        <span className="text-[11px] text-[#475569]">
+                          (Green chips have Riot #Tag pre-configured)
+                        </span>
+                      </div>
                       <div className="flex flex-wrap items-center gap-2">
-                        {team1?.players?.map((p) => (
-                          <button
-                            key={p.id}
-                            type="button"
-                            onClick={() => setRiotPlayerInput(p.name)}
-                            className="inline-flex items-center gap-1.5 rounded-lg border border-[#94a3b8]/30 bg-[#94a3b8]/10 px-2.5 py-1 text-[13px] font-bold text-[#f1f5f9] transition hover:bg-[#94a3b8]/25 hover:border-[#94a3b8]"
-                          >
-                            <span className="text-[11px] text-[#94a3b8]">[{team1.tag}]</span>
-                            <span>{p.name}</span>
-                          </button>
-                        ))}
-                        {team2?.players?.map((p) => (
-                          <button
-                            key={p.id}
-                            type="button"
-                            onClick={() => setRiotPlayerInput(p.name)}
-                            className="inline-flex items-center gap-1.5 rounded-lg border border-[#94a3b8]/30 bg-[#94a3b8]/10 px-2.5 py-1 text-[13px] font-bold text-[#c084fc] transition hover:bg-[#94a3b8]/25 hover:border-[#94a3b8]"
-                          >
-                            <span className="text-[11px] text-[#f1f5f9]">[{team2.tag}]</span>
-                            <span>{p.name}</span>
-                          </button>
-                        ))}
+                        {team1?.players?.map((p) => {
+                          const hasTag = p.name.includes("#");
+                          return (
+                            <button
+                              key={p.id}
+                              type="button"
+                              onClick={() => setRiotPlayerInput(hasTag ? p.name : `${p.name}#`)}
+                              className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[13px] font-bold transition ${
+                                hasTag
+                                  ? "border-[#10b981]/50 bg-[#10b981]/15 text-[#34d399] hover:bg-[#10b981]/25 hover:border-[#10b981]"
+                                  : "border-[#94a3b8]/30 bg-[#94a3b8]/10 text-[#f1f5f9] hover:bg-[#94a3b8]/25 hover:border-[#94a3b8]"
+                              }`}
+                            >
+                              <span className="text-[11px] text-[#94a3b8]">[{team1.tag}]</span>
+                              <span>{p.name}</span>
+                              {hasTag && <span className="text-[10px] font-black text-[#10b981]">✓ ID</span>}
+                            </button>
+                          );
+                        })}
+                        {team2?.players?.map((p) => {
+                          const hasTag = p.name.includes("#");
+                          return (
+                            <button
+                              key={p.id}
+                              type="button"
+                              onClick={() => setRiotPlayerInput(hasTag ? p.name : `${p.name}#`)}
+                              className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[13px] font-bold transition ${
+                                hasTag
+                                  ? "border-[#10b981]/50 bg-[#10b981]/15 text-[#34d399] hover:bg-[#10b981]/25 hover:border-[#10b981]"
+                                  : "border-[#94a3b8]/30 bg-[#94a3b8]/10 text-[#c084fc] hover:bg-[#94a3b8]/25 hover:border-[#94a3b8]"
+                              }`}
+                            >
+                              <span className="text-[11px] text-[#f1f5f9]">[{team2.tag}]</span>
+                              <span>{p.name}</span>
+                              {hasTag && <span className="text-[10px] font-black text-[#10b981]">✓ ID</span>}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
 
                   {/* Input row */}
                   <div className="grid gap-4 sm:grid-cols-12 items-end">
-                    <div className="sm:col-span-6">
+                    <div className="sm:col-span-5">
                       <label className="text-[12px] font-black uppercase tracking-widest text-[#64748b]">
                         Player Riot ID or Match UUID
                       </label>
@@ -931,12 +954,26 @@ export default function MatchResultRecorderPage() {
                         type="text"
                         value={riotPlayerInput}
                         onChange={(e) => setRiotPlayerInput(e.target.value)}
-                        placeholder="e.g. Nishku#VAL or 714838f4-5011-..."
+                        placeholder="e.g. zippaz007#2500 or 714838f4-5011-..."
                         className="mt-1.5 w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-4 py-3 text-sm font-semibold text-[#f1f5f9] outline-none transition focus:border-[#94a3b8]"
                       />
                     </div>
 
-                    <div className="sm:col-span-3">
+                    <div className="sm:col-span-2">
+                      <label className="text-[12px] font-black uppercase tracking-widest text-[#64748b]">
+                        Match Mode
+                      </label>
+                      <select
+                        value={riotMatchMode}
+                        onChange={(e) => setRiotMatchMode(e.target.value as "custom" | "all")}
+                        className="mt-1.5 w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-3 text-sm font-semibold text-[#f1f5f9] outline-none transition focus:border-[#94a3b8]"
+                      >
+                        <option value="custom" className="bg-[#0c0c18]">Custom Game</option>
+                        <option value="all" className="bg-[#0c0c18]">All Modes</option>
+                      </select>
+                    </div>
+
+                    <div className="sm:col-span-2">
                       <label className="text-[12px] font-black uppercase tracking-widest text-[#64748b]">
                         Server Cluster
                       </label>
@@ -945,7 +982,7 @@ export default function MatchResultRecorderPage() {
                         onChange={(e) => setRiotRegion(e.target.value)}
                         className="mt-1.5 w-full rounded-xl border border-[#1e1e3a] bg-[#080812] px-3 py-3 text-sm font-semibold text-[#f1f5f9] outline-none transition focus:border-[#94a3b8]"
                       >
-                        <option value="ap" className="bg-[#0c0c18]">AP (Mumbai / Asia)</option>
+                        <option value="ap" className="bg-[#0c0c18]">AP (Asia/Mumbai)</option>
                         <option value="eu" className="bg-[#0c0c18]">EU (Europe)</option>
                         <option value="na" className="bg-[#0c0c18]">NA (North America)</option>
                         <option value="kr" className="bg-[#0c0c18]">KR (Korea)</option>
@@ -971,6 +1008,19 @@ export default function MatchResultRecorderPage() {
                         )}
                       </button>
                     </div>
+                  </div>
+
+                  {/* Informational Guidance for Custom Matches */}
+                  <div className="rounded-xl border border-[#1e1e3a] bg-[#080812]/50 p-4 text-xs text-[#94a3b8] space-y-1.5">
+                    <p className="font-bold text-[#f1f5f9] flex items-center gap-1.5">
+                      <span>💡</span>
+                      <span>How to record custom match results:</span>
+                    </p>
+                    <ul className="list-disc list-inside space-y-1 text-[#94a3b8] pl-1">
+                      <li><strong className="text-[#f1f5f9]">Tournament Mode:</strong> In Valorant custom lobbies, turn <span className="text-[#f59e0b]">"Tournament Mode: ON"</span> in lobby options so Riot servers publish the match to HenrikDev/Riot API.</li>
+                      <li><strong className="text-[#f1f5f9]">Match UUID:</strong> You can paste the Match UUID directly into the box above (copy it from <em>Career → Match History → Details</em>).</li>
+                      <li><strong className="text-[#f1f5f9]">Direct Entry:</strong> You can always enter the final score directly in the <em>Score & Result</em> section above and click <span className="text-[#34d399]">Save Match Result</span>.</li>
+                    </ul>
                   </div>
 
                   {/* Feedback Messages */}
